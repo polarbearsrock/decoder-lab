@@ -1,4 +1,4 @@
-<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="description" content="An interactive quantum error correction lab: step through Union-Find growth, parent pointers, spanning forests and peeling."><meta name="theme-color" content="#f6f8fa"><title>Union-Find Decoder Lab</title><link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%2324344c'/%3E%3Cpath d='M16 18L32 34L48 18M32 34V48' stroke='%23ffffff' stroke-width='5' fill='none'/%3E%3Ccircle cx='16' cy='18' r='6' fill='%23ffffff'/%3E%3Ccircle cx='48' cy='18' r='6' fill='%23ffffff'/%3E%3Ccircle cx='32' cy='48' r='6' fill='%23ffffff'/%3E%3C/svg%3E"><script>
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="description" content="Explore Union-Find decoding on a planar surface code: physical errors, corrections, stabilizers, logical failures, growth and peeling."><meta name="theme-color" content="#f6f8fa"><title>Union-Find Decoder Lab</title><link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%2324344c'/%3E%3Cpath d='M16 18L32 34L48 18M32 34V48' stroke='%23ffffff' stroke-width='5' fill='none'/%3E%3Ccircle cx='16' cy='18' r='6' fill='%23ffffff'/%3E%3Ccircle cx='48' cy='18' r='6' fill='%23ffffff'/%3E%3Ccircle cx='32' cy='48' r='6' fill='%23ffffff'/%3E%3C/svg%3E"><script>
 /* Runs before the stylesheet to apply the saved theme without a light flash. */
 (() => {
   'use strict';
@@ -252,7 +252,169 @@ body{-webkit-font-smoothing:antialiased}button,select{line-height:1.35}.site-hea
   .theme-control { display:none; }
   .site-header { display:flex; min-height:55px; }
 }
-</style></head><body><a class="skip-link" href="#uf-decoder-lesson">Skip to decoder</a><header class="site-header"><a class="brand" href="#"><span class="brand-symbol">∪</span> Decoder lab</a><div class="header-actions"><nav aria-label="Page"><a href="#structures">Structures</a><a href="#field-guide">Field guide</a><a href="#sources">Sources</a></nav><div class="theme-control"><label for="theme-select">Theme</label><select id="theme-select"><option value="system">System</option><option value="light">Light</option><option value="dark">Dark</option></select></div></div></header><main><div id="uf-decoder-lesson">
+
+/* Surface-code workspace. Uses the shared light/dark semantic palette. */
+:root { --sc-error:#b65021; --sc-error-soft:#faeee8; }
+:root[data-theme="dark"] { --sc-error:#f2a978; --sc-error-soft:#372c27; }
+[hidden] { display:none!important; }
+.lab-switch { display:flex; gap:24px; padding-top:19px; border-bottom:1px solid var(--border); }
+.lab-switch a { padding:9px 0 12px; font-size:14px; font-weight:550; text-decoration:none; color:var(--muted-foreground); border-bottom:2px solid transparent; }
+.lab-switch a[aria-current="page"] { color:var(--foreground); border-color:var(--primary); }
+.sc-heading { display:flex; justify-content:space-between; align-items:center; gap:24px; padding:30px 0 25px; }
+.sc-heading h1 { font-size:37px; letter-spacing:-1.2px; margin-bottom:12px; }
+.sc-heading p { color:var(--muted-foreground); font-size:15px; margin:0; }
+.sc-example { flex:0 0 350px; min-width:0; }
+.sc-layout { display:grid; grid-template-columns:minmax(0,1.65fr) minmax(325px,1fr); gap:24px; align-items:start; }
+.sc-board-panel,.sc-outcome,.sc-factor,.sc-parity,.sc-experiment { background:var(--background); border:1px solid var(--border); border-radius:10px; min-width:0; }
+.sc-board-panel { padding:22px 24px 18px; }
+.sc-views { display:grid; grid-template-columns:repeat(3,1fr); gap:6px; margin:20px 0 22px; }
+.sc-views .btn { background:transparent; border-color:var(--subtle-border); min-width:0; padding:8px 5px; font-size:13px; font-weight:500; }
+.sc-views .btn[aria-pressed="true"] { background:var(--accent); color:var(--accent-foreground); border-color:var(--accent-border); font-weight:600; }
+.sc-view-heading { display:flex; gap:10px; justify-content:space-between; align-items:baseline; }
+.sc-view-heading h2 { font-size:20px; letter-spacing:-.35px; margin:0; }
+.sc-view-heading>span { font-size:13px; font-variant-numeric:tabular-nums; white-space:nowrap; }
+.sc-figure { margin:0; }
+#sc-graph { display:block; width:100%; overflow:visible; }
+.sc-legend { display:flex; flex-wrap:wrap; gap:7px 16px; font-size:13px; border-top:1px solid var(--subtle-border); padding-top:12px; }
+.sc-legend span { display:inline-flex; align-items:center; gap:7px; }
+.sc-legend i { width:20px; height:0; border-top:3px solid var(--foreground); display:inline-block; }
+.sc-legend i.dashed { border-top-style:dashed; }
+.sc-legend i.dot { width:8px; height:8px; border:0; border-radius:50%; background:var(--foreground); }
+.sc-view-note { font-size:15px; color:var(--muted-foreground); padding-top:14px; margin-bottom:12px; min-height:59px; }
+.sc-display-options { display:flex; flex-wrap:wrap; align-items:center; justify-content:space-between; gap:3px 10px; border-top:1px solid var(--border); padding-top:8px; }
+.sc-display-options .form-check { font-size:13px; }
+.sc-display-options .btn { font-size:13px; padding-left:8px; padding-right:8px; }
+.sc-outcome { padding:23px; }
+.sc-badge { font-size:12px; letter-spacing:0; padding:4px 9px; border-radius:4px; color:var(--success-text); background:var(--success-surface); white-space:nowrap; }
+.sc-badge.failure { color:var(--destructive); background:color-mix(in srgb,var(--destructive) 12%,var(--background)); }
+.sc-product { font:italic 33px/1.35 Georgia,serif; margin:23px 0 14px; overflow-wrap:anywhere; }
+.sc-product sub { font-size:.56em; }
+.sc-product sup { font-size:.55em; }
+#sc-outcome-note { font-size:16px; }
+.sc-checks { border-top:1px solid var(--border); border-bottom:1px solid var(--border); margin:20px 0; }
+.sc-checks>div { display:flex; justify-content:space-between; align-items:center; gap:12px; padding:11px 0; font-size:14px; }
+.sc-checks>div+div { border-top:1px solid var(--subtle-border); }
+.sc-checks strong { font-variant-numeric:tabular-nums; }
+.sc-weights { display:grid; grid-template-columns:repeat(3,1fr); gap:10px; }
+.sc-weights>div { display:flex; flex-direction:column; gap:5px; }
+.sc-weights span { color:var(--muted-foreground); font-size:12px; }
+.sc-weights strong { font-size:26px; font-weight:600; font-variant-numeric:tabular-nums; }
+.sc-equation-note { font:22px/1.4 Georgia,serif; margin:21px 0 10px; }
+.sc-secondary { font-size:14px; color:var(--muted-foreground); }
+.sc-knowledge { border-top:1px solid var(--border); padding-top:16px; margin-top:18px; }
+.sc-knowledge strong { font-size:14px; }
+.sc-knowledge p { color:var(--muted-foreground); font-size:14px; margin:7px 0 0; }
+.sc-example-story { padding:26px 0 32px; max-width:970px; }
+.sc-example-story .eyebrow { display:block; margin-bottom:8px; }
+.sc-example-story h2 { font-size:23px; margin-bottom:10px; }
+.sc-example-story p { color:var(--muted-foreground); margin:0; }
+.sc-factor-grid { display:grid; grid-template-columns:1fr 1fr 1.05fr; gap:18px; }
+.sc-factor,.sc-parity { padding:22px; }
+.sc-factor-heading { display:flex; gap:10px; justify-content:space-between; align-items:baseline; }
+.sc-factor h3 { font-size:17px; margin:0; }
+.sc-factor-heading>strong { font:22px/1.3 Georgia,serif; overflow-wrap:anywhere; text-align:right; }
+.sc-factor svg { display:block; width:100%; margin-top:9px; }
+.sc-factor p,.sc-parity p { font-size:14px; color:var(--muted-foreground); margin-bottom:0; }
+.sc-parity h3 { font-size:20px; margin-bottom:18px; }
+.sc-parity-equation { font:20px/1.45 Georgia,serif; margin-bottom:14px; }
+.sc-parity-readout { font-size:29px; margin:13px 0; font-variant-numeric:tabular-nums; }
+.sc-parity p+p { margin-top:14px; }
+#sc-verified { color:var(--success-text); }
+.sc-support-details { padding:18px 0 0; font-size:14px; }
+.sc-support-details summary { cursor:pointer; }
+.sc-supports { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:8px 24px; margin:16px 0; }
+.sc-supports p { margin:0; padding:8px 10px; border-radius:5px; background:var(--muted); overflow-wrap:anywhere; font:13px/1.65 ui-monospace,monospace; }
+.sc-experiment { display:grid; grid-template-columns:1.5fr 1fr; gap:50px; padding:27px; margin-top:30px; }
+.sc-experiment h2 { font-size:25px; margin-bottom:14px; }
+.sc-experiment p { color:var(--muted-foreground); }
+.sc-transform-controls { display:flex; flex-direction:column; align-items:stretch; gap:10px; }
+.sc-transform-controls label { margin:4px 0 -4px; }
+.sc-equivalence-status { font-size:14px; margin-bottom:0; }
+.sc-notes { display:grid; grid-template-columns:1fr 1fr; gap:0 30px; margin-top:28px; align-items:start; }
+.sc-notes details { border-top:1px solid var(--border); padding:18px 0; }
+.sc-notes summary { cursor:pointer; font-size:16px; font-weight:550; }
+.sc-notes details>div { padding-top:16px; color:var(--muted-foreground); font-size:15px; }
+.sc-notes details p:last-child { margin-bottom:0; }
+.sc-references { border-top:1px solid var(--border); margin-top:24px; padding-top:20px; display:flex; flex-wrap:wrap; gap:12px 24px; font-size:14px; }
+.sc-references span { color:var(--muted-foreground); }
+.sc-trace-caption { display:flex; gap:14px; justify-content:space-between; font-size:13px; }
+.sc-trace-caption strong { font-size:14px; }
+.sc-trace-buttons { display:flex; flex-wrap:wrap; gap:7px; padding:6px 0 14px; }
+.sc-editor { padding:14px; background:var(--muted); border-radius:6px; margin-top:12px; }
+.sc-editor p { font-size:14px; margin-bottom:12px; }
+.sc-editor-row { display:flex; flex-wrap:wrap; gap:8px; align-items:end; }
+.sc-editor-row>div { flex:1 1 190px; }
+.sc-edge-hit { cursor:pointer; }
+.sc-edge-hit:focus-visible { outline:2px solid var(--focus); outline-offset:2px; }
+@media(max-width:1100px) { .sc-heading { align-items:start; flex-direction:column; gap:18px; } .sc-example { flex:auto; width:100%; max-width:470px; } .sc-layout { gap:16px; grid-template-columns:minmax(0,1.4fr) minmax(310px,1fr); } .sc-board-panel { padding:20px 18px; } .sc-outcome { padding:20px; } .sc-heading h1 { font-size:35px; } .sc-views .btn { font-size:12px; } .sc-factor-grid { grid-template-columns:1fr 1fr; } .sc-parity { grid-column:1/-1; } }
+@media(max-width:850px) { .sc-layout { grid-template-columns:1fr; } .sc-outcome { min-height:0; } .sc-weights { max-width:400px; } .sc-experiment { grid-template-columns:1fr; gap:20px; } .sc-notes { grid-template-columns:1fr; } .sc-views .btn { font-size:14px; } }
+@media(max-width:500px) { .lab-switch { gap:20px; padding-top:12px; } .lab-switch a { font-size:13px; } .sc-heading { padding-top:23px; } .sc-heading h1 { font-size:31px; letter-spacing:-.8px; } .sc-heading p { font-size:14px; } .sc-board-panel { padding:17px 12px; } .sc-views { grid-template-columns:repeat(2,1fr); margin-top:16px; } .sc-views .btn { font-size:13px; } .sc-view-heading { flex-wrap:wrap; gap:5px; } .sc-view-heading h2 { font-size:18px; } .sc-factor-grid { grid-template-columns:1fr; } .sc-factor,.sc-parity { padding:20px; } .sc-parity { grid-column:auto; } .sc-example-story h2 { font-size:22px; } .sc-outcome { padding:20px; } .sc-experiment { padding:22px 18px; } .sc-experiment h2 { font-size:23px; } .sc-supports { grid-template-columns:1fr; } .sc-display-options { gap:5px 14px; justify-content:start; } .sc-view-note { font-size:14px; } .sc-legend { font-size:12px; } .sc-product { font-size:32px; } }
+@media print { .lab-switch,.sc-views,.sc-display-options,.sc-editor,.sc-transform-controls,#sc-trace-controls { display:none!important; } .sc-layout { grid-template-columns:1.5fr 1fr; } .sc-heading h1 { font-size:28px; } .sc-factor-grid { grid-template-columns:1fr 1fr; } .sc-factor,.sc-parity,.sc-experiment { break-inside:avoid; } .sc-heading { padding:16px 0; } }
+@media print { :root,:root[data-theme="dark"] { --sc-error:#b65021; --sc-error-soft:#faeee8; } }
+</style></head><body><a class="skip-link" href="#main-content">Skip to decoder</a><header class="site-header"><a class="brand" href="#"><span class="brand-symbol">∪</span> Decoder lab</a><div class="header-actions"><nav aria-label="Page"><a href="#structures">Structures</a><a href="#field-guide">Field guide</a><a href="#sources">Sources</a></nav><div class="theme-control"><label for="theme-select">Theme</label><select id="theme-select"><option value="system">System</option><option value="light">Light</option><option value="dark">Dark</option></select></div></div></header><main id="main-content"><nav class="lab-switch" aria-label="Choose a lab"><a href="#logical-lab" data-lab-mode="logical" aria-current="page">Surface code · logical errors</a><a href="#walkthrough" data-lab-mode="walkthrough">UF mechanics</a></nav><section id="logical-lab" aria-label="Surface-code logical recovery">
+  <div class="sc-heading">
+    <div><div class="eyebrow">SURFACE-CODE MEMORY</div><h1>Union-Find and logical errors</h1><p>Planar [[41, 1, 5]] code · Z errors · perfect syndrome measurements</p></div>
+    <div class="sc-example"><label class="form-label" for="sc-example">Error configuration</label><select class="form-select" id="sc-example"></select></div>
+  </div>
+  <div class="sc-layout">
+    <section class="sc-board-panel" aria-label="Surface-code patch">
+      <div class="surface-heading"><span>DISTANCE-5 PLANAR PATCH</span><span class="model-tag">41 data qubits · 1 logical qubit</span></div>
+      <div class="sc-views" role="group" aria-label="Choose a decoding view">
+        <button class="btn" data-sc-view="error" aria-pressed="false">1. Error E</button>
+        <button class="btn" data-sc-view="syndrome" aria-pressed="false">2. Syndrome</button>
+        <button class="btn" data-sc-view="trace" aria-pressed="false">3. UF trace</button>
+        <button class="btn" data-sc-view="correction" aria-pressed="false">4. Correction C</button>
+        <button class="btn" data-sc-view="residual" aria-pressed="false">5. Product CE</button>
+        <button class="btn" data-sc-view="decomposition" aria-pressed="true">6. Logical × stabilizer</button>
+      </div>
+      <div class="sc-view-heading"><h2 id="sc-view-title">The remaining operator</h2><span id="sc-view-meta" class="text-muted"></span></div>
+      <figure class="sc-figure"><svg id="sc-graph" role="img" aria-labelledby="sc-graph-title sc-graph-desc"><title id="sc-graph-title">Surface-code patch</title><desc id="sc-graph-desc"></desc><g id="sc-drawing"></g></svg><figcaption id="sc-legend" class="sc-legend"></figcaption></figure>
+      <p id="sc-view-note" class="sc-view-note"></p>
+      <div id="sc-trace-controls" hidden>
+        <div class="sc-trace-caption"><strong id="sc-trace-title"></strong><span id="sc-trace-count"></span></div>
+        <input type="range" id="sc-trace-scrub" class="form-range" min="0" max="1" value="0" aria-label="Surface-code UF step">
+        <div class="sc-trace-buttons"><button class="btn" id="sc-trace-start">Start</button><button class="btn" id="sc-trace-back">Back</button><button class="btn" id="sc-trace-play" aria-pressed="false">Play</button><button class="btn btn-primary" id="sc-trace-next">Next</button><button class="btn btn-ghost" id="sc-trace-end">Final correction</button></div>
+      </div>
+      <div class="sc-display-options"><label class="form-check"><input type="checkbox" class="form-check-input" id="sc-cut" checked> Show X̄ reference</label><label class="form-check"><input type="checkbox" class="form-check-input" id="sc-ids"> Qubit IDs</label><button class="btn btn-ghost" id="sc-edit" aria-pressed="false">Edit error E</button></div>
+      <div id="sc-editor" class="sc-editor" hidden><p>Click a data-qubit edge to toggle a Z error, or use the selector. The correction is recomputed from the syndrome.</p><div class="sc-editor-row"><div><label class="form-label" for="sc-qubit">Data qubit</label><select class="form-select" id="sc-qubit"></select></div><button class="btn" id="sc-toggle-qubit">Toggle Z</button><button class="btn" id="sc-clear">Clear E</button></div></div>
+    </section>
+    <aside class="sc-outcome" aria-label="Completed recovery outcome">
+      <div class="surface-heading"><span>COMPLETED RECOVERY</span><span id="sc-result-badge" class="sc-badge"></span></div>
+      <div class="sc-product" id="sc-equation" aria-live="polite"></div>
+      <p id="sc-outcome-note"></p>
+      <div class="sc-checks"><div><span>Residual syndrome</span><strong id="sc-syndrome-result">0 / 20</strong></div><div><span>Logical parity ℓ</span><strong id="sc-logical-result"></strong></div></div>
+      <div class="sc-weights"><div><span>Error |E|</span><strong id="sc-error-weight"></strong></div><div><span>Correction |C|</span><strong id="sc-correction-weight"></strong></div><div><span>Product |CE|</span><strong id="sc-residual-weight"></strong></div></div>
+      <div class="sc-equation-note">CE = Z̄<sup>ℓ</sup> ∏<sub>i</sub> S<sub>i</sub><sup>aᵢ</sup></div>
+      <p class="sc-secondary">Each S<sub>i</sub> is a Z stabilizer. Logical recovery succeeds exactly when ℓ = 0, including when a nonempty stabilizer remains.</p>
+      <div class="sc-knowledge"><strong>What the decoder knows</strong><p>UF receives only s = H<sub>X</sub>e. Error E and the logical verdict are available here because this is a simulation.</p></div>
+    </aside>
+  </div>
+
+  <div class="sc-example-story"><span class="eyebrow">THIS EXAMPLE</span><h2 id="sc-example-title"></h2><p id="sc-example-note"></p></div>
+
+  <section class="sc-witness" aria-label="Logical and stabilizer decomposition">
+    <div class="section-heading"><div><div class="eyebrow">VERIFY THE PRODUCT</div><h2>Separate the logical part from the stabilizers</h2></div><p>These factors reproduce CE exactly. On shared qubits, Z · Z = I.</p></div>
+    <div class="sc-factor-grid">
+      <section class="sc-factor"><div class="sc-factor-heading"><h3>Logical factor L</h3><strong id="sc-l-factor"></strong></div><svg id="sc-logical-factor" role="img" aria-label="Logical factor on the patch"></svg><p id="sc-l-caption"></p></section>
+      <section class="sc-factor"><div class="sc-factor-heading"><h3>Stabilizer factor S</h3><strong id="sc-s-factor"></strong></div><svg id="sc-stabilizer-factor" role="img" aria-label="Stabilizer product on the patch"></svg><p id="sc-s-caption"></p></section>
+      <section class="sc-parity"><div class="eyebrow">LOGICAL CLASS</div><h3>Count intersections with X̄</h3><div class="sc-parity-equation">ℓ = |CE ∩ X̄| mod 2</div><p id="sc-crossings"></p><div class="sc-parity-readout" id="sc-parity-readout"></div><p class="sc-secondary">X̄ is a fixed logical-X representative on the dual lattice. It is a diagnostic reference, not an additional syndrome measurement.</p><p class="sc-secondary" id="sc-verified"></p></section>
+    </div>
+    <details class="sc-support-details"><summary>Exact qubit support and stabilizer witness</summary><div class="sc-supports" id="sc-supports"></div><p class="sc-secondary">Qubit IDs start at q0. The witness is solved over GF(2) using all 20 Z stabilizers and the fixed middle-row Z̄. Multiplication of these Z-only operators is symmetric difference of their supports.</p></details>
+  </section>
+
+  <section class="sc-experiment">
+    <div><div class="eyebrow">SAME SYNDROME, DIFFERENT ERRORS</div><h2>Change E without changing UF’s input</h2><p>A logical Z̄ flips the logical outcome. A stabilizer changes the physical error pattern while preserving its logical class.</p><p id="sc-equivalence-status" class="sc-equivalence-status" role="status">Try either transformation. Both preserve the syndrome and deterministic correction.</p></div>
+    <div class="sc-transform-controls"><button class="btn" id="sc-add-logical">Multiply E by logical Z̄</button><label class="form-label" for="sc-face">Choose a Z stabilizer</label><select id="sc-face" class="form-select"></select><button class="btn" id="sc-add-stabilizer">Multiply E by this stabilizer</button><button class="btn btn-ghost" id="sc-reset-example">Reset selected example</button></div>
+  </section>
+
+  <section class="sc-notes" aria-label="Surface-code assumptions">
+    <details open><summary>Why a cleared syndrome is not enough</summary><div><p>Once H<sub>X</sub>(e ⊕ c) = 0, the remaining Z operator is either a stabilizer or a logical Z times a stabilizer. The syndrome cannot distinguish those two classes. Successful recovery requires CE ∈ 𝒮, where 𝒮 is the stabilizer group.</p><p>A nontrivial Z̄ changes the relative phase of an arbitrary encoded state: α|0<sub>L</sub>⟩ + β|1<sub>L</sub>⟩ → α|0<sub>L</sub>⟩ − β|1<sub>L</sub>⟩. It does not flip the logical computational-basis bit.</p></div></details>
+    <details><summary>Geometry, boundaries, and model limits</summary><div><p>This is an unrotated distance-5 planar CSS code. Its 41 data qubits lie on edges. The 20 measured X checks sit at non-boundary vertices; the 20 Z stabilizers surround faces. Boundary faces have weight 3. The left and right boundaries are rough, allowing Z chains to terminate without a measured endpoint.</p><p>The example uses only Pauli Z errors, perfect syndrome extraction, uniform unit-cost UF growth, and deterministic breadth-first peeling forests. It models one recovery round, without measurement errors, circuit faults, correlations, or time. Outcomes here are exact for the displayed error pattern, not a measured logical error rate.</p><p>Both check matrices have rank 20 and H<sub>X</sub>H<sub>Z</sub><sup>T</sup> = 0, leaving 41 − 20 − 20 = 1 logical qubit. The displayed Z̄ and X̄ overlap on one data qubit and anticommute.</p></div></details>
+    <details><summary>Is the physical correction actually applied?</summary><div><p>The display treats C as a Pauli operator for bookkeeping. A controller can instead track C in a Pauli frame and interpret later operations or measurements accordingly. The logical success criterion is still whether the tracked correction and actual error differ by a stabilizer.</p><p>In a real run, the decoder does not know E and cannot use this simulation’s logical verdict. Memory experiments use suitable logical preparation and final readout to assess outcomes; syndrome checks alone do not reveal an arbitrary encoded state.</p></div></details>
+  </section>
+  <div class="sc-references"><span>References</span><a href="https://arxiv.org/abs/1208.0928" target="_blank" rel="noopener">Fowler et al. · Surface codes</a><a href="https://arxiv.org/abs/1709.06218" target="_blank" rel="noopener">Delfosse &amp; Nickerson · Union-Find decoding</a><a href="#walkthrough">Open the detailed UF walkthrough →</a></div>
+</section>
+<div id="uf-decoder-lesson" hidden>
   
   <div class="uf-top">
     <div class="uf-title">
@@ -365,7 +527,7 @@ body{-webkit-font-smoothing:antialiased}button,select{line-height:1.35}.site-hea
     <details><summary><span>04</span> Why are there two kinds of forest?</summary><div><p>The <strong>Union-Find forest</strong> stores set membership. Find follows parent pointers; path compression points visited vertices directly to the root. Union attaches the smaller set’s root to the larger set’s root.</p><p>The <strong>peeling forest</strong> is built from real, fully grown graph edges. It removes cycles so that leaves can be processed. A parent-pointer link is not automatically an eligible correction edge.</p><p>“Breadth-first” and “depth-first” change this second forest only. Compare their costs while the syndrome and grown support stay fixed.</p></div></details>
     <details><summary><span>05</span> Why is peeling forced at a leaf?</summary><div><p>A non-root leaf has one remaining tree edge. If its residual bit is 1, selecting that edge is the only way to clear it. If its bit is 0, discard the edge. Remove the leaf and repeat.</p><p>At an ordinary root, the component’s even parity guarantees the final bit is 0. At an allowed boundary root, there is no measured bit to satisfy. With several boundary vertices, this demo builds a forest with a separate root at each one.</p><p>The residual panel checks <code>r = s ⊕ ∂C</code> at every step. At completion, all measured residuals must vanish.</p></div></details>
     <details><summary><span>06</span> How does this relate to Blossom?</summary><div><p>The TUM Blossom animation teaches maximum-cardinality matching through alternating paths and odd-cycle contraction. In quantum decoding, a related minimum-weight matching formulation seeks a correction of minimum total cost.</p><p>Union-Find follows a different procedure: expand invalid regions, merge them, then peel a forest. It does not maintain a matching or perform Blossom’s alternating-path optimization.</p><p>This lab’s exact reference uses shortest paths and a small subset dynamic program for at most 12 defects. It is a correctness baseline on this toy graph, not an implementation of Sparse Blossom.</p></div></details>
-    <details><summary><span>07</span> Why can the cost exceed the minimum?</summary><div><p>There are two separate restrictions. Growth may exclude every globally optimal correction. Then the forest can discard useful cycle edges from the grown region.</p><div class="formula">global minimum ≤ grown-region minimum ≤ forest correction</div><p>Example 4 isolates a forest-choice cost. Example 5 isolates a growth-region cost. The Compare tab reports all three quantities and can overlay a globally optimal correction.</p><p>Matching a syndrome does not establish logical success. That also depends on the actual error and the code’s logical operators, which this graph does not model.</p></div></details>
+    <details><summary><span>07</span> Why can the cost exceed the minimum?</summary><div><p>There are two separate restrictions. Growth may exclude every globally optimal correction. Then the forest can discard useful cycle edges from the grown region.</p><div class="formula">global minimum ≤ grown-region minimum ≤ forest correction</div><p>Example 4 isolates a forest-choice cost. Example 5 isolates a growth-region cost. The Compare tab reports all three quantities and can overlay a globally optimal correction.</p><p>Matching a syndrome does not establish logical success. That also depends on the actual error and the code’s logical operators, which this walkthrough’s toy graph does not model. <a href="#logical-lab">The surface-code lab</a> adds both and checks the logical class explicitly.</p></div></details>
     <details><summary><span>08</span> Which implementation choices matter?</summary><div><p>This lab uses uniform half-edge growth, union by vertex count, path compression, deterministic edge ordering, and your selected graph forest. These choices make each step reproducible.</p><p>Union by size, prioritizing clusters by frontier size, and assigning likelihood-based edge weights are different choices. Only the first is implemented here.</p><p>The production algorithm’s almost-linear bound relies on efficient frontier and set data structures. This teaching engine scans edges and copies snapshots for playback; its execution time is not a performance benchmark.</p></div></details>
   </div>
 </section>
@@ -919,8 +1081,362 @@ const {makeGraph,run,presets,minimumCorrection}=globalThis.__ufLessonModel;
   if(typeof ResizeObserver!=='undefined')new ResizeObserver(()=>{lastCoordinates=null;draw();}).observe(svg);
   root.ufInspect=()=>({key:select.value,index,total:trace.frames.length,state:trace.frames[index],valid:trace.valid,graph,trace,fullTrace,reference,grownReference,editing});
   $('forest-mode').addEventListener('change',()=>{pause();const phase=trace.frames[index].phase;compile(graph.key,graph.nodes.filter(v=>v.syndrome).map(v=>[v.col,v.row]),graph.preset.boundary);const i=trace.frames.findIndex(f=>f.phase===phase);index=Math.max(0,i);draw();});
-  document.addEventListener('keydown',e=>{if(/INPUT|SELECT|TEXTAREA|BUTTON/.test(e.target.tagName)||e.altKey||e.ctrlKey||e.metaKey)return;if(e.key==='ArrowRight'){e.preventDefault();next.click();}if(e.key==='ArrowLeft'){e.preventDefault();back.click();}if(e.code==='Space'){e.preventDefault();play.click();}});
+  document.addEventListener('keydown',e=>{if(root.hidden)return;if(/INPUT|SELECT|TEXTAREA|BUTTON/.test(e.target.tagName)||e.altKey||e.ctrlKey||e.metaKey)return;if(e.key==='ArrowRight'){e.preventDefault();next.click();}if(e.key==='ArrowLeft'){e.preventDefault();back.click();}if(e.code==='Space'){e.preventDefault();play.click();}});
   load('pair');
+})();
+
+</script>
+<script>
+/* A planar CSS surface code, with qubits on edges and perfect X checks.
+ * Horizontal Z strings end on the left/right rough boundaries.
+ * n = d^2 + (d-1)^2, rank(H_X) = rank(H_Z) = d(d-1), k = 1.
+ * The decoder receives only the measured syndrome, never the actual error.
+ */
+(() => {
+  'use strict';
+  const xor = (...sets) => {
+    const result = new Set();
+    for (const values of sets) for (const value of values) {
+      if (result.has(value)) result.delete(value); else result.add(value);
+    }
+    return [...result].sort((a,b) => a-b);
+  };
+  const mask = ids => ids.reduce((bits,id) => bits ^ (1n << BigInt(id)),0n);
+
+  function makePatch(d = 5) {
+    if (!Number.isInteger(d) || d < 3 || d > 9 || d % 2 === 0) throw new Error('Use an odd distance from 3 to 9.');
+    const nodes=[], edges=[], faces=[], nodeIds=new Map(), edgeIds=new Map();
+    const addNode=(col,row,boundary) => {
+      const id=nodes.length;
+      nodes.push({id,col,row,boundary,syndrome:0,label:'',name:boundary?`${col===0?'Left':'Right'} boundary ${row+1}`:`X check ${id+1}`});
+      nodeIds.set(`${col},${row}`,id);
+    };
+    for(let row=0;row<d;row++) for(let col=1;col<d;col++) addNode(col,row,false);
+    for(const col of [0,d]) for(let row=0;row<d;row++) addNode(col,row,true);
+    const addEdge=(kind,col,row,a,b) => {
+      const id=edges.length;
+      edges.push({id,kind,col,row,a:nodeIds.get(a),b:nodeIds.get(b)});
+      edgeIds.set(`${kind}${col},${row}`,id);
+    };
+    for(let row=0;row<d;row++) for(let col=0;col<d;col++) addEdge('h',col,row,`${col},${row}`,`${col+1},${row}`);
+    for(let row=0;row<d-1;row++) for(let col=1;col<d;col++) addEdge('v',col,row,`${col},${row}`,`${col},${row+1}`);
+    const edge=(kind,col,row) => {
+      const id=edgeIds.get(`${kind}${col},${row}`);
+      if(id===undefined) throw new Error('Edge outside this patch.');
+      return id;
+    };
+    for(let row=0;row<d-1;row++) for(let col=0;col<d;col++) {
+      const ids=[edge('h',col,row),edge('h',col,row+1)];
+      if(col>0) ids.push(edge('v',col,row));
+      if(col<d-1) ids.push(edge('v',col+1,row));
+      faces.push({id:faces.length,col,row,edges:ids.sort((a,b)=>a-b)});
+    }
+    const middle=Math.floor(d/2);
+    const logicalZ=Array.from({length:d},(_,col)=>edge('h',col,middle));
+    const logicalX=Array.from({length:d},(_,row)=>edge('h',middle,row));
+    return {d,n:edges.length,nodes,edges,faces,logicalZ,logicalX,edge,key:'surface',cols:d,rows:d,preset:{boundary:true,name:'Planar surface code'}};
+  }
+
+  function syndrome(patch,chain) {
+    const bits=patch.nodes.map(()=>0);
+    for(const id of chain) {
+      const e=patch.edges[id];
+      if(!e) throw new Error('Invalid data qubit.');
+      if(!patch.nodes[e.a].boundary) bits[e.a]^=1;
+      if(!patch.nodes[e.b].boundary) bits[e.b]^=1;
+    }
+    return bits;
+  }
+
+  function decompose(patch,chain) {
+    const violations=syndrome(patch,chain).reduce((a,b)=>a+b,0);
+    if(violations) return {closed:false,violations,logical:null,stabilizers:[],verified:false};
+    // Solve chain = sum_i a_i S_i + ell * Zbar over GF(2), retaining witnesses.
+    const basis=new Map(), generators=[...patch.faces.map(f=>f.edges),patch.logicalZ];
+    for(let i=0;i<generators.length;i++) {
+      let vector=mask(generators[i]), combination=1n<<BigInt(i);
+      for(let pivot=patch.n-1;pivot>=0;pivot--) {
+        if(!(vector&(1n<<BigInt(pivot)))) continue;
+        if(basis.has(pivot)) {
+          const row=basis.get(pivot);vector^=row.vector;combination^=row.combination;
+        } else {basis.set(pivot,{vector,combination});break;}
+      }
+      if(!vector) throw new Error('Dependent stabilizer/logical generators.');
+    }
+    let rest=mask(chain), witness=0n;
+    for(let pivot=patch.n-1;pivot>=0;pivot--) {
+      if(!(rest&(1n<<BigInt(pivot)))) continue;
+      const row=basis.get(pivot);
+      if(!row) throw new Error('Zero-syndrome chain outside the code normalizer basis.');
+      rest^=row.vector;witness^=row.combination;
+    }
+    const stabilizers=patch.faces.filter(f=>witness&(1n<<BigInt(f.id))).map(f=>f.id);
+    const logical=Number((witness>>BigInt(patch.faces.length))&1n);
+    const stabilizerEdges=xor(...stabilizers.map(id=>patch.faces[id].edges));
+    const reconstructed=xor(logical?patch.logicalZ:[],stabilizerEdges);
+    const cutCrossings=chain.filter(id=>patch.logicalX.includes(id));
+    const verified=mask(reconstructed)===mask(chain) && cutCrossings.length%2===logical;
+    if(!verified) throw new Error('Logical witness failed verification.');
+    return {closed:true,violations:0,logical,stabilizers,stabilizerEdges,reconstructed,cutCrossings,verified};
+  }
+
+  function decode(patch,error,forestStrategy='bfs') {
+    error=xor(error);
+    const observed=syndrome(patch,error);
+    let defect=0;
+    const graph={...patch,nodes:patch.nodes.map(v=>({...v,syndrome:observed[v.id],label:observed[v.id]?String.fromCharCode(65+defect++):''}))};
+    const trace=globalThis.__ufLessonModel.run(graph,{forestStrategy});
+    const correction=trace.correction.slice().sort((a,b)=>a-b),residual=xor(error,correction);
+    const result=decompose(patch,residual);
+    if(!trace.valid || !result.closed) throw new Error('The completed correction leaves a syndrome.');
+    return {graph,error,observed,trace,correction,residual,result};
+  }
+
+  function examples(patch) {
+    const h=(x,y)=>patch.edge('h',x,y),v=(x,y)=>patch.edge('v',x,y);
+    const m=Math.floor(patch.d/2),right=Array.from({length:patch.d-m},(_,i)=>h(m+i,m));
+    const detourFace=patch.faces.find(f=>f.col===m+1 && f.row===m-1);
+    const successFace=patch.faces.find(f=>f.col===m && f.row===m-1);
+    const boundaryFace=patch.faces.find(f=>f.col===0 && f.row===m-1);
+    return [
+      {id:'exact',name:'1 · Exact recovery: CE = I',error:[h(m,m)],title:'The correction cancels the error.',note:'One Z error creates two neighboring X-check defects. UF returns the same single-qubit Z, so both copies cancel.'},
+      {id:'stabilizer',name:'2 · Different paths: CE = S',error:xor([h(m,m)],successFace.edges),title:'Different physical paths can recover the same logical state.',note:'The actual error takes a three-edge detour. The one-edge correction leaves a plaquette stabilizer, which acts as identity on the code space.'},
+      {id:'logical',name:'3 · Wrong boundary: CE = Z̄',error:right,title:'A shorter correction can leave a logical error.',note:'The error reaches the right rough boundary, but its defect is closer to the left. UF chooses the left path; together they span the patch.'},
+      {id:'dressed',name:'4 · Deformed logical path: CE = Z̄S',error:xor(right,detourFace.edges),title:'A logical operator remains, even after removing a stabilizer.',note:'The error detours around one plaquette. After UF clears the syndrome, the remaining path is a logical Z multiplied by that plaquette stabilizer.'},
+      {id:'invisible',name:'5 · Zero syndrome, nontrivial logical Z̄',error:patch.logicalZ.slice(),title:'A logical error can produce no detection events.',note:'A complete rough-to-rough Z string flips no measured X check. UF receives an empty syndrome and returns C = I.'},
+      {id:'boundary',name:'6 · Boundary stabilizer: CE = S',error:boundaryFace.edges.slice(),title:'Touching a boundary does not by itself imply failure.',note:'This three-qubit chain returns to the same rough boundary. It is a boundary Z stabilizer, with zero syndrome and no logical effect.'}
+    ];
+  }
+  globalThis.__surfaceModel={makePatch,syndrome,decompose,decode,examples,xor};
+})();
+
+</script>
+<script>
+(() => {
+  'use strict';
+  const M=globalThis.__surfaceModel, patch=M.makePatch(5), presets=M.examples(patch);
+  const root=document.getElementById('logical-lab'), $=id=>document.getElementById('sc-'+id);
+  const NS='http://www.w3.org/2000/svg';
+  let selected='dressed',error=presets.find(p=>p.id===selected).error.slice(),data;
+  let view='decomposition',editing=false,traceIndex=0,timer=null,frames=[];
+  const viewButtons=[...root.querySelectorAll('[data-sc-view]')];
+  const colors={error:'var(--sc-error)',correction:'var(--viz-series-3)',residual:'var(--viz-series-5)',logical:'var(--muted-foreground)',stabilizer:'var(--viz-series-1)',cut:'var(--viz-series-2)'};
+  const views={
+    error:['Actual error E','Orange edges carry physical Z errors. Filled circles are the X checks they violate. E is known to the simulation; it is not given to UF.'],
+    syndrome:['Syndrome seen by UF','Only the violated X checks are revealed. Many physical error patterns, including different logical classes, produce exactly these same bits.'],
+    trace:['Uniform-growth UF','Follow the same UF engine on this surface-code graph. The actual error is hidden: growth and peeling use only the syndrome and allowed boundaries.'],
+    correction:['Decoder correction C','Green edges are the Z correction returned by UF. They reproduce the observed syndrome. Matching those check bits does not guarantee logical recovery.'],
+    residual:['Product CE = E ⊕ C','Combine the two supports modulo 2. A qubit hit by both E and C cancels because Z² = I. The remaining operator has no measured syndrome.'],
+    decomposition:['CE = logical × stabilizer','Purple is the remaining operator. The dashed middle-row Z̄ and the shaded stabilizers multiply to it; shared edges cancel.']
+  };
+  function svgEl(parent,tag,attrs={},text) {
+    const e=document.createElementNS(NS,tag);
+    for(const [k,v] of Object.entries(attrs)) e.setAttribute(k,v);
+    if(text!==undefined) e.textContent=text;
+    parent.append(e);return e;
+  }
+  const supportText=ids=>ids.length?ids.map(id=>'q'+id).join(', '):'∅';
+  const stabilizerHTML=ids=>ids.length?ids.map(id=>`S<sub>${id+1}</sub>`).join(' '):'I';
+  function stop(){if(timer!==null)clearInterval(timer);timer=null;$('trace-play').textContent='Play';$('trace-play').setAttribute('aria-pressed','false');}
+
+  function geometry(svg,mini=false) {
+    const width=Math.max(mini?240:260,svg.getBoundingClientRect().width||600),narrow=width<420;
+    const margin=mini?26:(narrow?35:45),top=mini?20:67,dy=mini?38:(narrow?46:56);
+    const dx=(width-2*margin)/patch.d,height=top+(patch.d-1)*dy+(mini?28:49);
+    svg.setAttribute('viewBox',`0 0 ${width} ${height}`);svg.setAttribute('height',height);
+    return {width,margin,top,dy,dx,height,narrow,pos:v=>({x:margin+v.col*dx,y:top+v.row*dy})};
+  }
+  function drawPatch(svg,{chain=[],color='var(--foreground)',bits=[],faces=[],logical=false,cut=false,ids=false,edit=false,trace=null,mini=false}={}) {
+    let drawing;
+    if(svg===$('graph')) {drawing=$('drawing');drawing.replaceChildren();}
+    else {svg.replaceChildren();drawing=svg;}
+    const g=geometry(svg,mini),nodePos=id=>g.pos(patch.nodes[id]);
+    const line=(a,b,attrs)=>svgEl(drawing,'line',{x1:a.x,y1:a.y,x2:b.x,y2:b.y,'stroke-linecap':'round',...attrs});
+    const edgeLine=(id,attrs,offset=0)=>{const e=patch.edges[id],a=nodePos(e.a),b=nodePos(e.b);return line({x:a.x,y:a.y+offset},{x:b.x,y:b.y+offset},attrs);};
+    const text=(x,y,value,attrs={})=>svgEl(drawing,'text',{x,y,fill:'var(--muted-foreground)','font-size':mini?11:12,'text-anchor':'middle',...attrs},value);
+    for(const col of [0,patch.d]) {
+      const p=g.pos({col,row:0});svgEl(drawing,'rect',{x:p.x-8,y:p.y-12,width:16,height:4*g.dy+24,rx:5,fill:'var(--muted)'});
+    }
+    if(!mini) {
+      text(g.width/2,23,'Smooth boundary');text(g.width/2,g.height-7,'Smooth boundary');
+      text(13,g.top+2*g.dy,'Rough boundary',{transform:`rotate(-90 13 ${g.top+2*g.dy})`});
+      text(g.width-13,g.top+2*g.dy,'Rough boundary',{transform:`rotate(90 ${g.width-13} ${g.top+2*g.dy})`});
+    }
+    for(const fid of faces) {
+      const f=patch.faces[fid],p=g.pos(f);
+      svgEl(drawing,'rect',{x:p.x+2,y:p.y+2,width:g.dx-4,height:g.dy-4,rx:3,fill:'var(--viz-series-1)',opacity:.12});
+      for(const eid of f.edges) edgeLine(eid,{stroke:'var(--viz-series-1)','stroke-width':1.5,'stroke-dasharray':'3 4',opacity:.75});
+      text(p.x+g.dx/2,p.y+g.dy/2+4,`S${fid+1}`,{fill:'var(--viz-series-1)','font-size':mini?11:12});
+    }
+    for(const e of patch.edges) edgeLine(e.id,{stroke:'var(--graph-grid)','stroke-width':mini?1:1.3});
+    if(cut) {
+      const x=g.margin+(Math.floor(patch.d/2)+.5)*g.dx;
+      line({x,y:g.top-18},{x,y:g.top+4*g.dy+20},{stroke:colors.cut,'stroke-width':1.6,'stroke-dasharray':'4 5',opacity:.85});
+      if(!mini) text(x+8,g.top-26,'X̄',{fill:colors.cut,'text-anchor':'start','font-size':14});
+    }
+    if(trace) {
+      for(const e of patch.edges) {
+        const a=nodePos(e.a),b=nodePos(e.b);
+        for(const side of [0,1]) {
+          const amount=trace.support[e.id][side];if(!amount)continue;
+          const start=side?b:a,end=side?a:b,group=trace.groups[trace.nodeGroups[side?e.b:e.a]];
+          const c=group?.active?'var(--viz-series-1)':'var(--viz-series-2)';
+          const target={x:start.x+(end.x-start.x)*amount,y:start.y+(end.y-start.y)*amount};
+          line(start,target,{stroke:c,'stroke-width':12,opacity:.22});
+          line(start,target,{stroke:c,'stroke-width':2,opacity:.75});
+        }
+      }
+      if(['forest','peel'].includes(trace.phase)) for(const id of trace.remaining) edgeLine(id,{stroke:'var(--foreground)','stroke-width':2,'stroke-dasharray':'5 4'});
+    }
+    if(logical) for(const id of patch.logicalZ) edgeLine(id,{stroke:colors.logical,'stroke-width':2,'stroke-dasharray':'5 4'},-5);
+    for(const id of chain) edgeLine(id,{stroke:color,'stroke-width':mini?4:5.5});
+    // Small ticks mark the data qubits; vertices are parity checks, not data qubits.
+    for(const e of patch.edges) {
+      const a=nodePos(e.a),b=nodePos(e.b),x=(a.x+b.x)/2,y=(a.y+b.y)/2,on=chain.includes(e.id);
+      if(!mini) svgEl(drawing,'circle',{cx:x,cy:y,r:edit?3.4:2.3,fill:on?color:'var(--muted-foreground)',opacity:on?1:.6});
+      if(ids&&!mini) text(x+(e.kind==='v'?6:0),y+(e.kind==='v'?4:15),`q${e.id}`,{'text-anchor':e.kind==='v'?'start':'middle','font-size':11});
+    }
+    for(const v of patch.nodes) {
+      const p=nodePos(v.id);
+      if(v.boundary) svgEl(drawing,'rect',{x:p.x-3,y:p.y-4,width:6,height:8,rx:1,fill:'var(--background)',stroke:'var(--muted-foreground)','stroke-width':1});
+      else {
+        const c=svgEl(drawing,'circle',{cx:p.x,cy:p.y,r:bits[v.id]?5.3:(mini?2.5:3.3),fill:bits[v.id]?'var(--foreground)':'var(--background)',stroke:'var(--muted-foreground)','stroke-width':1});
+        svgEl(c,'title',{},`X${v.id+1}: ${bits[v.id]?'−1, defect':'+1, satisfied'}`);
+      }
+    }
+    if(!mini) for(const e of patch.edges) {
+      const a=nodePos(e.a),b=nodePos(e.b),horizontal=e.kind==='h';
+      const hit=svgEl(drawing,'rect',{x:horizontal?a.x+7:a.x-9,y:horizontal?a.y-9:a.y+7,width:horizontal?b.x-a.x-14:18,height:horizontal?18:b.y-a.y-14,rx:3,fill:'transparent',...(edit?{class:'sc-edge-hit',role:'button',tabindex:0,'aria-label':`Toggle Z error on q${e.id}`,'aria-pressed':String(data.error.includes(e.id))}:{})});
+      svgEl(hit,'title',{},`q${e.id}${edit?': click to toggle a Z error':chain.includes(e.id)?': selected operator acts here':''}`);
+      if(edit){hit.addEventListener('click',()=>toggleQubit(e.id));hit.addEventListener('keydown',event=>{if(event.key==='Enter'||event.key===' '){event.preventDefault();toggleQubit(e.id);const replacement=$('drawing').querySelector(`[aria-label="Toggle Z error on q${e.id}"]`);replacement?.focus();}});}
+    }
+  }
+
+  function legend(items) {
+    $('legend').replaceChildren();
+    for(const [label,color,style] of items) {
+      const span=document.createElement('span'),mark=document.createElement('i');mark.setAttribute('aria-hidden','true');
+      if(color)mark.style.borderColor=color;if(style)mark.className=style;
+      span.append(mark,document.createTextNode(label));$('legend').append(span);
+    }
+  }
+  function drawMain(){
+    if(root.hidden)return;
+    const frame=frames[traceIndex],params={cut:$('cut').checked&&view!=='syndrome',ids:$('ids').checked};
+    let items=[];
+    if(view==='error'){Object.assign(params,{chain:data.error,color:colors.error,bits:data.observed,edit:editing});items=[['Z error E',colors.error],['Violated X check',null,'dot']];}
+    if(view==='syndrome'){params.bits=data.observed;items=[['Violated X check',null,'dot'],['Data-qubit edge','var(--graph-grid)']];}
+    if(view==='correction'){Object.assign(params,{chain:data.correction,color:colors.correction,bits:data.observed});items=[['Correction C',colors.correction],['Input syndrome',null,'dot']];}
+    if(view==='residual'){Object.assign(params,{chain:data.residual,color:colors.residual});items=[['Remaining CE',colors.residual]];}
+    if(view==='decomposition'){Object.assign(params,{chain:data.residual,color:colors.residual,faces:data.result.stabilizers,logical:!!data.result.logical});items=[['CE',colors.residual],['Logical L',colors.logical,'dashed'],['Z stabilizer S',colors.stabilizer]];}
+    if(view==='trace'){Object.assign(params,{chain:frame.correction,color:colors.correction,bits:frame.bits,trace:frame,cut:false});items=[['Grown region','var(--viz-series-1)'],['Remaining forest','var(--foreground)','dashed'],['Correction C',colors.correction]];}
+    if(params.cut)items.push(['X̄ reference',colors.cut,'dashed']);
+    drawPatch($('graph'),params);legend(items);
+    $('view-title').textContent=views[view][0];
+    $('view-meta').textContent=view==='trace'?`${frame.phase.toUpperCase()} · round ${frame.tick}`:view==='syndrome'?`${data.observed.reduce((a,b)=>a+b,0)} defects`:view==='decomposition'?`ℓ = ${data.result.logical}`:`${params.chain?.length||0} qubits`;
+    $('view-note').textContent=view==='trace'?frame.note:views[view][1];
+    $('graph-desc').textContent=`${views[view][0]}. ${$('view-meta').textContent}. ${views[view][1]} Left and right boundaries are rough. Top and bottom boundaries are smooth.`;
+    $('trace-controls').hidden=view!=='trace';
+    $('trace-title').textContent=frame.title;$('trace-count').textContent=`${traceIndex+1} / ${frames.length}`;
+    $('trace-scrub').max=frames.length-1;$('trace-scrub').value=traceIndex;
+    $('trace-back').disabled=$('trace-start').disabled=traceIndex===0;
+    $('trace-next').disabled=$('trace-end').disabled=traceIndex===frames.length-1;
+    $('trace-play').disabled=traceIndex===frames.length-1;
+    $('editor').hidden=!editing;$('edit').setAttribute('aria-pressed',String(editing));$('edit').textContent=editing?'Done editing':'Edit error E';
+    viewButtons.forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.scView===view)));
+  }
+  function drawFactors(){
+    if(root.hidden)return;
+    drawPatch($('logical-factor'),{mini:true,chain:data.result.logical?patch.logicalZ:[],color:colors.residual,cut:true});
+    drawPatch($('stabilizer-factor'),{mini:true,chain:data.result.stabilizerEdges,color:colors.stabilizer,faces:data.result.stabilizers});
+  }
+  function renderResult(){
+    const r=data.result,sHTML=stabilizerHTML(r.stabilizers),logical=r.logical?'Z̄':'I';
+    const rhs=r.logical?(r.stabilizers.length?'Z̄ '+sHTML:'Z̄'):sHTML;
+    $('equation').innerHTML='CE = '+rhs;
+    $('result-badge').textContent=r.logical?'Logical Z error':'Logical success';$('result-badge').classList.toggle('failure',!!r.logical);
+    $('outcome-note').textContent=r.logical?'Every measured check is satisfied, but a nontrivial logical Z remains. The encoded phase is not recovered.':data.residual.length?'The correction differs from the error by a stabilizer. Their product acts as identity on the encoded state.':'The correction cancels the error exactly. No residual physical or logical operator remains.';
+    $('syndrome-result').textContent='0 / 20 violated';$('logical-result').textContent=r.logical?'1 · nontrivial':'0 · trivial';
+    $('error-weight').textContent=data.error.length;$('correction-weight').textContent=data.correction.length;$('residual-weight').textContent=data.residual.length;
+    $('l-factor').textContent=logical;$('s-factor').innerHTML=sHTML;
+    $('l-caption').textContent=r.logical?'The fixed middle-row Z̄ joins the two rough boundaries. It anticommutes with the vertical X̄ reference.':'L = I. No logical operator is needed to reconstruct CE.';
+    $('s-caption').textContent=r.stabilizers.length?`${r.stabilizers.length} Z stabilizer${r.stabilizers.length===1?'':'s'}; shared edges cancel in their product. Each acts as +1 on the code space.`:'S = I: the empty stabilizer product.';
+    const n=r.cutCrossings.length;
+    $('crossings').textContent=n?`${n} residual qubit${n===1?'':'s'} overlap${n===1?'s':''} the X̄ representative: ${supportText(r.cutCrossings)}.`:'No residual qubits overlap the X̄ representative.';
+    $('parity-readout').textContent=`${n} mod 2 = ${r.logical}`;$('verified').textContent='✓ Exact stabilizer reconstruction verified.';
+    const supports=$('supports');supports.replaceChildren();
+    for(const [label,ids] of [['E',data.error],['C',data.correction],['CE',data.residual],['L',r.logical?patch.logicalZ:[]],['S',r.stabilizerEdges],['X̄',patch.logicalX]]) {
+      const p=document.createElement('p');p.textContent=label+' = {'+supportText(ids)+'}';supports.append(p);
+    }
+    for(const id of r.stabilizers){const p=document.createElement('p');p.textContent=`S${id+1} = {${supportText(patch.faces[id].edges)}}`;supports.append(p);}
+    drawMain();drawFactors();
+  }
+  function recompute({changed=false,message=''}={}) {
+    stop();data=M.decode(patch,error);error=data.error;frames=data.trace.frames.filter(f=>!f.micro);traceIndex=0;
+    if(changed){$('example').value='custom';$('example-title').textContent='Explore your own error pattern.';$('example-note').textContent='The syndrome, UF correction, and exact logical/stabilizer decomposition update together.';}
+    $('equivalence-status').textContent=message||'Try either transformation. Both preserve the syndrome and deterministic correction.';
+    renderResult();
+  }
+  function chooseExample(id){
+    const p=presets.find(p=>p.id===id);if(!p)return;
+    selected=id;error=p.error.slice();editing=false;$('example').value=id;
+    $('example-title').textContent=p.title;$('example-note').textContent=p.note;
+    $('reset-example').textContent=`Reset example ${presets.indexOf(p)+1}`;
+    recompute();
+  }
+  function toggleQubit(id){error=M.xor(error,[id]);recompute({changed:true});}
+  function transform(chain,isLogical){
+    const old=data;error=M.xor(error,chain);recompute({changed:true});
+    const sameS=old.observed.every((b,i)=>b===data.observed[i]);
+    const sameC=old.correction.join(',')===data.correction.join(',');
+    if(!sameS||!sameC||data.result.logical!==(old.result.logical^(isLogical?1:0)))throw new Error('Equivalence transformation failed.');
+    $('equivalence-status').textContent=`✓ Same syndrome · same correction C · logical class ${isLogical?'flipped':'unchanged'}.`;
+    view='decomposition';editing=false;drawMain();
+  }
+  function setView(next){stop();view=next;if(next!=='error')editing=false;drawMain();}
+  function goTrace(i){stop();traceIndex=Math.max(0,Math.min(frames.length-1,i));drawMain();}
+  $('example').replaceChildren(...presets.map(p=>new Option(p.name,p.id)));
+  const custom=new Option('Custom / transformed error','custom');custom.disabled=true;$('example').append(custom);
+  for(const e of patch.edges)$('qubit').append(new Option(`q${e.id} · ${e.kind==='h'?'horizontal':'vertical'} edge`,String(e.id)));
+  for(const f of patch.faces)$('face').append(new Option(`S${f.id+1} · ${f.edges.length}-qubit ${f.edges.length===3?'boundary':'plaquette'} stabilizer`,String(f.id)));
+  $('face').value='8';
+  $('example').addEventListener('change',()=>chooseExample($('example').value));
+  viewButtons.forEach(b=>b.addEventListener('click',()=>setView(b.dataset.scView)));
+  $('edit').addEventListener('click',()=>{stop();editing=!editing;view='error';drawMain();});
+  $('toggle-qubit').addEventListener('click',()=>toggleQubit(Number($('qubit').value)));
+  $('clear').addEventListener('click',()=>{error=[];recompute({changed:true});});
+  $('cut').addEventListener('change',drawMain);$('ids').addEventListener('change',drawMain);
+  $('reset-example').addEventListener('click',()=>chooseExample(selected));
+  $('add-logical').addEventListener('click',()=>transform(patch.logicalZ,true));
+  $('add-stabilizer').addEventListener('click',()=>transform(patch.faces[Number($('face').value)].edges,false));
+  $('trace-start').addEventListener('click',()=>goTrace(0));$('trace-back').addEventListener('click',()=>goTrace(traceIndex-1));
+  $('trace-next').addEventListener('click',()=>goTrace(traceIndex+1));$('trace-end').addEventListener('click',()=>goTrace(frames.length-1));
+  $('trace-scrub').addEventListener('input',()=>goTrace(Number($('trace-scrub').value)));
+  $('trace-play').addEventListener('click',()=>{
+    if(timer!==null){stop();return;}if(traceIndex>=frames.length-1)return;
+    $('trace-play').textContent='Pause';$('trace-play').setAttribute('aria-pressed','true');
+    timer=setInterval(()=>{traceIndex++;drawMain();if(traceIndex===frames.length-1)stop();},900);
+  });
+  document.addEventListener('visibilitychange',()=>{if(document.hidden)stop();});
+  document.addEventListener('keydown',event=>{
+    if(root.hidden||/INPUT|SELECT|TEXTAREA|BUTTON|A/.test(event.target.tagName)||event.altKey||event.ctrlKey||event.metaKey)return;
+    if(view==='trace'&&['ArrowLeft','ArrowRight',' '].includes(event.key)){
+      event.preventDefault();if(event.key===' ')$('trace-play').click();else goTrace(traceIndex+(event.key==='ArrowRight'?1:-1));
+    }
+  });
+  const oldRoot=document.getElementById('uf-decoder-lesson');
+  function route(){
+    const walkthrough=['#walkthrough','#structures','#field-guide','#sources','#uf-decoder-lesson'].includes(location.hash);
+    root.hidden=walkthrough;oldRoot.hidden=!walkthrough;
+    document.querySelectorAll('[data-lab-mode]').forEach(a=>{if(a.dataset.labMode===(walkthrough?'walkthrough':'logical'))a.setAttribute('aria-current','page');else a.removeAttribute('aria-current');});
+    if(walkthrough)stop();
+    else {const play=document.getElementById('uf-play');if(play.getAttribute('aria-pressed')==='true')play.click();drawMain();drawFactors();}
+    if(location.hash){const target=location.hash==='#walkthrough'?oldRoot:document.getElementById(location.hash.slice(1));if(target)requestAnimationFrame(()=>target.scrollIntoView({block:'start'}));}
+  }
+  new ResizeObserver(()=>{drawMain();drawFactors();}).observe(root);
+  window.addEventListener('hashchange',route);
+  chooseExample(selected);route();
+  root.surfaceInspect=()=>({view,editing,selected,error:data.error,correction:data.correction,residual:data.residual,syndrome:data.observed,result:data.result,frame:frames[traceIndex],traceIndex,frames:frames.length});
 })();
 
 </script></body></html>

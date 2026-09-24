@@ -1,0 +1,63 @@
+<section id="logical-lab" aria-label="Surface-code logical recovery">
+  <div class="sc-heading">
+    <div><div class="eyebrow">SURFACE-CODE MEMORY</div><h1>Union-Find and logical errors</h1><p>Planar [[41, 1, 5]] code · Z errors · perfect syndrome measurements</p></div>
+    <div class="sc-example"><label class="form-label" for="sc-example">Error configuration</label><select class="form-select" id="sc-example"></select></div>
+  </div>
+  <div class="sc-layout">
+    <section class="sc-board-panel" aria-label="Surface-code patch">
+      <div class="surface-heading"><span>DISTANCE-5 PLANAR PATCH</span><span class="model-tag">41 data qubits · 1 logical qubit</span></div>
+      <div class="sc-views" role="group" aria-label="Choose a decoding view">
+        <button class="btn" data-sc-view="error" aria-pressed="false">1. Error E</button>
+        <button class="btn" data-sc-view="syndrome" aria-pressed="false">2. Syndrome</button>
+        <button class="btn" data-sc-view="trace" aria-pressed="false">3. UF trace</button>
+        <button class="btn" data-sc-view="correction" aria-pressed="false">4. Correction C</button>
+        <button class="btn" data-sc-view="residual" aria-pressed="false">5. Product CE</button>
+        <button class="btn" data-sc-view="decomposition" aria-pressed="true">6. Logical × stabilizer</button>
+      </div>
+      <div class="sc-view-heading"><h2 id="sc-view-title">The remaining operator</h2><span id="sc-view-meta" class="text-muted"></span></div>
+      <figure class="sc-figure"><svg id="sc-graph" role="img" aria-labelledby="sc-graph-title sc-graph-desc"><title id="sc-graph-title">Surface-code patch</title><desc id="sc-graph-desc"></desc><g id="sc-drawing"></g></svg><figcaption id="sc-legend" class="sc-legend"></figcaption></figure>
+      <p id="sc-view-note" class="sc-view-note"></p>
+      <div id="sc-trace-controls" hidden>
+        <div class="sc-trace-caption"><strong id="sc-trace-title"></strong><span id="sc-trace-count"></span></div>
+        <input type="range" id="sc-trace-scrub" class="form-range" min="0" max="1" value="0" aria-label="Surface-code UF step">
+        <div class="sc-trace-buttons"><button class="btn" id="sc-trace-start">Start</button><button class="btn" id="sc-trace-back">Back</button><button class="btn" id="sc-trace-play" aria-pressed="false">Play</button><button class="btn btn-primary" id="sc-trace-next">Next</button><button class="btn btn-ghost" id="sc-trace-end">Final correction</button></div>
+      </div>
+      <div class="sc-display-options"><label class="form-check"><input type="checkbox" class="form-check-input" id="sc-cut" checked> Show X̄ reference</label><label class="form-check"><input type="checkbox" class="form-check-input" id="sc-ids"> Qubit IDs</label><button class="btn btn-ghost" id="sc-edit" aria-pressed="false">Edit error E</button></div>
+      <div id="sc-editor" class="sc-editor" hidden><p>Click a data-qubit edge to toggle a Z error, or use the selector. The correction is recomputed from the syndrome.</p><div class="sc-editor-row"><div><label class="form-label" for="sc-qubit">Data qubit</label><select class="form-select" id="sc-qubit"></select></div><button class="btn" id="sc-toggle-qubit">Toggle Z</button><button class="btn" id="sc-clear">Clear E</button></div></div>
+    </section>
+    <aside class="sc-outcome" aria-label="Completed recovery outcome">
+      <div class="surface-heading"><span>COMPLETED RECOVERY</span><span id="sc-result-badge" class="sc-badge"></span></div>
+      <div class="sc-product" id="sc-equation" aria-live="polite"></div>
+      <p id="sc-outcome-note"></p>
+      <div class="sc-checks"><div><span>Residual syndrome</span><strong id="sc-syndrome-result">0 / 20</strong></div><div><span>Logical parity ℓ</span><strong id="sc-logical-result"></strong></div></div>
+      <div class="sc-weights"><div><span>Error |E|</span><strong id="sc-error-weight"></strong></div><div><span>Correction |C|</span><strong id="sc-correction-weight"></strong></div><div><span>Product |CE|</span><strong id="sc-residual-weight"></strong></div></div>
+      <div class="sc-equation-note">CE = Z̄<sup>ℓ</sup> ∏<sub>i</sub> S<sub>i</sub><sup>aᵢ</sup></div>
+      <p class="sc-secondary">Each S<sub>i</sub> is a Z stabilizer. Logical recovery succeeds exactly when ℓ = 0, including when a nonempty stabilizer remains.</p>
+      <div class="sc-knowledge"><strong>What the decoder knows</strong><p>UF receives only s = H<sub>X</sub>e. Error E and the logical verdict are available here because this is a simulation.</p></div>
+    </aside>
+  </div>
+
+  <div class="sc-example-story"><span class="eyebrow">THIS EXAMPLE</span><h2 id="sc-example-title"></h2><p id="sc-example-note"></p></div>
+
+  <section class="sc-witness" aria-label="Logical and stabilizer decomposition">
+    <div class="section-heading"><div><div class="eyebrow">VERIFY THE PRODUCT</div><h2>Separate the logical part from the stabilizers</h2></div><p>These factors reproduce CE exactly. On shared qubits, Z · Z = I.</p></div>
+    <div class="sc-factor-grid">
+      <section class="sc-factor"><div class="sc-factor-heading"><h3>Logical factor L</h3><strong id="sc-l-factor"></strong></div><svg id="sc-logical-factor" role="img" aria-label="Logical factor on the patch"></svg><p id="sc-l-caption"></p></section>
+      <section class="sc-factor"><div class="sc-factor-heading"><h3>Stabilizer factor S</h3><strong id="sc-s-factor"></strong></div><svg id="sc-stabilizer-factor" role="img" aria-label="Stabilizer product on the patch"></svg><p id="sc-s-caption"></p></section>
+      <section class="sc-parity"><div class="eyebrow">LOGICAL CLASS</div><h3>Count intersections with X̄</h3><div class="sc-parity-equation">ℓ = |CE ∩ X̄| mod 2</div><p id="sc-crossings"></p><div class="sc-parity-readout" id="sc-parity-readout"></div><p class="sc-secondary">X̄ is a fixed logical-X representative on the dual lattice. It is a diagnostic reference, not an additional syndrome measurement.</p><p class="sc-secondary" id="sc-verified"></p></section>
+    </div>
+    <details class="sc-support-details"><summary>Exact qubit support and stabilizer witness</summary><div class="sc-supports" id="sc-supports"></div><p class="sc-secondary">Qubit IDs start at q0. The witness is solved over GF(2) using all 20 Z stabilizers and the fixed middle-row Z̄. Multiplication of these Z-only operators is symmetric difference of their supports.</p></details>
+  </section>
+
+  <section class="sc-experiment">
+    <div><div class="eyebrow">SAME SYNDROME, DIFFERENT ERRORS</div><h2>Change E without changing UF’s input</h2><p>A logical Z̄ flips the logical outcome. A stabilizer changes the physical error pattern while preserving its logical class.</p><p id="sc-equivalence-status" class="sc-equivalence-status" role="status">Try either transformation. Both preserve the syndrome and deterministic correction.</p></div>
+    <div class="sc-transform-controls"><button class="btn" id="sc-add-logical">Multiply E by logical Z̄</button><label class="form-label" for="sc-face">Choose a Z stabilizer</label><select id="sc-face" class="form-select"></select><button class="btn" id="sc-add-stabilizer">Multiply E by this stabilizer</button><button class="btn btn-ghost" id="sc-reset-example">Reset selected example</button></div>
+  </section>
+
+  <section class="sc-notes" aria-label="Surface-code assumptions">
+    <details open><summary>Why a cleared syndrome is not enough</summary><div><p>Once H<sub>X</sub>(e ⊕ c) = 0, the remaining Z operator is either a stabilizer or a logical Z times a stabilizer. The syndrome cannot distinguish those two classes. Successful recovery requires CE ∈ 𝒮, where 𝒮 is the stabilizer group.</p><p>A nontrivial Z̄ changes the relative phase of an arbitrary encoded state: α|0<sub>L</sub>⟩ + β|1<sub>L</sub>⟩ → α|0<sub>L</sub>⟩ − β|1<sub>L</sub>⟩. It does not flip the logical computational-basis bit.</p></div></details>
+    <details><summary>Geometry, boundaries, and model limits</summary><div><p>This is an unrotated distance-5 planar CSS code. Its 41 data qubits lie on edges. The 20 measured X checks sit at non-boundary vertices; the 20 Z stabilizers surround faces. Boundary faces have weight 3. The left and right boundaries are rough, allowing Z chains to terminate without a measured endpoint.</p><p>The example uses only Pauli Z errors, perfect syndrome extraction, uniform unit-cost UF growth, and deterministic breadth-first peeling forests. It models one recovery round, without measurement errors, circuit faults, correlations, or time. Outcomes here are exact for the displayed error pattern, not a measured logical error rate.</p><p>Both check matrices have rank 20 and H<sub>X</sub>H<sub>Z</sub><sup>T</sup> = 0, leaving 41 − 20 − 20 = 1 logical qubit. The displayed Z̄ and X̄ overlap on one data qubit and anticommute.</p></div></details>
+    <details><summary>Is the physical correction actually applied?</summary><div><p>The display treats C as a Pauli operator for bookkeeping. A controller can instead track C in a Pauli frame and interpret later operations or measurements accordingly. The logical success criterion is still whether the tracked correction and actual error differ by a stabilizer.</p><p>In a real run, the decoder does not know E and cannot use this simulation’s logical verdict. Memory experiments use suitable logical preparation and final readout to assess outcomes; syndrome checks alone do not reveal an arbitrary encoded state.</p></div></details>
+  </section>
+  <div class="sc-references"><span>References</span><a href="https://arxiv.org/abs/1208.0928" target="_blank" rel="noopener">Fowler et al. · Surface codes</a><a href="https://arxiv.org/abs/1709.06218" target="_blank" rel="noopener">Delfosse &amp; Nickerson · Union-Find decoding</a><a href="#walkthrough">Open the detailed UF walkthrough →</a></div>
+</section>

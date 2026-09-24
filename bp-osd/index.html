@@ -1,10 +1,12 @@
-<!doctype html><html lang="en" data-theme="dark"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="description" content="An interactive, numerical guide to belief propagation and ordered statistics decoding for quantum error correction. Inspect Tanner-graph messages, row reduction, candidate search, and quantum degeneracy."><meta name="theme-color" content="#11151b"><title>BP + OSD — Decoder Lab</title><script>try{const t=localStorage.getItem('dante-bp-osd-theme');if(t==='light'||t==='dark')document.documentElement.dataset.theme=t}catch{}</script><style>/* Paired research themes. Semantic colors are shared by HTML, SVG, and MathML. */
+<!doctype html><html lang="en" data-theme="dark"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="description" content="An interactive, numerical guide to belief propagation and ordered statistics decoding for quantum error correction. Inspect Tanner-graph messages, row reduction, candidate search, and quantum degeneracy."><meta name="theme-color" content="#11151b"><title>BP + OSD — Decoder Lab</title><script>try{const t=localStorage.getItem('qec-bp-osd-theme');if(t==='light'||t==='dark')document.documentElement.dataset.theme=t}catch{}</script><style>
+/* Paired research themes. Semantic colors are shared by HTML, SVG, and MathML. */
 :root {
   color-scheme: light;
   --ink: #202a36;
   --muted: #5b697a;
   --faint: #6b7889;
   --blue: #245fc2;
+  --violet: #6e4fb5;
   --blue-bg: #eef4ff;
   --orange: #9b5423;
   --orange-bg: #fff7ed;
@@ -44,6 +46,7 @@
   --muted: #a6b1c0;
   --faint: #8996a8;
   --blue: #91baff;
+  --violet: #c3a7f4;
   --blue-bg: #22334c;
   --orange: #e5b183;
   --orange-bg: #332a23;
@@ -382,32 +385,120 @@ tbody tr.clickable:focus-visible { outline-offset: -2px; }
   }
   body { background: #fff; }
 }
+
+</style><style>
+/* Research tools extend the existing paired theme and spacing scale. */
+.brand { letter-spacing: 1.6px; }
+.experiment-tools { display: flex; flex-wrap: wrap; gap: 10px 18px; align-items: center; justify-content: space-between; margin: -8px 0 20px; padding: 0 0 14px; border-bottom: 1px solid var(--line); }
+.experiment-tools > div { display: flex; gap: 8px; }
+.tool-message:empty { display: none; }
+.tool-message { width: 100%; font-size: 13px; color: var(--blue); }
+.share-fallback { width: 100%; font-size: 13px; color: var(--muted); }
+.share-fallback input { display: block; margin-top: 6px; width: 100%; border: 1px solid var(--input-border); background: var(--paper); color: var(--ink); border-radius: 4px; padding: 8px; font: 12px var(--mono); }
+.inline-check { display: inline-flex; align-items: center; gap: 8px; font-size: 13px; color: var(--muted); white-space: nowrap; cursor: pointer; }
+.inline-check input { accent-color: var(--blue); width: 15px; height: 15px; margin: 0; }
+.stat-strip { display: grid; grid-template-columns: repeat(auto-fit,minmax(155px,1fr)); gap: 0; margin: 6px 0 24px; border: 1px solid var(--line); border-radius: 5px; background: var(--inset); }
+.stat-strip > div { padding: 13px 16px; border-right: 1px solid var(--line); }
+.stat-strip > div:last-child { border-right: 0; }
+.stat-strip span { display: block; font-size: 12px; color: var(--muted); }
+.stat-strip strong { display: block; margin-top: 5px; font: 20px/1.5 var(--mono); color: var(--ink); }
+.stat-strip small { display: block; font-size: 12px; color: var(--faint); margin-top: 3px; }
+.plot-heading { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 14px; align-items: center; margin: 5px 0 20px; }
+.plot-heading .caption { margin-top: 4px; font-size: 13px; }
+.qubit-switch { display: inline-flex; gap: 3px; flex-wrap: wrap; }
+.qubit-switch button { font: 12px var(--mono); padding: 6px 8px; }
+.qubit-switch .selected { background: var(--blue-bg); color: var(--blue); border-color: var(--blue); }
+.plot-scroll { overflow-x: auto; }
+.research-plot { width: 100%; min-width: 520px; display: block; overflow: visible; }
+.plot-grid { stroke: var(--line); stroke-width: 1; }
+.plot-label { fill: var(--muted); font: 12px -apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif; }
+.plot-tick { fill: var(--muted); font: 12px var(--mono); }
+.research-plot [role=button] { cursor: pointer; }
+.research-plot [role=button]:focus-visible { outline: none; }
+.research-plot [role=button]:focus-visible circle { stroke: var(--ink); stroke-width: 3; }
+.plot-legend { display: flex; flex-wrap: wrap; gap: 10px 22px; align-items: center; margin: 13px 0 24px; font-size: 12px; color: var(--muted); }
+.plot-legend > span { display: inline-flex; gap: 7px; align-items: center; }
+.plot-legend .tiny { width: 100%; margin-top: 2px; }
+.line-key { width: 23px; height: 0; border-top: 2px solid var(--blue); display: inline-block; }
+.exact-key { border-top: 2px dashed var(--orange); }
+.hide-exact .plot-legend > span:nth-child(2) { display: none; }
+#marginal-comparison table { font-size: 13px; }
+#marginal-comparison th, #marginal-comparison td { padding: 10px; }
+#marginal-comparison tbody th { white-space: nowrap; font-size: 12px; }
+#order-comparison th, #order-comparison td { padding: 11px 10px; }
+#order-comparison .tag { font-size: 11px; letter-spacing: 0; }
+.study { max-width: 1280px; margin: auto; }
+.study > .card > .pad > p { max-width: 1050px; }
+.study-controls { display: flex; gap: 18px; align-items: end; flex-wrap: wrap; margin: 25px 0 15px; padding: 18px 0; border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); }
+.study-controls label { font-size: 13px; color: var(--muted); }
+.study-controls select { display: block; width: 160px; }
+.study-controls .caption { margin: auto 0; font-size: 13px; }
+.study-controls button { margin-bottom: 1px; }
+.channel-plot { margin-top: 22px; min-width: 680px; }
+.study .stat-strip { margin-top: 20px; }
+.data-details { border-top: 1px solid var(--line); padding-top: 16px; font-size: 14px; }
+.data-details .scroll-x { max-height: 420px; margin-top: 15px; }
+.data-details th { position: sticky; top: 0; z-index: 1; }
+.study-definitions { display: grid; grid-template-columns: repeat(3,1fr); gap: 30px; margin-top: 20px; }
+.study-definitions strong { font-size: 14px; font-weight: 600; }
+.study-definitions p { margin-top: 7px; }
+#syndrome-census table { font-size: 13px; }
+#syndrome-census th { font-size: 12px; }
+#syndrome-census th, #syndrome-census td { padding: 12px 10px; }
+@media(max-width:1100px) { .tabs { gap: 18px; } .tabs button { font-size: 13px; } .tabs .num { margin-right: 5px; } }
+@media(max-width:760px) {
+ .experiment-tools { margin-top: -4px; gap: 10px; }
+ .experiment-tools > .tiny { display: none; }
+ .experiment-tools button { font-size: 12px; }
+ .topbar > span { font-size: 10px; }
+ .brand { letter-spacing: 1px; }
+ .stat-strip { grid-template-columns: 1fr 1fr; }
+ .stat-strip > div { padding: 11px; border-bottom: 1px solid var(--line); }
+ .stat-strip > div:nth-child(2n) { border-right: 0; }
+ .stat-strip > div:nth-last-child(-n+2) { border-bottom: 0; }
+ .stat-strip strong { font-size: 17px; }
+ .study-controls { align-items: center; gap: 12px; }
+ .study-controls label { width: 100%; }
+ .study-controls select { width: 100%; }
+ .study-definitions { grid-template-columns: 1fr; gap: 20px; }
+ .study .card-head h2 { font-size: 18px; }
+}
+@media print { .experiment-tools, .inline-check, .qubit-switch, .study-controls { display: none; } :root[data-theme=dark] { --violet: #6e4fb5; } .plot-scroll { overflow: visible; } }
+
+.figure-actions { display:flex; gap:10px; align-items:center; flex-wrap:wrap; }
+@media print { .figure-actions { display:none; } }
+
 </style></head><body>
-<header class="topbar"><span><b class="brand">DANTE</b> &nbsp; / &nbsp; Decoder studies</span><button id="theme-toggle" class="theme-toggle" aria-label="Switch to light mode" title="Switch to light mode"><svg class="sun-icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2m0 16v2M2 12h2m16 0h2M5 5l1.5 1.5m11 11L19 19M5 19l1.5-1.5m11-11L19 5"/></svg><svg class="moon-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M20.5 14.2A8.5 8.5 0 0 1 9.8 3.5 8.5 8.5 0 1 0 20.5 14.2Z"/></svg><span id="theme-label">Light mode</span></button></header>
-<main class="wrap"><div class="intro"><div><div class="wordmark">Belief propagation · Ordered statistics decoding</div><h1>BP + OSD</h1><p>Inspect the messages, reconstruct a correction, and check its logical class.</p></div><div class="intro-note"><strong>[[7,1,3]] Steane code</strong>X errors · Independent noise · Perfect checks</div></div><nav class="tabs" role="tablist" aria-label="Decoder lessons"><button role="tab" id="tab-bp" aria-controls="panel-bp" aria-selected="true" data-tab="bp"><span class="num">01</span>Belief propagation</button><button role="tab" id="tab-osd" aria-controls="panel-osd" aria-selected="false" tabindex="-1" data-tab="osd"><span class="num">02</span>Ordered statistics</button><button role="tab" id="tab-quantum" aria-controls="panel-quantum" aria-selected="false" tabindex="-1" data-tab="quantum"><span class="num">03</span>Logical recovery</button><button role="tab" id="tab-guide" aria-controls="panel-guide" aria-selected="false" tabindex="-1" data-tab="guide"><span class="num">04</span>Method & references</button></nav>
-<div id="interactive" class="workspace"><aside class="sidebar"><section class="card"><details id="experiment-panel" class="config-panel" open><summary class="config-summary">Experiment configuration<span id="config-overview" class="tiny"></span></summary><div class="pad config"><div class="config-heading"><h3>Experiment</h3><span id="modified" class="modified" hidden>MODIFIED</span></div><label class="field wide">Scenario<select id="preset"><option value="stall">BP stalls → OSD repairs</option><option value="easy">BP finds a correction</option><option value="order">Why search beyond OSD-0?</option><option value="logical">Same syndrome, wrong logical class</option><option value="zero">An invisible stabilizer</option></select></label><p id="preset-note" class="callout-inline"></p><div class="wide"><div class="range-label"><strong>Injected X errors</strong><span class="tiny">Click to toggle</span></div><div id="error-bits" class="bits"></div><div class="bit-labels"><span>q₁</span><span>q₂</span><span>q₃</span><span>q₄</span><span>q₅</span><span>q₆</span><span>q₇</span></div><p class="tiny" style="margin-top:9px">Ground truth is used to generate the syndrome and assess recovery. BP and OSD never see it.</p></div><div class="wide"><div class="range-label"><label for="prior">Channel prior p</label><output id="prior-value">0.080</output></div><input id="prior" type="range" min="1" max="499" value="80" aria-label="Uniform error probability in thousandths"><details><summary class="caption">Per-qubit channel probabilities</summary><div id="prior-inputs" class="prob-inputs"></div></details></div><div class="control-pair"><label class="field">BP limit<select id="maxiter"><option>4</option><option selected>8</option><option>16</option><option>32</option></select></label><label class="field">OSD order<select id="order"><option value="0">0</option><option value="1">1</option><option value="2" selected>2</option><option value="3">3</option><option value="4">4 · full</option></select></label></div><p id="search-budget" class="tiny wide" style="margin-top:10px"></p><div class="wide" style="margin-top:16px"><button id="reset" class="small">Reset example</button></div></div></details></section><section class="card pad howto"><details><summary class="caption">Reading the experiment</summary><ol class="step-list"><li><strong>Choose an error.</strong>The measured syndrome is s = H e.</li><li><strong>Inspect a BP message.</strong>Select a check, qubit, or edge. Advance one half-iteration at a time.</li><li><strong>Follow the fallback.</strong>OSD uses BP’s final error probabilities to choose a basis.</li><li><strong>Check the logical result.</strong>A valid syndrome is only the first test.</li></ol></details></section><div class="caption">Model: independent X noise, perfect checks. Sum-product BP, flooding schedule, no damping. This is a teaching instance, not a hardware or LER benchmark.</div></aside>
+<header class="topbar"><span><b class="brand">DECODER LAB</b> &nbsp; / &nbsp; BP + OSD</span><button id="theme-toggle" class="theme-toggle" aria-label="Switch to light mode" title="Switch to light mode"><svg class="sun-icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2m0 16v2M2 12h2m16 0h2M5 5l1.5 1.5m11 11L19 19M5 19l1.5-1.5m11-11L19 5"/></svg><svg class="moon-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M20.5 14.2A8.5 8.5 0 0 1 9.8 3.5 8.5 8.5 0 1 0 20.5 14.2Z"/></svg><span id="theme-label">Light mode</span></button></header>
+<main class="wrap"><div class="intro"><div><div class="wordmark">Belief propagation · Ordered statistics decoding</div><h1>BP + OSD</h1><p>Inspect the messages, reconstruct a correction, and check its logical class.</p></div><div class="intro-note"><strong>[[7,1,3]] Steane code</strong>X errors · Independent noise · Perfect checks</div></div><nav class="tabs" role="tablist" aria-label="Decoder lessons"><button role="tab" id="tab-bp" aria-controls="panel-bp" aria-selected="true" data-tab="bp"><span class="num">01</span>Belief propagation</button><button role="tab" id="tab-osd" aria-controls="panel-osd" aria-selected="false" tabindex="-1" data-tab="osd"><span class="num">02</span>Ordered statistics</button><button role="tab" id="tab-quantum" aria-controls="panel-quantum" aria-selected="false" tabindex="-1" data-tab="quantum"><span class="num">03</span>Logical recovery</button><button role="tab" id="tab-study" aria-controls="panel-study" aria-selected="false" tabindex="-1" data-tab="study"><span class="num">04</span>Channel study</button><button role="tab" id="tab-guide" aria-controls="panel-guide" aria-selected="false" tabindex="-1" data-tab="guide"><span class="num">05</span>Method & references</button></nav>
+<div class="experiment-tools" aria-label="Experiment tools"><span class="tiny">Reproducible experiments · all computation stays in your browser</span><div><button id="share-experiment" class="small">Copy experiment link</button><button id="export-experiment" class="small">Export JSON</button></div><span id="tool-message" class="tool-message" role="status"></span><label id="share-fallback" class="share-fallback" hidden>Experiment link<input id="share-url" type="text" readonly></label></div>
+<div id="interactive" class="workspace"><aside class="sidebar"><section class="card"><details id="experiment-panel" class="config-panel" open><summary class="config-summary">Experiment configuration<span id="config-overview" class="tiny"></span></summary><div class="pad config"><div class="config-heading"><h3>Experiment</h3><span id="modified" class="modified" hidden>MODIFIED</span></div><label class="field wide">Scenario<select id="preset"><option value="stall">BP stalls → OSD repairs</option><option value="easy">BP finds a correction</option><option value="order">Why search beyond OSD-0?</option><option value="logical">Same syndrome, wrong logical class</option><option value="zero">An invisible stabilizer</option></select></label><p id="preset-note" class="callout-inline"></p><div class="wide"><div class="range-label"><strong>Injected X errors</strong><span class="tiny">Click to toggle</span></div><div id="error-bits" class="bits"></div><div class="bit-labels"><span>q₁</span><span>q₂</span><span>q₃</span><span>q₄</span><span>q₅</span><span>q₆</span><span>q₇</span></div><p class="tiny" style="margin-top:9px">Ground truth is used to generate the syndrome and assess recovery. BP and OSD never see it.</p></div><div class="wide"><div class="range-label"><label for="prior">Channel prior p</label><output id="prior-value">0.080</output></div><input id="prior" type="range" min="1" max="499" value="80" aria-label="Uniform error probability in thousandths"><details><summary class="caption">Per-qubit channel probabilities</summary><div id="prior-inputs" class="prob-inputs"></div></details></div><div class="control-pair"><label class="field">BP limit<select id="maxiter"><option>4</option><option selected>8</option><option>16</option><option>32</option></select></label><label class="field">OSD order<select id="order"><option value="0">0</option><option value="1">1</option><option value="2" selected>2</option><option value="3">3</option><option value="4">4 · full</option></select></label></div><label class="field wide">Message damping α<select id="damping"><option value="0">0 · undamped</option><option value="0.25">0.25</option><option value="0.5">0.50</option><option value="0.75">0.75</option></select></label><p class="tiny wide" style="margin-top:6px">Fraction of the previous outgoing message retained. Does not damp the current posterior.</p><p id="search-budget" class="tiny wide" style="margin-top:10px"></p><div class="wide" style="margin-top:16px"><button id="reset" class="small">Reset example</button></div></div></details></section><section class="card pad howto"><details><summary class="caption">Reading the experiment</summary><ol class="step-list"><li><strong>Choose an error.</strong>The measured syndrome is s = H e.</li><li><strong>Inspect a BP message.</strong>Select a check, qubit, or edge. Advance one half-iteration at a time.</li><li><strong>Follow the fallback.</strong>OSD uses BP’s final error probabilities to choose a basis.</li><li><strong>Check the logical result.</strong>A valid syndrome is only the first test.</li></ol></details></section><div class="caption">Model: independent X noise, perfect checks. Sum-product BP with a flooding schedule and optional variable-message damping. This is a teaching instance, not a hardware or LER benchmark.</div></aside>
 <div class="stack">
 <section role="tabpanel" id="panel-bp" aria-labelledby="tab-bp" class="stack">
 <div class="card"><div class="card-head"><div><div class="eyebrow">Tanner graph / Selected message</div><h2 id="phase-title">Start with channel beliefs</h2></div><span id="phase-tag" class="tag blue">INITIALIZATION</span></div><div id="phase-track" class="phase-track" aria-label="BP update phase"></div><div class="metrics"><div class="metric"><span class="caption">Observed syndrome s</span><b id="syndrome"></b></div><div class="metric"><span class="caption">Hard estimate ê</span><b id="hard"></b></div><div class="metric"><span class="caption">Residual s ⊕ Hê</span><b id="residual"></b></div></div><div class="graph-wrap"><svg id="graph" class="graph" viewBox="0 0 840 320" role="group" aria-label="Interactive Tanner graph. Three square check nodes and seven circular variable nodes."></svg></div><div class="legend"><span><i class="key square"></i>Parity check</span><span><i class="key"></i>Error variable</span><span><i class="key line"></i>Output message</span><span><i class="key line input"></i>Incoming evidence</span></div><div id="graph-note" class="graph-note"></div><div class="mobile-note graph-note">Scroll the graph horizontally to inspect all seven qubits.</div><div class="transport"><button id="prev" aria-label="Previous BP step">← Back</button><button id="play" class="primary">▶ Play</button><button id="next" aria-label="Next BP step">Next →</button><input id="timeline" type="range" min="0" max="16" value="0" aria-label="BP timeline"><output id="step-label" class="caption mono">0 / 16</output></div></div>
 <div id="bp-status" class="status" aria-live="polite"></div>
 <div class="two-col"><section class="card inspector"><div class="card-head"><h3>Message calculation</h3><select id="edge-select" aria-label="Message edge"></select></div><div class="pad" id="inspector"></div></section><section class="card"><div class="card-head"><div><h3>Posterior beliefs</h3><p class="caption" id="belief-version">Approximate P(eᵥ = 1 | s)</p></div></div><div class="pad"><div id="beliefs" class="prob-grid"></div><p class="caption" style="margin-top:16px">The dashed line is ½. A bit becomes 1 when its posterior LLR is negative. BP marginals need not agree on a joint solution.</p><div id="belief-equation" class="formula"></div></div></section></div>
+<section class="card" id="diagnostics"><div class="card-head"><div><div class="eyebrow">Inference diagnostics</div><h3>Approximate beliefs, exact reference</h3></div><div class="figure-actions"><button id="export-trajectory" class="small">Export SVG</button><label class="inline-check"><input id="show-exact" type="checkbox" checked> Exact reference</label></div></div><div class="pad"><div id="diagnostic-stats" class="stat-strip"></div><div class="plot-heading"><div><h3 id="trajectory-title">Posterior trajectory</h3><p class="caption">Select a qubit; select a plotted iteration to revisit it.</p></div><div id="trajectory-qubits" class="qubit-switch" aria-label="Trajectory qubit"></div></div><div class="plot-scroll"><svg id="trajectory-plot" class="research-plot" viewBox="0 0 800 240" role="group" aria-label="Posterior probability over BP iterations"></svg></div><div class="plot-legend"><span><i class="line-key"></i>BP posterior</span><span><i class="line-key exact-key"></i>Exact posterior</span><span class="tiny">The selected half-step shows the most recent completed variable update.</span></div><div id="marginal-comparison" class="scroll-x"></div><p class="caption" style="margin-top:14px">The exact reference enumerates all 16 errors matching this syndrome. A marginal discrepancy measures inference error; it is not a logical-failure probability.</p></div></section>
 <section class="card"><div class="card-head"><h3>The decoding trace</h3><span class="caption">Select a row to revisit that iteration</span></div><div id="history" class="history-table"></div></section><div class="lesson-nav"><button class="primary" data-go="osd">Continue to OSD →</button><button data-go="guide">Explain the equations</button></div>
 </section>
 <section role="tabpanel" id="panel-osd" aria-labelledby="tab-osd" class="stack" hidden><div id="osd-status" class="status"></div><section class="card pad"><div class="eyebrow">01 / Order the columns</div><h2>Put the most likely error locations first.</h2><p class="subtle" style="margin-top:9px">Sort by final BP error probability, descending. Scan left to right and keep a column only if it increases the GF(2) rank.</p><div id="ordering" class="order-row"></div><div id="basis-summary"></div><p class="callout-inline"><strong>Convention used here:</strong> Roffe-style syndrome OSD. This orders P(error), not |LLR|. Other OSD formulations use hard decisions and absolute-LLR reliability. Do not mix their initialization rules.</p></section>
 <section class="card"><div class="card-head"><div><div class="eyebrow">02 / Solve the parity constraints</div><h2>Reduce [H<sub>B</sub> H<sub>F</sub> | s] to [I A | b].</h2></div></div><div class="pad"><p class="caption">Blue columns are basis variables. The remaining columns are free variables. The orange column is the transformed syndrome; every row XOR must also update it.</p><div id="elimination" class="scroll-x"></div><div class="matrix-key"><span>Basis columns B</span><span class="source">Source row</span><span class="target">Target row</span></div><div class="transport" style="padding:14px 0 0"><button id="elim-prev" class="small">← Previous row operation</button><input id="elim-slider" type="range" min="0" max="1" value="0" aria-label="Gaussian elimination step"><button id="elim-next" class="small">Next row operation →</button></div><div id="elim-note" class="formula"></div><div class="status"><strong>Free bits are choices; basis bits are consequences.</strong>For each assignment f to the free variables, solve e<sub>B</sub> = b ⊕ A f. This enforces Hê = s exactly.</div></div></section>
 <div class="two-col"><section class="card"><div class="card-head"><div><div class="eyebrow">03 / Search free assignments</div><h3 id="candidate-title">Candidate list</h3></div></div><div id="candidates" class="scroll-x"></div><div class="pad caption"><strong>Selection:</strong> the blue row marker identifies the inspected candidate; BEST identifies the minimum-cost candidate. Here, order t bounds free-bit weight, not total correction weight. This search differs from the library’s combination-sweep parameter.</div></section><section class="card inspector"><div class="card-head"><h3>Candidate reconstruction</h3><span id="candidate-badge" class="tag blue"></span></div><div id="candidate-detail" class="pad"></div></section></div>
-<section class="card pad"><div class="eyebrow">04 / Choose by the noise model</div><h3>BP determines the ordering. The channel determines the score.</h3><div class="symbolic"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mrow><mi mathvariant="normal">cost</mi><mrow><mo>(</mo><mover><mi>e</mi><mo>^</mo></mover><mo>)</mo></mrow></mrow><mo>=</mo><munder><mo>∑</mo><mi>v</mi></munder><msub><mover><mi>e</mi><mo>^</mo></mover><mi>v</mi></msub><mo>·</mo><mrow><mi mathvariant="normal">ln</mi><mrow><mo>(</mo><mfrac><mrow><mn>1</mn><mo>−</mo><msub><mi>p</mi><mi>v</mi></msub></mrow><msub><mi>p</mi><mi>v</mi></msub></mfrac><mo>)</mo></mrow></mrow></mrow></math><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><msup><mover><mi>e</mi><mo>^</mo></mover><mo>∗</mo></msup><mo>=</mo><msub><mrow><mi mathvariant="normal">arg</mi><mi mathvariant="normal">min</mi></mrow><mtext>generated candidates</mtext></msub><mrow><mi mathvariant="normal">cost</mi><mrow><mo>(</mo><mover><mi>e</mi><mo>^</mo></mover><mo>)</mo></mrow></mrow></mrow></math></div><p class="caption">Costs are relative negative log-likelihoods, measured in nats. They equal the negative log of the independent-error probability up to a candidate-independent constant. Multiplying BP posterior marginals is not the same objective. Uniform p &lt; ½ reduces the ranking to Hamming weight.</p><div id="osd-result" style="margin-top:16px"></div></section><div class="lesson-nav"><button class="primary" data-go="quantum">Check the quantum recovery →</button></div></section>
+<section class="card pad"><div class="eyebrow">04 / Choose by the noise model</div><h3>BP determines the ordering. The channel determines the score.</h3><div class="symbolic"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mrow><mi mathvariant="normal">cost</mi><mrow><mo>(</mo><mover><mi>e</mi><mo>^</mo></mover><mo>)</mo></mrow></mrow><mo>=</mo><munder><mo>∑</mo><mi>v</mi></munder><msub><mover><mi>e</mi><mo>^</mo></mover><mi>v</mi></msub><mo>·</mo><mrow><mi mathvariant="normal">ln</mi><mrow><mo>(</mo><mfrac><mrow><mn>1</mn><mo>−</mo><msub><mi>p</mi><mi>v</mi></msub></mrow><msub><mi>p</mi><mi>v</mi></msub></mfrac><mo>)</mo></mrow></mrow></mrow></math><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><msup><mover><mi>e</mi><mo>^</mo></mover><mo>∗</mo></msup><mo>=</mo><msub><mrow><mi mathvariant="normal">arg</mi><mi mathvariant="normal">min</mi></mrow><mtext>generated candidates</mtext></msub><mrow><mi mathvariant="normal">cost</mi><mrow><mo>(</mo><mover><mi>e</mi><mo>^</mo></mover><mo>)</mo></mrow></mrow></mrow></math></div><p class="caption">Costs are relative negative log-likelihoods, measured in nats. They equal the negative log of the independent-error probability up to a candidate-independent constant. Multiplying BP posterior marginals is not the same objective. Uniform p &lt; ½ reduces the ranking to Hamming weight.</p><div id="osd-result" style="margin-top:16px"></div></section><section class="card"><div class="card-head"><div><div class="eyebrow">Search budget</div><h3>What does a higher OSD order buy?</h3></div><button id="export-order" class="small">Export CSV</button></div><div class="pad"><p id="order-policy-note" class="caption"></p><div id="order-comparison" class="scroll-x" style="margin-top:14px"></div><p class="caption" style="margin-top:14px">Captured mass uses the full conditional distribution P(e | s). More search increases coverage and cannot raise the best candidate cost; logical recovery need not improve monotonically. Select an order to apply it.</p></div></section>
+<div class="lesson-nav"><button class="primary" data-go="quantum">Check the quantum recovery →</button></div></section>
 <section role="tabpanel" id="panel-quantum" aria-labelledby="tab-quantum" class="stack" hidden><section class="card pad"><div class="eyebrow">Syndrome validity ≠ logical success</div><h2>There are sixteen explanations for this syndrome.</h2><p class="subtle" style="margin-top:12px">In this Steane-code X sector, the sixteen valid errors divide into two logical classes of eight errors each. Errors in one class differ by X stabilizers. The decoder should choose the more probable <em>class</em>, but ordinary BP+OSD scores individual candidates.</p><div class="eyebrow" style="margin-top:24px">Standard BP → OSD policy</div><div id="quantum-result"></div></section><section class="card pad"><div class="eyebrow">Inspection only · does not change decoder output</div><h3>Selected correction</h3><p class="caption">Select a candidate in either class below. Ground truth is used here to evaluate its residual.</p><div id="residual-detail"></div></section><div id="cosets" class="equivalence"></div><section class="card pad"><div class="eyebrow">Exact calculation · small-code oracle</div><h3>What a real logical confidence would compare</h3><div class="formula">P(class ℓ | s) ∝ Σ<sub>e : He=s, logical(e)=ℓ</sub> ∏ᵥ pᵥ<sup>eᵥ</sup>(1−pᵥ)<sup>1−eᵥ</sup></div><div id="mass-detail"></div><p class="callout-inline">The class masses above come from exhaustive enumeration of all 2⁷ errors, not from BP or the OSD shortlist. This is practical for seven qubits; it is not a proposed scalable decoder. Class labels are relative to a fixed reference solution, not the injected error.</p></section><section class="card pad"><h3>Why this matters for hierarchical decoding</h3><p style="margin-top:10px">A high-confidence bit can belong to a wrong logical correction. A valid OSD candidate can also be in the wrong class. A shortlist score difference is not automatically a calibrated logical error probability or a complementary matching gap.</p><p>For an outer decoder, evaluate confidence against <em>logical</em> failures on held-out data. Useful research directions include class-aware candidate aggregation, inexpensive failure predictors, and an escalation policy. Their accuracy and cost need to be measured for the actual code and noise model.</p></section><div class="lesson-nav"><button data-go="guide" class="primary">Read the full algorithm →</button></div></section>
 </div></div>
+<section role="tabpanel" id="panel-study" aria-labelledby="tab-study" class="study stack" hidden><section class="card"><div class="card-head"><div><div class="eyebrow">Exact enumeration · no sampling</div><h2>From one syndrome to the whole channel</h2></div><div class="figure-actions"><button id="export-channel-figure" class="small">Export SVG</button><button id="export-study" class="small">Export CSV</button></div></div><div class="pad"><p>Compare decoders on all 128 possible X-error patterns of the [[7,1,3]] Steane code. These are exact probabilities per seven-qubit block under independent X noise and perfect checks.</p><div class="study-controls"><label>Largest physical error probability<select id="sweep-max"><option value="0.1">0.10</option><option value="0.2" selected>0.20</option><option value="0.3">0.30</option><option value="0.49">0.49</option></select></label><button id="run-sweep" class="primary">Run exact sweep</button><span id="study-settings" class="caption"></span><button class="small" data-go="bp">Change BP settings</button></div><p id="study-progress" class="caption" role="status"></p><div class="plot-scroll"><svg id="channel-plot" class="research-plot channel-plot" viewBox="0 0 1000 350" role="img" aria-label="Exact block failure probability versus physical error probability"></svg></div><div id="channel-legend" class="plot-legend"></div><div id="sweep-summary" class="stat-strip"></div><details class="data-details"><summary>Numerical sweep data and failure decomposition</summary><div id="sweep-table" class="scroll-x"></div></details><p class="caption" style="margin-top:16px">BP+OSD invokes OSD only after BP fails to satisfy the syndrome. Even BP+OSD-4 can return a logically wrong BP result without searching. Logical MAP sums the probability of each stabilizer class and gives the optimal reference for this model.</p></div></section><section class="card"><div class="card-head"><div><div class="eyebrow">Current channel priors</div><h3>All eight syndromes</h3></div></div><div class="pad"><p id="syndrome-study-note" class="caption"></p><div id="syndrome-summary" class="stat-strip"></div><div id="syndrome-census" class="scroll-x"></div><p class="caption" style="margin-top:14px">Each conditional failure probability averages over every compatible true error. P(s) supplies the weight when aggregating across syndromes. Select a syndrome to load its most likely individual error into the message lab.</p></div></section><section class="card pad"><h3>How to interpret these curves</h3><div class="study-definitions"><div><strong>Total failure</strong><p class="caption">Syndrome mismatch plus a nontrivial logical residual. Both count as unsuccessful recovery.</p></div><div><strong>Fallback probability</strong><p class="caption">Probability that BP does not satisfy the syndrome before its iteration limit. This controls how often OSD is invoked.</p></div><div><strong>Scope</strong><p class="caption">One seven-qubit block and one X-noise correction round. This is not a surface-code threshold, a circuit-noise result, or a hardware latency benchmark.</p></div></div></section></section>
 <section role="tabpanel" id="panel-guide" aria-labelledby="tab-guide" class="guide" hidden>
 <section class="card pad"><div class="guide-banner"><span class="big-num">01</span><div><div class="eyebrow">The problem</div><h2>Infer an error from parity information.</h2></div></div><p style="margin-top:18px">For independent binary error variables eᵥ, a parity-check matrix H defines which variables meet each check. You observe s = He over GF(2). The decoder sees H, s, and the channel probabilities pᵥ. It must return an estimate ê; the physical error e is hidden.</p><div class="formula math-display"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mrow><mi mathvariant="normal">P</mi><mrow><mo>(</mo><mrow><mi>e</mi><mo>|</mo><mi>s</mi></mrow><mo>)</mo></mrow></mrow><mo>∝</mo><mrow><mo>[</mo><mrow><mi>H</mi><mi>e</mi><mo>=</mo><mi>s</mi></mrow><mo>]</mo></mrow><mo>·</mo><mrow><munder><mo>∏</mo><mi>v</mi></munder><msup><msub><mi>p</mi><mi>v</mi></msub><msub><mi>e</mi><mi>v</mi></msub></msup><msup><mrow><mo>(</mo><mrow><mn>1</mn><mo>−</mo><msub><mi>p</mi><mi>v</mi></msub></mrow><mo>)</mo></mrow><mrow><mn>1</mn><mo>−</mo><msub><mi>e</mi><mi>v</mi></msub></mrow></msup></mrow></mrow></math></div><p>The bracket is 1 only for a syndrome-consistent error. BP approximates single-bit marginals of this distribution by exchanging messages on its Tanner graph. Taking the most likely value of every bit independently can produce a vector that violates a parity constraint.</p><details><summary>What exactly is in this teaching code?</summary><p class="caption">Homogeneous code constraints [H | 0]; the first seven columns are H.</p><div id="guide-matrix"></div><p>H is both H<sub>Z</sub> and H<sub>X</sub> for the [[7,1,3]] Steane CSS code; HHᵀ = 0 mod 2. We infer X errors from Z-check outcomes. The three rows generate X stabilizers as well. The all-ones vector represents a logical Z test: for a zero-syndrome X residual, odd parity identifies the nontrivial logical X class.</p><p>These graph edges mean “this check touches this variable.” They are not error-chain edges of a surface-code matching graph. Qubits are the circles here.</p></details></section>
-<section class="card pad"><div class="guide-banner"><span class="big-num">02</span><div><div class="eyebrow">Belief propagation</div><h2>Each message excludes its recipient’s contribution.</h2></div></div><h3>Start with a log-likelihood ratio</h3><div class="formula math-display"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><msub><mi>λ</mi><mi>v</mi></msub><mo>=</mo><mrow><mi mathvariant="normal">ln</mi><mrow><mo>(</mo><mfrac><mrow><mn>1</mn><mo>−</mo><msub><mi>p</mi><mi>v</mi></msub></mrow><msub><mi>p</mi><mi>v</mi></msub></mfrac><mo>)</mo></mrow></mrow><mspace width="2em"></mspace><msubsup><mi>q</mi><mrow><mi>v</mi><mo>→</mo><mi>c</mi></mrow><mrow><mo>(</mo><mn>0</mn><mo>)</mo></mrow></msubsup><mo>=</mo><msub><mi>λ</mi><mi>v</mi></msub></mrow></math></div><p>A positive LLR favors no error. A negative LLR favors an error. Zero means equal odds. An LLR is a log odds ratio, not a probability.</p><h3>Check → variable: enforce the observed parity</h3><div class="formula math-display"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><msubsup><mi>r</mi><mrow><mi>c</mi><mo>→</mo><mi>v</mi></mrow><mrow><mo>(</mo><mi>t</mi><mo>)</mo></mrow></msubsup><mo>=</mo><mn>2</mn><mrow><mi mathvariant="normal">atanh</mi><mrow><mo>(</mo><mrow><msup><mrow><mo>(</mo><mrow><mo>−</mo><mn>1</mn></mrow><mo>)</mo></mrow><msub><mi>s</mi><mi>c</mi></msub></msup><munder><mo>∏</mo><mrow><mi>u</mi><mo>∈</mo><mrow><mi mathvariant="normal">N</mi><mrow><mo>(</mo><mi>c</mi><mo>)</mo></mrow></mrow><mo>∖</mo><mrow><mo>{</mo><mi>v</mi><mo>}</mo></mrow></mrow></munder><mrow><mi mathvariant="normal">tanh</mi><mrow><mo>(</mo><mfrac><msubsup><mi>q</mi><mrow><mi>u</mi><mo>→</mo><mi>c</mi></mrow><mrow><mo>(</mo><mrow><mi>t</mi><mo>−</mo><mn>1</mn></mrow><mo>)</mo></mrow></msubsup><mn>2</mn></mfrac><mo>)</mo></mrow></mrow></mrow><mo>)</mo></mrow></mrow></mrow></math></div><p>To advise v, check c asks what parity its <em>other</em> variables are likely to have. If that parity differs from s꜀, v should be 1. The syndrome bit changes the sign. Uncertainty in any of the other variables reduces the message magnitude.</p><h3>Combine evidence, then form the next outgoing message</h3><div class="formula math-display"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><msubsup><mi>L</mi><mi>v</mi><mrow><mo>(</mo><mi>t</mi><mo>)</mo></mrow></msubsup><mo>=</mo><msub><mi>λ</mi><mi>v</mi></msub><mo>+</mo><munder><mo>∑</mo><mrow><mi>c</mi><mo>∈</mo><mrow><mi mathvariant="normal">N</mi><mrow><mo>(</mo><mi>v</mi><mo>)</mo></mrow></mrow></mrow></munder><msubsup><mi>r</mi><mrow><mi>c</mi><mo>→</mo><mi>v</mi></mrow><mrow><mo>(</mo><mi>t</mi><mo>)</mo></mrow></msubsup></mrow></math><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><msubsup><mi>q</mi><mrow><mi>v</mi><mo>→</mo><mi>c</mi></mrow><mrow><mo>(</mo><mi>t</mi><mo>)</mo></mrow></msubsup><mo>=</mo><msubsup><mi>L</mi><mi>v</mi><mrow><mo>(</mo><mi>t</mi><mo>)</mo></mrow></msubsup><mo>−</mo><msubsup><mi>r</mi><mrow><mi>c</mi><mo>→</mo><mi>v</mi></mrow><mrow><mo>(</mo><mi>t</mi><mo>)</mo></mrow></msubsup></mrow></math><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><msub><mi>P</mi><mi>v</mi></msub><mrow><mo>(</mo><mtext>error</mtext><mo>)</mo></mrow><mo>=</mo><mfrac><mn>1</mn><mrow><mn>1</mn><mo>+</mo><mrow><mi mathvariant="normal">exp</mi><mrow><mo>(</mo><msubsup><mi>L</mi><mi>v</mi><mrow><mo>(</mo><mi>t</mi><mo>)</mo></mrow></msubsup><mo>)</mo></mrow></mrow></mrow></mfrac><mspace width="2em"></mspace><msub><mover><mi>e</mi><mo>^</mo></mover><mi>v</mi></msub><mo>=</mo><mrow><mo>[</mo><mrow><msubsup><mi>L</mi><mi>v</mi><mrow><mo>(</mo><mi>t</mi><mo>)</mo></mrow></msubsup><mo>&lt;</mo><mn>0</mn></mrow><mo>]</mo></mrow></mrow></math></div><p>The outgoing message omits the recipient’s incoming message. Otherwise the check would immediately receive its own evidence back. On a tree, this exclusion supports exact inference after sufficient propagation. On a graph with cycles, information can still return by a longer path, so the independence approximation can break down.</p><h3>The stopping test is a parity test</h3><div class="formula math-display"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mtext>residual</mtext><mo>=</mo><mi>s</mi><mo>⊕</mo><mi>H</mi><mover><mi>e</mi><mo>^</mo></mover><mspace width="2em"></mspace><mtext>stop if residual = 0</mtext></mrow></math></div><p>The measured syndrome s stays fixed. The residual changes as ê changes. “Converged” in this lab means a syndrome-consistent hard estimate was found; it does not mean that the posterior is exact or that the logical recovery succeeded.</p><details><summary>Numerical and scheduling choices</summary><p>This lab uses natural logarithms, floating-point sum-product updates, and a flooding schedule: all check messages in iteration t use variable messages from t−1. It clips atanh arguments to avoid infinity and maps a zero LLR to bit 0. A half-step exposes one message phase; posterior bars change only after a full variable update. The initial hard estimate is also checked.</p><p>No damping, normalized min-sum, serial schedule, or X/Z correlation exchange is used. Those choices can change convergence and performance. Production implementations often use other BP variants; this page does not reproduce the Roffe paper’s numerical benchmarks.</p></details></section>
+<section class="card pad"><div class="guide-banner"><span class="big-num">02</span><div><div class="eyebrow">Belief propagation</div><h2>Each message excludes its recipient’s contribution.</h2></div></div><h3>Start with a log-likelihood ratio</h3><div class="formula math-display"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><msub><mi>λ</mi><mi>v</mi></msub><mo>=</mo><mrow><mi mathvariant="normal">ln</mi><mrow><mo>(</mo><mfrac><mrow><mn>1</mn><mo>−</mo><msub><mi>p</mi><mi>v</mi></msub></mrow><msub><mi>p</mi><mi>v</mi></msub></mfrac><mo>)</mo></mrow></mrow><mspace width="2em"></mspace><msubsup><mi>q</mi><mrow><mi>v</mi><mo>→</mo><mi>c</mi></mrow><mrow><mo>(</mo><mn>0</mn><mo>)</mo></mrow></msubsup><mo>=</mo><msub><mi>λ</mi><mi>v</mi></msub></mrow></math></div><p>A positive LLR favors no error. A negative LLR favors an error. Zero means equal odds. An LLR is a log odds ratio, not a probability.</p><h3>Check → variable: enforce the observed parity</h3><div class="formula math-display"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><msubsup><mi>r</mi><mrow><mi>c</mi><mo>→</mo><mi>v</mi></mrow><mrow><mo>(</mo><mi>t</mi><mo>)</mo></mrow></msubsup><mo>=</mo><mn>2</mn><mrow><mi mathvariant="normal">atanh</mi><mrow><mo>(</mo><mrow><msup><mrow><mo>(</mo><mrow><mo>−</mo><mn>1</mn></mrow><mo>)</mo></mrow><msub><mi>s</mi><mi>c</mi></msub></msup><munder><mo>∏</mo><mrow><mi>u</mi><mo>∈</mo><mrow><mi mathvariant="normal">N</mi><mrow><mo>(</mo><mi>c</mi><mo>)</mo></mrow></mrow><mo>∖</mo><mrow><mo>{</mo><mi>v</mi><mo>}</mo></mrow></mrow></munder><mrow><mi mathvariant="normal">tanh</mi><mrow><mo>(</mo><mfrac><msubsup><mi>q</mi><mrow><mi>u</mi><mo>→</mo><mi>c</mi></mrow><mrow><mo>(</mo><mrow><mi>t</mi><mo>−</mo><mn>1</mn></mrow><mo>)</mo></mrow></msubsup><mn>2</mn></mfrac><mo>)</mo></mrow></mrow></mrow><mo>)</mo></mrow></mrow></mrow></math></div><p>To advise v, check c asks what parity its <em>other</em> variables are likely to have. If that parity differs from s꜀, v should be 1. The syndrome bit changes the sign. Uncertainty in any of the other variables reduces the message magnitude.</p><h3>Combine evidence, then form the next outgoing message</h3><div class="formula math-display"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><msubsup><mi>L</mi><mi>v</mi><mrow><mo>(</mo><mi>t</mi><mo>)</mo></mrow></msubsup><mo>=</mo><msub><mi>λ</mi><mi>v</mi></msub><mo>+</mo><munder><mo>∑</mo><mrow><mi>c</mi><mo>∈</mo><mrow><mi mathvariant="normal">N</mi><mrow><mo>(</mo><mi>v</mi><mo>)</mo></mrow></mrow></mrow></munder><msubsup><mi>r</mi><mrow><mi>c</mi><mo>→</mo><mi>v</mi></mrow><mrow><mo>(</mo><mi>t</mi><mo>)</mo></mrow></msubsup></mrow></math><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><msubsup><mi>q</mi><mrow><mi>v</mi><mo>→</mo><mi>c</mi></mrow><mrow><mo>(</mo><mi>t</mi><mo>)</mo></mrow></msubsup><mo>=</mo><msubsup><mi>L</mi><mi>v</mi><mrow><mo>(</mo><mi>t</mi><mo>)</mo></mrow></msubsup><mo>−</mo><msubsup><mi>r</mi><mrow><mi>c</mi><mo>→</mo><mi>v</mi></mrow><mrow><mo>(</mo><mi>t</mi><mo>)</mo></mrow></msubsup></mrow></math><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><msub><mi>P</mi><mi>v</mi></msub><mrow><mo>(</mo><mtext>error</mtext><mo>)</mo></mrow><mo>=</mo><mfrac><mn>1</mn><mrow><mn>1</mn><mo>+</mo><mrow><mi mathvariant="normal">exp</mi><mrow><mo>(</mo><msubsup><mi>L</mi><mi>v</mi><mrow><mo>(</mo><mi>t</mi><mo>)</mo></mrow></msubsup><mo>)</mo></mrow></mrow></mrow></mfrac><mspace width="2em"></mspace><msub><mover><mi>e</mi><mo>^</mo></mover><mi>v</mi></msub><mo>=</mo><mrow><mo>[</mo><mrow><msubsup><mi>L</mi><mi>v</mi><mrow><mo>(</mo><mi>t</mi><mo>)</mo></mrow></msubsup><mo>&lt;</mo><mn>0</mn></mrow><mo>]</mo></mrow></mrow></math></div><p>The displayed outgoing-message equation gives the raw update. With damping enabled, the sent message is (1 − α) times this raw update plus α times the previous outgoing message.</p><p>The outgoing message omits the recipient’s incoming message. Otherwise the check would immediately receive its own evidence back. On a tree, this exclusion supports exact inference after sufficient propagation. On a graph with cycles, information can still return by a longer path, so the independence approximation can break down.</p><h3>The stopping test is a parity test</h3><div class="formula math-display"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mtext>residual</mtext><mo>=</mo><mi>s</mi><mo>⊕</mo><mi>H</mi><mover><mi>e</mi><mo>^</mo></mover><mspace width="2em"></mspace><mtext>stop if residual = 0</mtext></mrow></math></div><p>The measured syndrome s stays fixed. The residual changes as ê changes. “Converged” in this lab means a syndrome-consistent hard estimate was found; it does not mean that the posterior is exact or that the logical recovery succeeded.</p><details><summary>What does message damping change?</summary><p>The setting α retains a fraction of the previous variable-to-check message: q<sup>new</sup> = (1 − α) q<sup>raw</sup> + α q<sup>previous</sup>. Here q<sup>raw</sup> is the extrinsic sum λ + Σr that excludes the receiving check. α = 0 recovers the original algorithm. Damping affects the next check update; the current posterior L = λ + Σr is not mixed. Damping can change the trajectory and stopping iteration, but does not guarantee convergence or correct logical recovery.</p></details><details><summary>Numerical and scheduling choices</summary><p>This lab uses natural logarithms, floating-point sum-product updates, and a flooding schedule: all check messages in iteration t use variable messages from t−1. It clips atanh arguments to avoid infinity and maps a zero LLR to bit 0. A half-step exposes one message phase; posterior bars change only after a full variable update. The initial hard estimate is also checked.</p><p>Optional variable-message damping retains a fraction α of the previous outgoing message; α = 0 disables it. No normalized min-sum, serial schedule, or X/Z correlation exchange is used. Those choices can change convergence and performance. Production implementations often use other BP variants; this page does not reproduce the Roffe paper’s numerical benchmarks.</p></details></section>
 <section class="card pad"><div class="guide-banner"><span class="big-num">03</span><div><div class="eyebrow">Ordered statistics decoding</div><h2>Use the soft ordering to organize an exact linear solve.</h2></div></div><ol class="step-list"><li><strong>Keep BP’s final soft information.</strong>Sort columns by P(error) from largest to smallest; break ties by original qubit index.</li><li><strong>Build an independent basis B.</strong>Greedily retain a column when it raises the binary rank. Stop at r = rank(H). The other n−r columns form F.</li><li><strong>Reduce the augmented system.</strong>Reorder to [H<sub>B</sub> H<sub>F</sub> | s], then perform Gaussian elimination over GF(2). XOR replaces subtraction.</li><li><strong>Generate the order-zero candidate.</strong>Set e<sub>F</sub> = 0 and solve the basis variables. A physically valid syndrome guarantees a solution in the basis span.</li><li><strong>Explore extra free assignments.</strong>For each chosen f, solve e<sub>B</sub> = b ⊕ Af. Undo the column permutation before interpreting the error.</li><li><strong>Score and select.</strong>Use the original independent channel likelihood and return the lowest-cost generated candidate. Resolve ties deterministically.</li></ol><div class="formula math-display"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><msub><mi>N</mi><mtext>candidates</mtext></msub><mrow><mo>(</mo><mi>t</mi><mo>)</mo></mrow><mo>=</mo><munderover><mo>∑</mo><mrow><mi>j</mi><mo>=</mo><mn>0</mn></mrow><mrow><mi mathvariant="normal">min</mi><mrow><mo>(</mo><mrow><mi>t</mi><mo>,</mo><mi>n</mi><mo>−</mo><mi>r</mi></mrow><mo>)</mo></mrow></mrow></munderover><mrow><mo>(</mo><mfrac linethickness="0"><mrow><mi>n</mi><mo>−</mo><mi>r</mi></mrow><mi>j</mi></mfrac><mo>)</mo></mrow></mrow></math></div><p>For this code n−r = 4. Orders 0, 1, 2, 3, 4 produce 1, 5, 11, 15, 16 candidates. Searching all sixteen gives the most likely <em>individual error</em> for this sector; it still need not maximize a quantum logical-class probability.</p><details><summary>Why can’t I just choose the top r probabilities?</summary><p>The corresponding columns might be linearly dependent, leaving some syndromes unreachable. The greedy rank test skips dependent columns. In redundant check matrices, r can be less than the row count m. Use independent equations (or consistent elimination with redundant rows), rather than trying to invert a singular m×m matrix.</p></details><details><summary>Why do descriptions of OSD ordering sometimes disagree?</summary><p>This page uses the probability-ordered syndrome construction described by Roffe et al.: likely error columns form the solve basis and the free bits start at zero. Other formulations build around a BP hard estimate, select by absolute LLR reliability, and search flips relative to that estimate. “Most reliable basis” and “least reliable basis” can refer to different matrix representations. Always state the ordering, the fixed variables, and the candidate-generation rule together.</p></details><details><summary>Is this the same as osd_cs order in the ldpc package?</summary><p>No. Here t is a Hamming-weight bound over every free coordinate. The combination-sweep method includes all single-coordinate choices and a restricted set of pairs; its order parameter controls that pair search. Exhaustive variants can instead enumerate all assignments within a selected subset. Equal parameter values do not imply equal candidate counts.</p></details></section>
 <section class="card pad"><div class="guide-banner"><span class="big-num">04</span><div><div class="eyebrow">The quantum complication</div><h2>A decoder chooses a recovery class.</h2></div></div><div class="formula math-display"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mi>δ</mi><mo>=</mo><mi>e</mi><mo>⊕</mo><mover><mi>e</mi><mo>^</mo></mover></mrow></math><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><msub><mi>H</mi><mi>Z</mi></msub><mi>δ</mi><mo>≠</mo><mn>0</mn><mo>⇒</mo><mtext>syndrome mismatch</mtext></mrow></math><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mi>δ</mi><mo>∈</mo><mrow><mi mathvariant="normal">rowspace</mi><mrow><mo>(</mo><msub><mi>H</mi><mi>X</mi></msub><mo>)</mo></mrow></mrow><mo>⇒</mo><mtext>equivalent recovery</mtext></mrow></math><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mi>δ</mi><mo>∈</mo><mrow><mrow><mi mathvariant="normal">ker</mi><mrow><mo>(</mo><msub><mi>H</mi><mi>Z</mi></msub><mo>)</mo></mrow></mrow><mo>∖</mo><mrow><mi mathvariant="normal">rowspace</mi><mrow><mo>(</mo><msub><mi>H</mi><mi>X</mi></msub><mo>)</mo></mrow></mrow></mrow><mo>⇒</mo><mtext>logical X failure</mtext></mrow></math></div><p>Degeneracy means that many distinct errors act identically on the code space. Ordinary BP’s bitwise decisions can be incompatible with any one of these correlated patterns. OSD constructs globally consistent candidates, but does not automatically sum the probability of every error in each stabilizer class.</p><p>A nonzero residual need not be a failure: it can be a stabilizer. Conversely, zero measured syndrome does not rule out a logical error. The third tab makes both distinctions visible using exact enumeration.</p></section>
 <section class="card pad"><div class="guide-banner"><span class="big-num">05</span><div><div class="eyebrow">From algorithm to architecture</div><h2>Where the work moves.</h2></div></div><div class="scroll-x" style="margin-top:20px"><table><thead><tr><th>Stage</th><th>Work</th><th>Systems implication</th></tr></thead><tbody><tr><td>BP iterations</td><td>Local message updates; O(I·E) with efficient per-node reuse, bounded-degree graph.</td><td>Parallel arithmetic and message storage. Iteration count and routing matter.</td></tr><tr><td>Soft ordering</td><td>Sort n probabilities; O(n log n) for a comparison sort.</td><td>Global ordering can contrast with BP’s local communication.</td></tr><tr><td>Basis + elimination</td><td>Rank decisions and GF(2) row operations; naive dense work roughly O(mrn).</td><td>Fill-in, memory traffic, and dependencies. Bit packing and specialized algorithms change constants.</td></tr><tr><td>Candidate search</td><td>N(t) assignments; update the basis solution and score each.</td><td>Order controls a combinatorial work budget. Candidate generation can reuse linear structure.</td></tr><tr><td>Escalation</td><td>Invoke OSD only when BP has not found a valid estimate.</td><td>Average work depends on fallback frequency; tail latency can be dominated by difficult instances.</td></tr></tbody></table></div><p style="margin-top:18px">The browser uses explicit small loops for inspectability, not a throughput-optimized BP kernel. Its timings would not represent a production decoder.</p><details><summary>How does this relate to surface codes and UF?</summary><p>The same binary inference formulation can be applied to a surface-code check matrix, or to a detector–fault matrix when the model is expressed in binary fault variables. Surface-code degeneracy and short cycles remain relevant. BP+OSD’s applicability does not establish a speed or accuracy advantage over matching or UF.</p><p>For an L0→UF stack, one possible use of BP is to supply probabilistic guidance for edge weights or cluster-growth priorities. That is a separate algorithmic proposal: this lab uses OSD as its fallback and does not implement BP+UF. Demonstrate any improvement using logical-error rates, calibrated confidence, total work, and latency distributions under the target noise model.</p></details><details><summary>What changes with circuit-level noise?</summary><p>Repeated noisy measurements require a spacetime model. A variable may represent a circuit fault, and one fault can trigger several detectors. Correlated Pauli components and mutually exclusive faults may violate a naive independent-binary model. The seven-qubit, perfect-measurement experiment here deliberately isolates the BP and OSD mechanics.</p></details><details><summary>What can I send to a higher-level decoder?</summary><p>Final bit LLRs, OSD candidate costs, a best-vs-runner-up difference, and an exact logical probability are different objects. To obtain logical confidence, compare relevant logical classes and calibrate the result. A shortlist can omit substantial probability mass; an arbitrary candidate gap is not a complementary matching gap.</p></details></section>
 <section class="card pad"><div class="eyebrow">Sources & conventions</div><h2>Read alongside the original work.</h2><ol class="source-list"><li><a href="https://arxiv.org/abs/2005.07016" target="_blank" rel="noopener">Roffe, White, Burton & Campbell — Decoding Across the Quantum LDPC Code Landscape</a><br><span class="caption">Probability-ordered syndrome OSD, degeneracy, and search variants. See Section V and Appendices B–C.</span></li><li><a href="https://arxiv.org/abs/1904.02703" target="_blank" rel="noopener">Panteleev & Kalachev — Degenerate Quantum LDPC Codes With Good Finite Length Performance</a><br><span class="caption">Early quantum BP+OSD construction; Section III uses a distinct reliability / hard-decision formulation.</span></li><li><a href="https://www.pennylane.ai/demos/tutorial_bp_catalyst" target="_blank" rel="noopener">PennyLane — Decoding Quantum Errors on the Steane Code with Belief Propagation</a><br><span class="caption">A worked Steane-code setting and syndrome-conditioned sum-product equations.</span></li><li><a href="https://software.roffe.eu/ldpc/quantum_decoder.html" target="_blank" rel="noopener">LDPC documentation — Decoders for quantum error correction</a> · <a href="https://github.com/quantumgizmos/bp_osd" target="_blank" rel="noopener">BP+OSD implementation</a><br><span class="caption">Production software and post-processing options; its schedules and order parameters need not match this teaching model.</span></li></ol><p class="caption">Original interactive diagrams and numerical implementation. No performance claims are inferred from the toy examples. Last reviewed September 2026.</p></section>
 <div class="lesson-nav"><button class="primary" data-go="bp">Return to the message lab</button></div></section>
-<footer class="footer"><span>DANTE · Decoder studies / BP + OSD</span><span>Independent X noise · GF(2) · Natural logarithms</span></footer></main><noscript><p style="padding:30px">Enable JavaScript to use the interactive numerical model. The full algorithm explanation is available in the HTML source.</p></noscript><script>/* BP + syndrome-OSD teaching engine. No DOM and no external dependencies.
+<footer class="footer"><span>BP+OSD Decoder Lab · Steane-code workbench</span><span>Independent X noise · GF(2) · Natural logarithms</span></footer></main><noscript><p style="padding:30px">Enable JavaScript to use the interactive numerical model. The full algorithm explanation is available in the HTML source.</p></noscript><script>
+/* BP + syndrome-OSD teaching engine. No DOM and no external dependencies.
  * Binary arithmetic is over GF(2). LLR = log(P(e=0)/P(e=1)).
  * OSD uses descending posterior error probability, equivalently ascending LLR,
  * to select an independent set of columns in the syndrome formulation.
@@ -471,8 +562,10 @@ tbody tr.clickable:focus-visible { outline-offset: -2px; }
   function bp(H, s, priors, options = {}) {
     validate(H, s, priors);
     const maxIterations = options.maxIterations === undefined ? 8 : options.maxIterations;
+    const damping = options.damping === undefined ? 0 : options.damping;
     const stopOnConvergence = options.stopOnConvergence !== false;
     if (!Number.isInteger(maxIterations) || maxIterations < 0 || maxIterations > 1000) throw new Error('Invalid iteration limit.');
+    if (!Number.isFinite(damping) || damping < 0 || damping >= 1) throw new Error('Damping must lie in [0, 1).');
     const n = H[0].length;
     const channelLLR = priors.map(logOdds);
     const checkNeighbors = H.map(row => row.flatMap((h, v) => h ? [v] : []));
@@ -485,6 +578,7 @@ tbody tr.clickable:focus-visible { outline-offset: -2px; }
       incomingVToC: clone(vToC),
       cToV: edgeMatrix(H, () => 0),
       outgoingVToC: clone(vToC),
+      rawOutgoingVToC: clone(vToC),
       posteriorLLR: channelLLR.slice(),
       posteriorErrorProb: priors.slice(),
       hardDecision: initialHard,
@@ -508,11 +602,14 @@ tbody tr.clickable:focus-visible { outline-offset: -2px; }
           return 2 * Math.atanh(product);
         });
         const posteriorLLR = channelLLR.map((l, v) => l + variableNeighbors[v].reduce((sum, c) => sum + cToV[c][v], 0));
-        const outgoingVToC = edgeMatrix(H, (c, v) => channelLLR[v] + variableNeighbors[v].reduce((sum, d) => sum + (d === c ? 0 : cToV[d][v]), 0));
+        const rawOutgoingVToC = edgeMatrix(H, (c, v) => channelLLR[v] + variableNeighbors[v].reduce((sum, d) => sum + (d === c ? 0 : cToV[d][v]), 0));
+        // Retain a fraction of the previous outgoing variable message. This
+        // changes the next check update, not the current posterior belief.
+        const outgoingVToC = edgeMatrix(H, (c, v) => (1 - damping) * rawOutgoingVToC[c][v] + damping * incomingVToC[c][v]);
         const hardDecision = posteriorLLR.map(l => +(l < 0));
         const predictedSyndrome = syndrome(H, hardDecision);
         final = snapshotAliases({
-          iteration, incomingVToC, checkProducts, cToV, outgoingVToC,
+          iteration, incomingVToC, checkProducts, cToV, rawOutgoingVToC, outgoingVToC,
           posteriorLLR,
           posteriorErrorProb: posteriorLLR.map(sigmoidError),
           hardDecision, predictedSyndrome,
@@ -525,7 +622,7 @@ tbody tr.clickable:focus-visible { outline-offset: -2px; }
       }
     }
     return {
-      H: clone(H), syndrome: s.slice(), priors: priors.slice(), channelLLR,
+      H: clone(H), syndrome: s.slice(), priors: priors.slice(), channelLLR, damping,
       initial, snapshots, allSnapshots: [initial, ...snapshots],
       final, iterations: snapshots.length, converged: final.converged,
       decision: final.hardDecision.slice(), posteriorLLR: final.posteriorLLR.slice(),
@@ -673,7 +770,440 @@ tbody tr.clickable:focus-visible { outline-offset: -2px; }
   }
   return {STEANE_H: clone(STEANE_H), clone, parity, xor, weight, same, syndrome, rankGF2, logOdds, sigmoidError, bp, elimination, osd, exact, candidateScore, candidateProbability, classifyQuantum};
 });
-</script><script>(function(){
+
+</script><script>
+/* Exact research helpers for the [[7,1,3]] Steane code, X-only independent noise.
+ * UMD: window.Research in a browser; require('./experiments.js') in Node.
+ * syndromeTable({priors, maxIterations=8, damping=0, orders=[0,1,2,3,4]})
+ * channelSweep({points=[0.005..0.2], maxIterations=8, damping=0, includeSyndromes=false})
+ * orderComparison({syndrome, posteriorLLR, priors, actualError?})
+ * Probabilities describe one seven-qubit correction round, not surface-code LER.
+ * totalFailure = detectedFailure + logicalFailure; stabilizer-equivalent errors
+ * count as successful recovery. errorPatternMismatch is a separate classical
+ * statistic and does NOT determine quantum recovery success.
+ * Eight BP runs per channel point; 128 patterns are enumerated exactly, with no
+ * Monte Carlo uncertainty. Damping is delegated to Decoder.bp unchanged.
+ */
+(function (root, factory) {
+  if (typeof module === 'object' && module.exports) module.exports = factory(require('./decoder.js'));
+  else root.Research = factory(root.Decoder);
+})(typeof globalThis !== 'undefined' ? globalThis : this, function (D) {
+  'use strict';
+  if (!D) throw new Error('Load decoder.js before experiments.js.');
+  const H = D.STEANE_H.map(row => row.slice());
+  const N = 7;
+  const METRICS = ['success', 'detectedFailure', 'logicalFailure', 'totalFailure', 'errorPatternMismatch'];
+  const MODEL = {
+    code: '[[7,1,3]] Steane', qubits: N, checks: 3,
+    noise: 'Independent X errors with perfect syndrome measurements',
+    normalization: 'Per seven-qubit correction round',
+    metric: 'Quantum block failure: detected syndrome mismatch plus undetected logical failure',
+    caveat: 'These are exact finite-code probabilities, not a surface-code logical error rate, threshold, or per-cycle latency estimate.',
+  };
+  const binary = (value, length) => Array.from({length}, (_, i) => (value >>> i) & 1);
+  const bitKey = bits => bits.join('');
+  const probability = (bits, priors) => bits.reduce((p, bit, i) => p * (bit ? priors[i] : 1 - priors[i]), 1);
+  const zeroMetrics = () => Object.fromEntries(METRICS.map(key => [key, 0]));
+  const sum = values => values.reduce((a, b) => a + b, 0);
+  const stabilizers = new Set(Array.from({length: 8}, (_, mask) =>
+    bitKey(Array.from({length: N}, (_, v) => H.reduce((bit, row, c) => bit ^ (((mask >>> c) & 1) & row[v]), 0)))));
+  const allPatterns = Array.from({length: 128}, (_, mask) => {
+    const error = binary(mask, N);
+    const syndrome = D.syndrome(H, error);
+    return {error, syndrome, key: bitKey(syndrome)};
+  });
+  const syndromeGroups = Array.from({length: 8}, (_, index) => {
+    // Display checks in their written order: 000, 001, ... 111.
+    const syndrome = binary(index, 3).reverse();
+    const patterns = allPatterns.filter(pattern => pattern.key === bitKey(syndrome));
+    return {syndrome, key: bitKey(syndrome), patterns, reference: patterns[0].error};
+  });
+
+  function validatePriors(priors) {
+    if (!Array.isArray(priors) || priors.length !== N || priors.some(p => !Number.isFinite(p) || p <= 0 || p >= 1)) {
+      throw new Error('Exactly seven independent error probabilities strictly between 0 and 1 are required.');
+    }
+  }
+  function validateBinary(bits, length, name) {
+    if (!Array.isArray(bits) || bits.length !== length || bits.some(bit => bit !== 0 && bit !== 1)) {
+      throw new Error(`${name} must contain ${length} binary values.`);
+    }
+  }
+  function validateOptions(options) {
+    const maxIterations = options.maxIterations === undefined ? 8 : options.maxIterations;
+    const damping = options.damping === undefined ? 0 : options.damping;
+    if (!Number.isInteger(maxIterations) || maxIterations < 0 || maxIterations > 1000) throw new Error('Invalid BP iteration limit.');
+    if (!Number.isFinite(damping) || damping < 0 || damping >= 1) throw new Error('BP damping must lie in [0,1).');
+    return {maxIterations, damping};
+  }
+  function weightedGroup(group, priors) {
+    const truths = group.patterns.map(pattern => ({
+      error: pattern.error.slice(), probability: probability(pattern.error, priors),
+      logicalClass: D.parity(D.xor(pattern.error, group.reference)),
+    }));
+    const evidence = sum(truths.map(truth => truth.probability));
+    if (!(evidence > 0)) throw new Error('Syndrome probability underflow: use less extreme channel probabilities.');
+    for (const truth of truths) truth.posteriorProbability = truth.probability / evidence;
+    const classMasses = [0, 1].map(logicalClass => sum(truths.filter(truth => truth.logicalClass === logicalClass).map(truth => truth.probability)));
+    return {
+      ...group, truths, evidence, classMasses,
+      classPosterior: classMasses.map(mass => mass / evidence),
+    };
+  }
+  function assess(group, correction) {
+    const predictedSyndrome = D.syndrome(H, correction);
+    const syndromeConsistent = D.same(group.syndrome, predictedSyndrome);
+    const result = zeroMetrics();
+    for (const truth of group.truths) {
+      const residual = D.xor(correction, truth.error);
+      const equivalent = stabilizers.has(bitKey(residual));
+      const metric = !syndromeConsistent ? 'detectedFailure' : equivalent ? 'success' : 'logicalFailure';
+      result[metric] += truth.posteriorProbability;
+      if (!D.same(correction, truth.error)) result.errorPatternMismatch += truth.posteriorProbability;
+    }
+    result.totalFailure = result.detectedFailure + result.logicalFailure;
+    return {
+      ...result, correction: correction.slice(), predictedSyndrome,
+      syndromeConsistent,
+      logicalClass: syndromeConsistent ? D.parity(D.xor(correction, group.reference)) : null,
+    };
+  }
+  function addWeighted(target, source, evidence) {
+    for (const key of METRICS) target[key] += evidence * source[key];
+  }
+  function mapResult(group) {
+    // Class labels are relative to the first valid error in mask enumeration.
+    // Their names have no meaning across different syndromes.
+    const logicalClass = group.classMasses[1] > group.classMasses[0] ? 1 : 0;
+    const correction = group.truths.filter(truth => truth.logicalClass === logicalClass)
+      .reduce((best, truth) => truth.probability > best.probability ? truth : best).error;
+    return {...assess(group, correction), logicalClass};
+  }
+
+  function syndromeTable(options = {}) {
+    const priors = options.priors === undefined ? Array(N).fill(0.08) : options.priors.slice();
+    validatePriors(priors);
+    const bpOptions = validateOptions(options);
+    const orders = options.orders === undefined ? [0, 1, 2, 3, 4] : options.orders.slice();
+    if (!orders.length || orders.some(order => !Number.isInteger(order) || order < 0 || order > 4) || new Set(orders).size !== orders.length) {
+      throw new Error('OSD orders must be unique integers from 0 through 4.');
+    }
+    const totals = {
+      bp: zeroMetrics(), osd: orders.map(order => ({order, ...zeroMetrics(), meanSearchedCandidates: 0})),
+      map: zeroMetrics(), fallbackProbability: 0, meanIterations: 0, syndromeProbability: 0,
+    };
+    const rows = syndromeGroups.map(rawGroup => {
+      const group = weightedGroup(rawGroup, priors);
+      const run = D.bp(H, group.syndrome, priors, {...bpOptions, stopOnConvergence: true});
+      const bp = {
+        ...assess(group, run.decision), decision: run.decision.slice(),
+        converged: run.converged, iterations: run.iterations,
+        posteriorLLR: run.posteriorLLR.slice(),
+      };
+      const osd = orders.map(order => {
+        // This is the deployed BP→OSD policy: successful syndrome checks bypass
+        // OSD even if the BP decision belongs to the wrong logical class.
+        const search = run.converged ? null : D.osd(H, group.syndrome, run.posteriorLLR, priors, {order});
+        return {
+          order, usedFallback: !run.converged, candidateCount: search ? search.candidateCount : 0,
+          ...assess(group, search ? search.best.error : run.decision),
+        };
+      });
+      const map = mapResult(group);
+      const mostLikelyTruth = group.truths.reduce((best, truth) => truth.probability > best.probability ? truth : best);
+      totals.syndromeProbability += group.evidence;
+      totals.fallbackProbability += group.evidence * Number(!run.converged);
+      totals.meanIterations += group.evidence * run.iterations;
+      addWeighted(totals.bp, bp, group.evidence);
+      addWeighted(totals.map, map, group.evidence);
+      osd.forEach((result, index) => {
+        addWeighted(totals.osd[index], result, group.evidence);
+        totals.osd[index].meanSearchedCandidates += group.evidence * result.candidateCount;
+      });
+      return {
+        syndrome: group.syndrome.slice(), key: group.key, evidence: group.evidence,
+        reference: group.reference.slice(), referenceError: group.reference.slice(),
+        mostLikelyError: {
+          error: mostLikelyTruth.error.slice(), probability: mostLikelyTruth.probability,
+          posteriorProbability: mostLikelyTruth.posteriorProbability,
+          cost: D.candidateScore(mostLikelyTruth.error, priors), logicalClass: mostLikelyTruth.logicalClass,
+        },
+        classPosterior: group.classPosterior.slice(),
+        truthCount: group.truths.length, bp, osd, map,
+      };
+    });
+    return {model: {...MODEL}, priors, options: bpOptions, orders, rows, totals};
+  }
+
+  function channelSweep(options = {}) {
+    const points = options.points === undefined ? Array.from({length: 15}, (_, i) => 0.005 + i * (0.2 - 0.005) / 14) : options.points.slice();
+    if (!points.length || points.length > 201 || points.some(p => !Number.isFinite(p) || p <= 0 || p >= 1)) {
+      throw new Error('Provide 1–201 channel probabilities strictly between 0 and 1.');
+    }
+    const bpOptions = validateOptions(options);
+    const results = points.map(p => {
+      const table = syndromeTable({priors: Array(N).fill(p), ...bpOptions, orders: [0, 1, 4]});
+      const result = {
+        p, bp: table.totals.bp, osd0: table.totals.osd[0], osd1: table.totals.osd[1], osd4: table.totals.osd[2],
+        map: table.totals.map,
+        fallbackProbability: table.totals.fallbackProbability,
+        meanIterations: table.totals.meanIterations,
+        syndromeProbability: table.totals.syndromeProbability,
+      };
+      if (options.includeSyndromes) result.rows = table.rows;
+      return result;
+    });
+    return {model: {...MODEL}, options: bpOptions, exactPatternCount: 128, points: results};
+  }
+
+  function orderComparison(options = {}) {
+    const {syndrome, posteriorLLR, actualError} = options;
+    const priors = options.priors === undefined ? Array(N).fill(0.08) : options.priors.slice();
+    validatePriors(priors);
+    validateBinary(syndrome, 3, 'Syndrome');
+    if (!Array.isArray(posteriorLLR) || posteriorLLR.length !== N || posteriorLLR.some(value => !Number.isFinite(value))) {
+      throw new Error('Seven finite terminal posterior LLRs are required.');
+    }
+    if (actualError !== undefined) {
+      validateBinary(actualError, N, 'Actual error');
+      if (!D.same(D.syndrome(H, actualError), syndrome)) throw new Error('The actual error must generate the supplied syndrome.');
+    }
+    const group = weightedGroup(syndromeGroups.find(group => group.key === bitKey(syndrome)), priors);
+    const rows = [0, 1, 2, 3, 4].map(order => {
+      const result = D.osd(H, syndrome, posteriorLLR, priors, {order});
+      const assessed = assess(group, result.best.error);
+      const candidates = result.candidates.map(candidate => ({
+        index: candidate.index, error: candidate.error.slice(),
+        freeAssignment: candidate.freeAssignment.slice(), freeWeight: candidate.freeWeight,
+        cost: candidate.score, probability: candidate.probability,
+        posteriorProbability: candidate.probability / group.evidence,
+        logicalClass: D.parity(D.xor(candidate.error, group.reference)),
+        selected: candidate.index === result.best.index,
+      }));
+      const row = {
+        order, candidateCount: result.candidateCount, candidateFraction: result.candidateCount / 16,
+        posteriorCoverage: sum(candidates.map(candidate => candidate.posteriorProbability)),
+        cost: result.best.score, correction: result.best.error.slice(),
+        logicalClass: assessed.logicalClass, conditionalFailure: assessed.totalFailure,
+        ...assessed, candidates,
+        basisColumns: result.basis.slice(), freeColumns: result.free.slice(),
+      };
+      if (actualError !== undefined) row.actualOutcome = D.classifyQuantum(H, H, result.best.error, actualError);
+      return row;
+    });
+    return {
+      model: {...MODEL}, syndrome: syndrome.slice(), priors,
+      reference: group.reference.slice(), evidence: group.evidence, classPosterior: group.classPosterior.slice(),
+      validCandidateCount: 16, rows,
+      note: 'Forced OSD comparison using the same terminal BP ordering. Standard BP+OSD invokes this search only after BP fails its syndrome check. Posterior coverage measures candidate probability mass, not quantum recovery success.',
+    };
+  }
+
+  return {MODEL: {...MODEL}, syndromeTable, channelSweep, orderComparison};
+});
+
+</script><script>
+/* Research views and reproducible exports. The numerical engine is independent of the UI. */
+(function(root){
+'use strict';
+const $=id=>document.getElementById(id);
+const esc=x=>String(x).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const num=(x,d=4)=>Number.isFinite(x)?x.toFixed(d):'—';
+const percent=x=>x===0?'0%':x<.0001?(100*x).toExponential(2)+'%':(100*x).toFixed(2)+'%';
+const vector=x=>x.join(' ');
+const stat=(label,value,note='')=>`<div><span>${label}</span><strong>${value}</strong>${note?`<small>${note}</small>`:''}</div>`;
+const methodSpecs=[
+ {key:'bp',label:'BP only',color:'var(--muted)',dash:'3 5'},
+ {key:'osd0',label:'BP + OSD-0',color:'var(--orange)',dash:'9 4'},
+ {key:'osd1',label:'BP + OSD-1',color:'var(--blue)',dash:''},
+ {key:'osd4',label:'BP + OSD-4',color:'var(--violet)',dash:'12 4 2 4'},
+ {key:'map',label:'Logical MAP',color:'var(--green)',dash:'6 4'}
+];
+function csv(rows){return rows.map(row=>row.map(v=>'"'+String(v??'').replace(/"/g,'""')+'"').join(',')).join('\r\n');}
+function download(name,content,type){
+ const url=URL.createObjectURL(new Blob([content],{type}));
+ const a=document.createElement('a');a.href=url;a.download=name;document.body.append(a);a.click();a.remove();
+ setTimeout(()=>URL.revokeObjectURL(url),1000);
+}
+function axes({width,height,maxX,maxY,xLabel,yLabel,left=62,bottom=40,integerX=false}){
+ const right=22,top=32,w=width-left-right,h=height-top-bottom;
+ const X=x=>left+w*(maxX?x/maxX:0),Y=y=>top+h*(1-y/maxY);
+ let svg=`<text x="${left}" y="15" class="plot-label">${yLabel}</text>`;
+ for(let i=0;i<=4;i++){
+  const y=maxY*i/4;
+  svg+=`<line x1="${left}" x2="${width-right}" y1="${Y(y)}" y2="${Y(y)}" class="plot-grid"/><text x="${left-12}" y="${Y(y)+4}" text-anchor="end" class="plot-tick">${num(y,2)}</text>`;
+ }
+ const ticks=integerX?[...new Set(Array.from({length:5},(_,i)=>Math.round(maxX*i/4)))]:Array.from({length:5},(_,i)=>maxX*i/4);
+ for(const x of ticks){
+  svg+=`<text x="${X(x)}" y="${height-bottom+20}" text-anchor="middle" class="plot-tick">${integerX?x:num(x,3)}</text>`;
+ }
+ svg+=`<text x="${width-right}" y="${height-3}" text-anchor="end" class="plot-label">${xLabel}</text>`;
+ return {svg,X,Y};
+}
+function validateConfig(c){
+ if(!c||c.version!==1||!Array.isArray(c.priors)||c.priors.length!==7||c.priors.some(p=>typeof p!=='number'||!Number.isFinite(p)||p<.001||p>.499))throw Error('Invalid channel priors.');
+ if(!Array.isArray(c.error)||c.error.length!==7||c.error.some(x=>x!==0&&x!==1))throw Error('Invalid error pattern.');
+ if(![4,8,16,32].includes(c.maxIterations)||![0,.25,.5,.75].includes(c.damping)||![0,1,2,3,4].includes(c.order))throw Error('Unsupported decoder settings.');
+ if(!['bp','osd','quantum','study','guide'].includes(c.tab)||!Number.isInteger(c.step)||c.step<0||c.step>64)throw Error('Invalid view state.');
+ if(!c.edge||!Number.isInteger(c.edge.c)||!Number.isInteger(c.edge.v)||!Decoder.STEANE_H[c.edge.c]?.[c.edge.v])throw Error('Invalid selected edge.');
+ if(c.view){
+  if(![.1,.2,.3,.49].includes(c.view.sweepMax)||typeof c.view.showExact!=='boolean'||!Number.isInteger(c.view.elimStep)||c.view.elimStep<0||c.view.elimStep>100||!Number.isInteger(c.view.selectedCandidate)||c.view.selectedCandidate<0||c.view.selectedCandidate>15)throw Error('Invalid view selections.');
+  if(!Array.isArray(c.view.quantumCandidate)||c.view.quantumCandidate.length!==7||c.view.quantumCandidate.some(x=>x!==0&&x!==1))throw Error('Invalid inspected correction.');
+  if(!Decoder.same(Decoder.syndrome(Decoder.STEANE_H,c.view.quantumCandidate),Decoder.syndrome(Decoder.STEANE_H,c.error)))throw Error('Inspected correction has the wrong syndrome.');
+ }
+ return c;
+}
+function create(hooks){
+ let comparison=null,census=null,censusKey='',sweep=null,sweepKey='',busy=false;
+ const state=hooks.getState;
+ const config=()=>{const s=state();return {version:1,priors:s.priors.slice(),error:s.error.slice(),maxIterations:s.maxIterations,damping:s.damping,order:s.order,tab:s.activeTab,step:s.step,edge:{...s.edge},view:{sweepMax:+$('sweep-max').value,showExact:$('show-exact').checked,elimStep:s.elimStep,selectedCandidate:s.selectedCandidate,quantumCandidate:s.quantumCandidate.slice()}};};
+ function message(text){$('tool-message').textContent=text;}
+ function exportFigure(id,name,title,subtitle,legend){
+  const plot=$(id),box=plot.viewBox.baseVal,width=box.width+32,height=box.height+154;
+  const theme=getComputedStyle(document.documentElement),color=key=>theme.getPropertyValue(key).trim();
+  const resolve=text=>text.replace(/var\((--[a-z-]+)\)/g,(_,key)=>color(key));
+  const keys=legend.map((m,i)=>`<g transform="translate(${16+i*190},${height-42})"><line x1="0" x2="26" y1="0" y2="0" stroke="${m.color}" stroke-width="2" ${m.dash?`stroke-dasharray="${m.dash}"`:''}/><text x="34" y="4" font-size="12">${esc(m.label)}</text></g>`).join('');
+  const svg=resolve(`<svg xmlns="http://www.w3.org/2000/svg" width="${width}" height="${height}" viewBox="0 0 ${width} ${height}" role="img"><title>${esc(title)}</title><desc>${esc(subtitle)}</desc><metadata>${esc(JSON.stringify({schema:'bp-osd-lab/figure-1',configuration:config()}))}</metadata><style>text{fill:${color('--ink')};font-family:Arial,sans-serif}.plot-label,.plot-tick{fill:${color('--muted')};font-size:12px}.plot-tick{font-family:monospace}.plot-grid{stroke:${color('--line')};stroke-width:1}</style><rect width="100%" height="100%" fill="${color('--paper')}"/><text x="16" y="27" font-size="20" font-weight="600">${esc(title)}</text><text x="16" y="49" font-size="12">${esc(subtitle)}</text><g transform="translate(16,70)">${plot.innerHTML}</g>${keys}<text x="16" y="${height-15}" font-size="10">BP+OSD Decoder Lab · [[7,1,3]] Steane code · independent X noise · perfect checks</text></svg>`);
+  download(name,svg,'image/svg+xml');message('Vector figure exported with its experiment configuration.');
+ }
+ function renderDiagnostics(){
+  const s=state();if(!s.bp)return;
+  const iteration=Math.floor(s.step/2),b=s.bp.allSnapshots[iteration],previous=s.bp.allSnapshots[Math.max(0,iteration-1)];
+  const exact=s.exact.posteriorMarginals,v=s.edge.v,show=$('show-exact').checked;
+  const meanError=b.probabilities.reduce((sum,p,i)=>sum+Math.abs(p-exact[i]),0)/7;
+  let movement=0;for(let c=0;c<3;c++)for(let i=0;i<7;i++)if(s.H[c][i])movement=Math.max(movement,Math.abs(b.q[c][i]-previous.q[c][i]));
+  const flips=b.hard.reduce((n,x,i)=>n+(x!==previous.hard[i]),0);
+  $('diagnostic-stats').innerHTML=stat('Unsatisfied checks',Decoder.weight(b.residual)+' / 3')+stat('Hard-bit changes',flips,iteration?'vs previous iteration':'channel initialization')+stat('Largest message change',num(movement,3)+' LLR','completed variable updates')+(show?stat('Mean marginal error',num(100*meanError,2)+' pp','absolute difference from exact'):'');
+  $('trajectory-title').textContent=`Posterior trajectory · q${v+1}`;
+  $('trajectory-qubits').innerHTML=Array.from({length:7},(_,i)=>`<button class="small ${i===v?'selected':''}" aria-pressed="${i===v}" aria-label="Plot qubit ${i+1}" data-plot-qubit="${i}">q${i+1}</button>`).join('');
+  const maxX=Math.max(s.bp.iterations,1),a=axes({width:800,height:240,maxX,maxY:1,xLabel:'Completed BP iteration',yLabel:'Error probability',integerX:true});
+  // Integer labels avoid suggesting half-iterations are posterior updates.
+  let svg=a.svg;
+  if(show)svg+=`<line x1="${a.X(0)}" x2="${a.X(maxX)}" y1="${a.Y(exact[v])}" y2="${a.Y(exact[v])}" stroke="var(--orange)" stroke-width="2" stroke-dasharray="7 5"/>`;
+  const points=s.bp.allSnapshots.map(x=>`${a.X(x.iteration)},${a.Y(x.probabilities[v])}`).join(' ');
+  svg+=`<polyline points="${points}" fill="none" stroke="var(--blue)" stroke-width="2.5"/>`;
+  for(const x of s.bp.allSnapshots)svg+=`<g role="button" tabindex="0" data-plot-iteration="${x.iteration}" aria-label="Inspect iteration ${x.iteration}, qubit ${v+1}, posterior ${num(x.probabilities[v],4)}"><circle cx="${a.X(x.iteration)}" cy="${a.Y(x.probabilities[v])}" r="10" fill="transparent"/><circle cx="${a.X(x.iteration)}" cy="${a.Y(x.probabilities[v])}" r="${iteration===x.iteration?5:3}" fill="${iteration===x.iteration?'var(--blue)':'var(--paper)'}" stroke="var(--blue)" stroke-width="2"/><title>Iteration ${x.iteration}: ${num(x.probabilities[v],6)}</title></g>`;
+  $('trajectory-plot').innerHTML=svg;
+  $('diagnostics').classList.toggle('hide-exact',!show);
+  $('marginal-comparison').innerHTML=`<table><thead><tr><th>Qubit</th>${Array.from({length:7},(_,i)=>`<th class="numeric">q${i+1}</th>`).join('')}</tr></thead><tbody><tr><th>BP marginal</th>${b.probabilities.map(p=>`<td class="numeric">${num(p,4)}</td>`).join('')}</tr>${show?`<tr><th>Exact marginal</th>${exact.map(p=>`<td class="numeric">${num(p,4)}</td>`).join('')}</tr><tr><th>BP − exact</th>${b.probabilities.map((p,i)=>`<td class="numeric">${p-exact[i]>=0?'+':''}${num(p-exact[i],4)}</td>`).join('')}</tr>`:''}</tbody></table>`;
+ }
+ function renderOrderComparison(){
+  const s=state();if(!s.bp)return;
+  comparison=Research.orderComparison({syndrome:s.syndrome,posteriorLLR:s.bp.final.llr,priors:s.priors,actualError:s.error});
+  $('order-policy-note').textContent=s.bp.converged?'Forced OSD comparison: standard BP+OSD skips every order here because BP already satisfies the syndrome.':'Fallback comparison: each order uses the same terminal BP probabilities and original channel priors.';
+  $('order-comparison').innerHTML=`<table><thead><tr><th>Order</th><th class="numeric">Candidates</th><th class="numeric">Captured mass</th><th class="numeric">Best cost (nats)</th><th>Correction</th><th>Injected-error recovery</th></tr></thead><tbody>${comparison.rows.map(r=>{
+   const recovery=Decoder.classifyQuantum(s.H,s.H,r.correction,s.error);
+   return `<tr class="clickable ${r.order===s.order?'selected':''}" role="button" tabindex="0" data-compare-order="${r.order}" aria-label="Use OSD order ${r.order}"><td>OSD-${r.order}${r.order===4?' · full':''}</td><td class="numeric">${r.candidateCount} / 16</td><td class="numeric">${percent(r.posteriorCoverage)}</td><td class="numeric">${num(r.cost,5)}</td><td class="mono">${r.correction.join('')}</td><td><span class="tag ${recovery.stabilizerEquivalent?'green':'orange'}">${recovery.stabilizerEquivalent?'Correct':'Logical failure'}</span></td></tr>`;
+  }).join('')}</tbody></table>`;
+ }
+ function getCensus(){
+  const s=state(),key=JSON.stringify([s.priors,s.maxIterations,s.damping]);
+  if(key!==censusKey){census=Research.syndromeTable({priors:s.priors,maxIterations:s.maxIterations,damping:s.damping});censusKey=key;}
+  return census;
+ }
+ function renderCensus(){
+  const s=state(),data=getCensus(),rows=data.rows;
+  const uniform=s.priors.every(p=>Math.abs(p-s.priors[0])<1e-12);
+  $('syndrome-study-note').textContent=`${uniform?'Uniform p = '+num(s.priors[0],3):'Per-qubit priors: '+s.priors.map(p=>num(p,3)).join(', ')}. BP limit ${s.maxIterations}; damping α = ${s.damping}. The selected OSD order is ${s.order}.`;
+  const fallback=rows.reduce((sum,r)=>sum+(r.bp.converged?0:r.evidence),0);
+  const fail=rows.reduce((sum,r)=>sum+r.evidence*r.osd.find(o=>o.order===s.order).totalFailure,0);
+  const map=rows.reduce((sum,r)=>sum+r.evidence*r.map.totalFailure,0);
+  $('syndrome-summary').innerHTML=stat('BP + OSD-'+s.order+' failure',percent(fail),'exact current-channel probability')+stat('Logical MAP failure',percent(map),'optimal class decision')+stat('Fallback probability',percent(fallback),'weighted by P(s)')+stat('Mean BP iterations',num(rows.reduce((sum,r)=>sum+r.evidence*r.bp.iterations,0),3),'weighted by P(s)');
+  $('syndrome-census').innerHTML=`<table><thead><tr><th>Syndrome</th><th class="numeric">P(s)</th><th class="numeric">BP iterations</th><th>BP stop</th><th>Returned correction</th><th class="numeric">P(failure | s)</th><th class="numeric">MAP P(failure | s)</th></tr></thead><tbody>${rows.map(r=>{const o=r.osd.find(x=>x.order===s.order);return `<tr class="clickable ${Decoder.same(r.syndrome,s.syndrome)?'selected':''}" role="button" tabindex="0" data-study-syndrome="${r.syndrome.join('')}" aria-label="Inspect syndrome ${r.syndrome.join(' ')}"><td class="mono">${vector(r.syndrome)}</td><td class="numeric">${percent(r.evidence)}</td><td class="numeric">${r.bp.iterations}</td><td>${r.bp.converged?'Syndrome satisfied':'OSD fallback'}</td><td class="mono">${o.correction.join('')}</td><td class="numeric">${percent(o.totalFailure)}</td><td class="numeric">${percent(r.map.totalFailure)}</td></tr>`;}).join('')}</tbody></table>`;
+ }
+ function drawSweep(){
+  if(!sweep)return;
+  const points=sweep.points,maxX=points[points.length-1].p;
+  const maxY=Math.max(.05,Math.ceil(20*Math.max(...points.flatMap(p=>methodSpecs.map(m=>p[m.key].totalFailure))))/20);
+  const a=axes({width:1000,height:350,maxX,maxY,xLabel:'Physical X-error probability p',yLabel:'Exact failure probability per 7-qubit block'});
+  let svg=a.svg;
+  for(const m of methodSpecs){const pts=points.map(p=>`${a.X(p.p)},${a.Y(p[m.key].totalFailure)}`).join(' ');svg+=`<polyline points="${pts}" fill="none" stroke="${m.color}" stroke-width="${m.key==='map'?2.5:2}" ${m.dash?`stroke-dasharray="${m.dash}"`:''}/>`;}
+  $('channel-plot').innerHTML=svg;
+  $('channel-legend').innerHTML=methodSpecs.map(m=>`<span><svg width="28" height="10" aria-hidden="true"><line x1="0" x2="28" y1="5" y2="5" stroke="${m.color}" stroke-width="2" ${m.dash?`stroke-dasharray="${m.dash}"`:''}/></svg>${m.label}</span>`).join('');
+  const p=points[points.length-1];
+  $('sweep-summary').innerHTML=stat('At p = '+num(p.p,3),'128 patterns','exact weighted enumeration')+stat('BP + OSD-1 failure',percent(p.osd1.totalFailure))+stat('Logical MAP failure',percent(p.map.totalFailure))+stat('BP fallback probability',percent(p.fallbackProbability));
+  $('sweep-table').innerHTML=`<table><thead><tr><th class="numeric">Physical p</th><th>Decoder</th><th class="numeric">Syndrome mismatch</th><th class="numeric">Logical failure</th><th class="numeric">Total failure</th><th class="numeric">BP fallback P</th></tr></thead><tbody>${points.map(p=>methodSpecs.map(m=>`<tr><td class="numeric">${num(p.p,4)}</td><td>${m.label}</td><td class="numeric">${num(p[m.key].detectedFailure,7)}</td><td class="numeric">${num(p[m.key].logicalFailure,7)}</td><td class="numeric">${num(p[m.key].totalFailure,7)}</td><td class="numeric">${num(p.fallbackProbability,7)}</td></tr>`).join('')).join('')}</tbody></table>`;
+ }
+ function runSweep(force=false){
+  const s=state(),max=+$('sweep-max').value,key=JSON.stringify([max,s.maxIterations,s.damping]);
+  if(!force&&sweepKey===key){drawSweep();return;}
+  if(busy)return;
+  busy=true;$('run-sweep').disabled=true;$('export-study').disabled=true;$('study-progress').textContent='Computing 21 exact channel points…';
+  const settings={maxIterations:s.maxIterations,damping:s.damping};
+  // Allow the status to paint before the bounded exact calculation.
+  setTimeout(()=>{
+   try{
+    const points=Array.from({length:21},(_,i)=>.001+(max-.001)*i/20);
+    sweep=Research.channelSweep({points,...settings});sweepKey=key;drawSweep();
+    $('study-progress').textContent='21 points · 128 weighted error patterns per point · no Monte Carlo uncertainty. Lines connect evaluated points.';
+   }catch(e){$('study-progress').textContent='The sweep could not be completed: '+e.message;}
+   finally{busy=false;$('run-sweep').disabled=false;$('export-study').disabled=!sweep;}
+  },0);
+ }
+ function renderStudy(){
+  const s=state();if(!s.bp)return;
+  $('study-settings').textContent=`BP limit ${s.maxIterations} · α = ${s.damping}`;
+  renderCensus();runSweep();
+ }
+ function refresh(){renderDiagnostics();renderOrderComparison();if(state().activeTab==='study')renderStudy();}
+ $('show-exact').addEventListener('change',renderDiagnostics);
+ function activate(container,selector,action){
+  container.addEventListener('click',e=>{const el=e.target.closest(selector);if(el)action(el,e);});
+  container.addEventListener('keydown',e=>{if(e.key!=='Enter'&&e.key!==' ')return;const el=e.target.closest(selector);if(el){e.preventDefault();action(el,e);}});
+ }
+ // Native buttons already synthesize click from the keyboard.
+ $('trajectory-qubits').addEventListener('click',e=>{const b=e.target.closest('[data-plot-qubit]');if(b){const v=+b.dataset.plotQubit;hooks.setQubit(v);$('trajectory-qubits').querySelector(`[data-plot-qubit="${v}"]`)?.focus({preventScroll:true});}});
+ activate($('trajectory-plot'),'[data-plot-iteration]',(el,e)=>{const i=+el.dataset.plotIteration;hooks.setIteration(i);if(e.type==='keydown')$('trajectory-plot').querySelector(`[data-plot-iteration="${i}"]`)?.focus({preventScroll:true});});
+ activate($('order-comparison'),'[data-compare-order]',(el,e)=>{const order=+el.dataset.compareOrder;hooks.setOrder(order);if(e.type==='keydown')$('order-comparison').querySelector(`[data-compare-order="${order}"]`)?.focus({preventScroll:true});});
+ activate($('syndrome-census'),'[data-study-syndrome]',el=>{
+  const s=state(),syndrome=el.dataset.studySyndrome.split('').map(Number),truth=Decoder.exact(s.H,syndrome,s.priors).mostLikelyError.error;
+  const {view,...settings}=config();hooks.applyConfig({...settings,error:truth,step:0,tab:'bp'});document.querySelector('.tabs').scrollIntoView({block:'start'});
+ });
+ $('run-sweep').addEventListener('click',()=>runSweep(true));
+ $('sweep-max').addEventListener('change',()=>runSweep());
+ $('export-trajectory').addEventListener('click',()=>{
+  const s=state(),legend=[{label:'BP posterior',color:'var(--blue)'}];
+  if($('show-exact').checked)legend.push({label:'Exact posterior',color:'var(--orange)',dash:'7 5'});
+  exportFigure('trajectory-plot','bp-osd-posterior.svg',`Posterior trajectory · qubit ${s.edge.v+1}`,`Syndrome ${s.syndrome.join('')} · BP limit ${s.maxIterations} · damping α = ${s.damping}`,legend);
+ });
+ $('export-channel-figure').addEventListener('click',()=>{
+  if(!sweep)return;
+  exportFigure('channel-plot','bp-osd-channel-study.svg','Exact channel failure probabilities',`21 physical-error probabilities · BP limit ${sweep.options.maxIterations} · damping α = ${sweep.options.damping} · 128 weighted patterns per point`,methodSpecs);
+ });
+ $('share-experiment').addEventListener('click',async()=>{
+  const url=new URL(location.href);url.hash='experiment='+encodeURIComponent(JSON.stringify(config()));
+  $('share-fallback').hidden=true;
+  try{await navigator.clipboard.writeText(url.href);message('Experiment link copied. Includes priors, error pattern, settings, and current view.');}
+  catch{$('share-fallback').hidden=false;$('share-url').value=url.href;$('share-url').select();message('Copy the experiment link below.');}
+ });
+ $('export-experiment').addEventListener('click',()=>{
+  const s=state();
+  const data={schema:'bp-osd-lab/1',configuration:config(),model:{code:'[[7,1,3]] Steane',H:s.H,noise:'independent X errors',measurements:'perfect',rounds:1},conventions:{llr:'ln(P(0)/P(1))',schedule:'flooding',damping:'q_new = (1-alpha) q_raw + alpha q_previous; posterior not damped',stopping:'first syndrome-consistent hard decision',osd:'descending posterior error probability; free bits baseline zero; exhaustive free-bit Hamming weight <= order',ties:'OSD probability ordering by original qubit index; candidate scores by generation order',cost:'relative negative log likelihood, natural logarithms'},syndrome:s.syndrome,bp:s.bp,osd:s.osd,exact:s.exact};
+  download('bp-osd-experiment.json',JSON.stringify(data,null,2),'application/json');message('Experiment JSON exported, including all messages and exact references.');
+ });
+ $('export-order').addEventListener('click',()=>{
+  const s=state();if(!comparison)return;
+  const rows=[['order','candidates','captured_posterior_mass','relative_nll_nats','correction','logical_class','conditional_failure','max_bp_iterations','damping','priors','syndrome'],...comparison.rows.map(r=>[r.order,r.candidateCount,r.posteriorCoverage,r.cost,r.correction.join(''),r.logicalClass,r.conditionalFailure,s.maxIterations,s.damping,s.priors.join(';'),s.syndrome.join('')])];
+  download('bp-osd-order-comparison.csv',csv(rows),'text/csv');message('OSD order comparison exported.');
+ });
+ $('export-study').addEventListener('click',()=>{
+  if(!sweep)return;
+  const rows=[['physical_p','decoder','detected_failure','logical_failure','total_failure','fallback_probability','mean_bp_iterations','max_bp_iterations','damping','model'],...sweep.points.flatMap(p=>methodSpecs.map(m=>[p.p,m.label,p[m.key].detectedFailure,p[m.key].logicalFailure,p[m.key].totalFailure,p.fallbackProbability,p.meanIterations,sweep.options.maxIterations,sweep.options.damping,'Steane independent X noise; perfect checks; one block']))];
+  download('bp-osd-channel-study.csv',csv(rows),'text/csv');message('Exact channel sweep exported.');
+ });
+ function restoreSharedExperiment(){
+  if(!location.hash.startsWith('#experiment='))return;
+  try{if(location.hash.length>4000)throw Error('Link is too long.');const c=validateConfig(JSON.parse(decodeURIComponent(location.hash.slice(12))));if(c.view){$('sweep-max').value=c.view.sweepMax;$('show-exact').checked=c.view.showExact;}hooks.applyConfig(c);message('Shared experiment restored.');}
+  catch{message('This experiment link is invalid. The current experiment is unchanged.');}
+ }
+ window.addEventListener('hashchange',restoreSharedExperiment);
+ return {refresh,renderDiagnostics,renderStudy,restoreSharedExperiment};
+}
+root.Features={create,validateConfig};
+})(typeof window!=='undefined'?window:this);
+
+</script><script>
+(function(){
 'use strict';
 const $=id=>document.getElementById(id), D=Decoder, H=D.STEANE_H, qs=['q₁','q₂','q₃','q₄','q₅','q₆','q₇'], cs=['c₁','c₂','c₃'];
 
@@ -688,7 +1218,7 @@ function updateThemeControl(){
 themeButton.addEventListener('click',()=>{
  const theme=document.documentElement.dataset.theme==='dark'?'light':'dark';
  document.documentElement.dataset.theme=theme;
- try{localStorage.setItem('dante-bp-osd-theme',theme)}catch{}
+ try{localStorage.setItem('qec-bp-osd-theme',theme)}catch{}
  updateThemeControl();
 });
 updateThemeControl();
@@ -700,20 +1230,20 @@ const presets={
  logical:{p:Array(7).fill(.08),e:[1,0,0,0,0,0,0],order:2,note:'BP passes the parity checks after one iteration, but its correction causes a logical error. A standard fallback policy will not call OSD.'},
  zero:{p:Array(7).fill(.08),e:[1,1,1,1,0,0,0],order:0,note:'These four X errors form a stabilizer. The syndrome is zero and doing nothing is a logically correct recovery.'}
 };
-let priors, error, bp, osd, exact, syndrome, elim, reference, step=0, elimStep=0, selectedCandidate=0, quantumCandidate, edge={c:0,v:0}, timer=null, activeTab='bp', modified=false;
+let priors, error, bp, osd, exact, syndrome, elim, reference, step=0, elimStep=0, selectedCandidate=0, quantumCandidate, edge={c:0,v:0}, timer=null, activeTab='bp', modified=false, features=null;
 const fmt=(x,d=3)=>Math.abs(x)<.5*10**(-d)?(0).toFixed(d):x.toFixed(d), pct=x=>x>0&&x<.0005?'<0.05%':(100*x).toFixed(1)+'%', bits=(a,color='')=>`<span class="vector ${color}" aria-label="${a.join(' ')}">${a.map(b=>`<span class="${b?'one':''}">${b}</span>`).join('')}</span>`;
 const qlist=a=>a.map(v=>qs[v]).join(', ')||'none', status=(title,text,kind='')=>`<div class="status ${kind}"><strong>${title}</strong>${text}</div>`;
-function setTab(tab){activeTab=tab;stop();document.querySelectorAll('[role=tab]').forEach(b=>{const on=b.dataset.tab===tab;b.setAttribute('aria-selected',on);b.tabIndex=on?0:-1});['bp','osd','quantum','guide'].forEach(t=>$('panel-'+t).hidden=t!==tab);$('interactive').hidden=tab==='guide';if(tab==='quantum')renderQuantum();}
-function loadPreset(){modified=false;const p=presets[$('preset').value];priors=p.p.slice();error=p.e.slice();$('order').value=p.order;$('maxiter').value='8';$('preset-note').textContent=p.note;step=0;elimStep=0;recompute();}
-function recompute(keep=false){stop();syndrome=D.syndrome(H,error);bp=D.bp(H,syndrome,priors,{maxIterations:+$('maxiter').value});osd=D.osd(H,syndrome,bp.final.llr,priors,{order:+$('order').value});elim=D.elimination(H,syndrome,[...osd.basis,...osd.free]);reference=null;for(let m=0;m<128;m++){let a=Array.from({length:7},(_,i)=>(m>>i)&1);if(D.same(D.syndrome(H,a),syndrome)){reference=a;break}}
-exact=D.exact(H,syndrome,priors,{referenceError:reference});if(!keep)step=0;step=Math.min(step,bp.iterations*2);elimStep=0;selectedCandidate=0;quantumCandidate=(bp.converged?bp.final.hard:osd.best.error).slice();renderConfig();renderBP();renderOSD();renderQuantum();}
+function setTab(tab){activeTab=tab;stop();document.querySelectorAll('[role=tab]').forEach(b=>{const on=b.dataset.tab===tab;b.setAttribute('aria-selected',on);b.tabIndex=on?0:-1});['bp','osd','quantum','study','guide'].forEach(t=>$('panel-'+t).hidden=t!==tab);$('interactive').hidden=tab==='guide'||tab==='study';if(tab==='quantum')renderQuantum();if(tab==='study')features?.renderStudy();}
+function loadPreset(){modified=false;const p=presets[$('preset').value];priors=p.p.slice();error=p.e.slice();$('order').value=p.order;$('maxiter').value='8';$('damping').value='0';$('preset-note').textContent=p.note;step=0;elimStep=0;recompute();}
+function recompute(keep=false){stop();syndrome=D.syndrome(H,error);bp=D.bp(H,syndrome,priors,{maxIterations:+$('maxiter').value,damping:+$('damping').value});osd=D.osd(H,syndrome,bp.final.llr,priors,{order:+$('order').value});elim=D.elimination(H,syndrome,[...osd.basis,...osd.free]);reference=null;for(let m=0;m<128;m++){let a=Array.from({length:7},(_,i)=>(m>>i)&1);if(D.same(D.syndrome(H,a),syndrome)){reference=a;break}}
+exact=D.exact(H,syndrome,priors,{referenceError:reference});if(!keep)step=0;step=Math.min(step,bp.iterations*2);elimStep=0;selectedCandidate=0;quantumCandidate=(bp.converged?bp.final.hard:osd.best.error).slice();renderConfig();renderBP();renderOSD();renderQuantum();features?.refresh();}
 function renderConfig(){
  const uniform=priors.every(p=>Math.abs(p-priors[0])<1e-10);
  $('modified').hidden=!modified;
  $('search-budget').textContent=`Search budget: ${osd.candidateCount} of 16 valid candidates`;
 
  $('prior-value').textContent=uniform?fmt(priors[0]):'Nonuniform';
- $('config-overview').textContent=`${uniform?'p = '+fmt(priors[0]):'Nonuniform priors'} · ${$('maxiter').value} BP iterations · OSD-${$('order').value}${modified?' · Modified':''}`;
+ $('config-overview').textContent=`${uniform?'p = '+fmt(priors[0]):'Nonuniform priors'} · ${$('maxiter').value} BP iterations · OSD-${$('order').value} · α = ${$('damping').value}${modified?' · Modified':''}`;
  document.querySelector('label[for="prior"]').textContent=uniform?'Channel prior p':'Set all priors';
  if(uniform)$('prior').value=Math.round(priors[0]*1000);
  $('prior').setAttribute('aria-valuetext',uniform?fmt(priors[0]):'Nonuniform probabilities. Move to replace all channel priors.');
@@ -727,7 +1257,7 @@ $('phase-track').innerHTML=`<span class="${f.phase==='initial'?'current':''}">In
 $('belief-version').textContent=f.phase==='initial'?'Channel prior · before message passing':`Beliefs from iteration ${b.iteration}${f.phase==='check'?' · awaiting variable update':''}`;
 $('prev').disabled=step===0;$('next').disabled=step===bp.iterations*2;$('play').disabled=bp.iterations===0;
 let title,text,kind='';if(b.converged){title='Parity checks satisfied.';text='BP would stop here. This says nothing yet about the logical class; inspect the quantum check.';kind='success'}else if(step===bp.iterations*2){title=`BP reached its ${bp.iterations}-iteration budget.`;text='The hard estimate still mismatches the syndrome. Keep the final probabilities and invoke OSD.';kind='warning'}else if(f.phase==='check'){title='The syndrome stays fixed.';text='Each check uses the previous variable messages and excludes the qubit receiving its advice. Hard decisions update in the next half-step.'}else if(step===0){title='Initial state';text='Select an edge or node to inspect its messages. Advance the timeline to compute the first check update.'}else{title='Hard decisions updated';text='The posterior includes all checks. Each outgoing message excludes the receiving check’s contribution.'}
-$('bp-status').className='status '+kind;$('bp-status').innerHTML=`<strong>${title}</strong>${text}`;renderGraph(f);renderInspector(f);$('beliefs').innerHTML=b.probabilities.map((p,i)=>`<div class="prob-cell"><span>${qs[i]}</span><div class="bar-area"><div class="bar ${p>.5?'hot':''}" style="height:${p*100}%"></div></div><b>${pct(p)}</b><div class="tiny">ê = ${b.hard[i]}</div></div>`).join('');$('belief-equation').innerHTML=`P(e<sub>${edge.v+1}</sub> = 1 | s) ≈ 1 / (1 + exp(${fmt(b.llr[edge.v])}))<br><span class="blue">= ${fmt(b.probabilities[edge.v],4)}</span> &nbsp; → &nbsp; ê<sub>${edge.v+1}</sub> = ${b.hard[edge.v]}`;
+$('bp-status').className='status '+kind;$('bp-status').innerHTML=`<strong>${title}</strong>${text}`;renderGraph(f);renderInspector(f);features?.renderDiagnostics();$('beliefs').innerHTML=b.probabilities.map((p,i)=>`<div class="prob-cell"><span>${qs[i]}</span><div class="bar-area"><div class="bar ${p>.5?'hot':''}" style="height:${p*100}%"></div></div><b>${pct(p)}</b><div class="tiny">ê = ${b.hard[i]}</div></div>`).join('');$('belief-equation').innerHTML=`P(e<sub>${edge.v+1}</sub> = 1 | s) ≈ 1 / (1 + exp(${fmt(b.llr[edge.v])}))<br><span class="blue">= ${fmt(b.probabilities[edge.v],4)}</span> &nbsp; → &nbsp; ê<sub>${edge.v+1}</sub> = ${b.hard[edge.v]}`;
 $('history').innerHTML=`<table><thead><tr><th>Iteration</th><th>Hard estimate</th><th>Residual</th><th>Decision</th></tr></thead><tbody>${bp.allSnapshots.map(s=>`<tr class="clickable ${s.iteration===b.iteration?'selected':''}" tabindex="0" role="button" aria-label="Show BP iteration ${s.iteration}" data-iteration="${s.iteration}"><td>${s.iteration===0?'Prior':s.iteration}</td><td class="mono">${s.hard.join(' ')}</td><td class="mono">${s.residual.join(' ')}</td><td>${s.converged?'<span class="tag green">STOP · valid syndrome</span>':s.iteration===bp.iterations?'<span class="tag orange">Fallback to OSD</span>':'Continue'}</td></tr>`).join('')}</tbody></table>`;
 }
 function renderGraph(f){
@@ -768,7 +1298,7 @@ function renderGraph(f){
  $('graph-note').innerHTML=f.phase==='initial'?'Circle values are hard estimates. Percentages are channel priors; no syndrome evidence has been applied.':toVar?`Computing ${cs[edge.c]} → ${qs[edge.v]}. The reverse input ${qs[edge.v]} → ${cs[edge.c]} is excluded; incoming arrows show the other variables’ evidence.`:`Computing ${qs[edge.v]} → ${cs[edge.c]}. The reverse input ${cs[edge.c]} → ${qs[edge.v]} is excluded; incoming arrows show the other checks’ evidence.`;
 }
 
-function renderInspector(f){const {c,v}=edge,b=f.current;let html='';if(f.phase==='initial'){html=`<div class="eyebrow">Channel → ${qs[v]}</div><h3>Initialize the outgoing LLR</h3><div class="formula">λ = ln[(1 − ${fmt(priors[v])}) / ${fmt(priors[v])}]<br><span class="blue">= ${fmt(bp.channelLLR[v])}</span></div><p>Initialize every outgoing message from ${qs[v]} to this same prior LLR. Check ${cs[c]} has observed syndrome ${syndrome[c]}, but has not yet sent advice.</p><p class="caption">Positive favors 0; negative favors 1. The prior p is a noise-model parameter, not the observed frequency in this single injected error.</p>`;}else if(f.phase==='check'){let others=bp.checkNeighbors[c].filter(u=>u!==v),prod=b.checkProducts[c][v];html=`<div class="eyebrow">${cs[c]} → ${qs[v]}</div><h3>Apply the parity constraint</h3><p class="caption" style="margin-top:8px">Use the other ${others.length} variables. The selected qubit’s reverse message is excluded from the input product.</p><div class="factor-row">${others.map(u=>`<div class="factor">${qs[u]} → ${cs[c]}<b>${fmt(b.previousQ[c][u])}</b><span>tanh(q/2)<br>${fmt(Math.tanh(b.previousQ[c][u]/2))}</span></div>`).join('')}</div><div class="formula">parity sign = (−1)<sup>${syndrome[c]}</sup> = ${syndrome[c]?-1:1}<br>signed product = ${fmt(prod,5)}<br>r<sub>${c+1}→${v+1}</sub> = 2 atanh(${fmt(prod,5)})<br><span class="blue">= ${fmt(b.r[c][v])}</span> · favors ${b.r[c][v]<0?'error 1':'no error 0'}</div><p class="caption">If the other bits probably have the wrong parity for s꜀, this qubit should flip. A weak input makes the check less certain.</p>`;}else{let others=bp.variableNeighbors[v].filter(k=>k!==c);html=`<div class="eyebrow">${qs[v]} → ${cs[c]}</div><h3>Combine extrinsic evidence</h3><div class="formula">L<sub>${v+1}</sub> = λ<sub>${v+1}</sub> + Σ r<sub>c→${v+1}</sub><br>= ${fmt(bp.channelLLR[v])}${bp.variableNeighbors[v].map(k=>` + (${fmt(b.r[k][v])})`).join('')}<br><span class="blue">posterior LLR = ${fmt(b.llr[v])}</span><br><br>q<sub>${v+1}→${c+1}</sub> = L<sub>${v+1}</sub> − r<sub>${c+1}→${v+1}</sub><br>= ${fmt(b.llr[v])} − (${fmt(b.r[c][v])})<br><span class="blue">outgoing LLR = ${fmt(b.q[c][v])}</span></div><p class="caption">The full belief includes all checks. The outgoing message uses the prior and ${others.length?`only ${others.map(k=>cs[k]).join(', ')}`:'no other checks'}, excluding ${cs[c]}’s contribution.</p>`;}$('inspector').innerHTML=html;}
+function renderInspector(f){const {c,v}=edge,b=f.current;let html='';if(f.phase==='initial'){html=`<div class="eyebrow">Channel → ${qs[v]}</div><h3>Initialize the outgoing LLR</h3><div class="formula">λ = ln[(1 − ${fmt(priors[v])}) / ${fmt(priors[v])}]<br><span class="blue">= ${fmt(bp.channelLLR[v])}</span></div><p>Initialize every outgoing message from ${qs[v]} to this same prior LLR. Check ${cs[c]} has observed syndrome ${syndrome[c]}, but has not yet sent advice.</p><p class="caption">Positive favors 0; negative favors 1. The prior p is a noise-model parameter, not the observed frequency in this single injected error.</p>`;}else if(f.phase==='check'){let others=bp.checkNeighbors[c].filter(u=>u!==v),prod=b.checkProducts[c][v];html=`<div class="eyebrow">${cs[c]} → ${qs[v]}</div><h3>Apply the parity constraint</h3><p class="caption" style="margin-top:8px">Use the other ${others.length} variables. The selected qubit’s reverse message is excluded from the input product.</p><div class="factor-row">${others.map(u=>`<div class="factor">${qs[u]} → ${cs[c]}<b>${fmt(b.previousQ[c][u])}</b><span>tanh(q/2)<br>${fmt(Math.tanh(b.previousQ[c][u]/2))}</span></div>`).join('')}</div><div class="formula">parity sign = (−1)<sup>${syndrome[c]}</sup> = ${syndrome[c]?-1:1}<br>signed product = ${fmt(prod,5)}<br>r<sub>${c+1}→${v+1}</sub> = 2 atanh(${fmt(prod,5)})<br><span class="blue">= ${fmt(b.r[c][v])}</span> · favors ${b.r[c][v]<0?'error 1':'no error 0'}</div><p class="caption">If the other bits probably have the wrong parity for s꜀, this qubit should flip. A weak input makes the check less certain.</p>`;}else{let others=bp.variableNeighbors[v].filter(k=>k!==c);html=`<div class="eyebrow">${qs[v]} → ${cs[c]}</div><h3>Combine extrinsic evidence</h3><div class="formula">L<sub>${v+1}</sub> = λ<sub>${v+1}</sub> + Σ r<sub>c→${v+1}</sub><br>= ${fmt(bp.channelLLR[v])}${bp.variableNeighbors[v].map(k=>` + (${fmt(b.r[k][v])})`).join('')}<br><span class="blue">posterior LLR = ${fmt(b.llr[v])}</span><br><br>q<sup>raw</sup><sub>${v+1}→${c+1}</sub> = L<sub>${v+1}</sub> − r<sub>${c+1}→${v+1}</sub><br>= ${fmt(b.llr[v])} − (${fmt(b.r[c][v])})<br><span class="blue">raw outgoing LLR = ${fmt(b.rawOutgoingVToC[c][v])}</span>${bp.damping?`<br><br>q damped = (1 − ${bp.damping}) × ${fmt(b.rawOutgoingVToC[c][v])}<br> + ${bp.damping} × ${fmt(b.previousQ[c][v])}<br><span class="blue">sent LLR = ${fmt(b.q[c][v])}</span>`:''}</div><p class="caption">The full belief includes all checks. The outgoing message uses the prior and ${others.length?`only ${others.map(k=>cs[k]).join(', ')}`:'no other checks'}, excluding ${cs[c]}’s contribution.</p>`;}$('inspector').innerHTML=html;}
 function renderOSD(){if(bp.converged){$('osd-status').className='status';$('osd-status').innerHTML='<strong>Teaching view: OSD is being inspected even though BP passed.</strong>A standard BP→OSD fallback policy would return the BP estimate and skip this stage. The quantum tab reports that standard policy separately.'}else{$('osd-status').className='status warning';$('osd-status').innerHTML=`<strong>Fallback invoked after ${bp.iterations} BP iterations.</strong>The final hard decision is invalid; the final soft probabilities still provide an ordering. This workbench always uses BP’s terminal state, independent of the message-lab slider.`}
 $('ordering').innerHTML=osd.basisSelection.map((x,i)=>`<div class="order-chip ${x.accepted?'basis':''}" title="${x.accepted?'Independent column: rank increases':'Dependent column: retain as free'}"><span class="tiny">#${i+1}</span><strong>${qs[x.originalColumn]}</strong><span class="tiny">${pct(bp.final.probabilities[x.originalColumn])}</span><span class="role">${x.accepted?'BASIS':'FREE'}</span></div>`).join('');$('basis-summary').innerHTML=`<div class="caption"><strong>B = {${qlist(osd.basis)}}</strong> &nbsp; · &nbsp; F = {${qlist(osd.free)}}<br>rank(H) = ${osd.basis.length}. Bring basis columns together for the elimination below; retain the relative order within B and F.</div>`;renderElim();
 $('candidate-title').textContent=`Order ${osd.order} · ${osd.candidateCount} candidate${osd.candidateCount===1?'':'s'}`;$('candidates').innerHTML=`<table><thead><tr><th>Free bits set</th><th>Correction ê</th><th class="numeric">Cost (nats)</th></tr></thead><tbody>${osd.candidates.map((c,i)=>`<tr tabindex="0" role="button" aria-label="Inspect OSD candidate ${i+1}, cost ${fmt(c.score)}" data-candidate="${i}" class="clickable ${selectedCandidate===i?'selected':''}"><td>${c.freeWeight?qlist(c.freeOriginalColumns):'∅ · OSD-0'}</td><td class="mono">${c.error.join('')}${i===osd.best.index?'<span class="result-mark">BEST</span>':''}</td><td class="numeric">${fmt(c.score)}</td></tr>`).join('')}</tbody></table>`;renderCandidate();$('osd-result').innerHTML=status(`Best in this list: ${osd.best.error.join(' ')} · cost ${fmt(osd.best.score)}`,`Hê = ${osd.best.syndrome.join(' ')} matches s. ${osd.improvement>1e-10?`The score improves by ${fmt(osd.improvement)} over OSD-0.`:'No generated candidate has a lower cost than OSD-0.'} ${osd.order===4?'All sixteen consistent errors are included.':'This limited search does not prove global optimality.'}`,'success');}
@@ -798,10 +1328,10 @@ function stop(){if(timer){clearInterval(timer);timer=null;if(bp)renderGraph(fram
 function advance(){if(step>=bp.iterations*2){stop();return}step++;renderBP();if(step>=bp.iterations*2)stop();}
 $('edge-select').innerHTML=H.flatMap((row,c)=>row.flatMap((h,v)=>h?[`<option value="${c},${v}">${cs[c]} ↔ ${qs[v]}</option>`]:[])).join('');
 $('guide-matrix').innerHTML=matrixHTML(H.map(row=>[...row,0]),[0,1,2,3,4,5,6]);
-document.querySelector('.tabs').addEventListener('click',e=>{let b=e.target.closest('[data-tab]');if(b)setTab(b.dataset.tab)});
-document.querySelector('.tabs').addEventListener('keydown',e=>{if(!['ArrowLeft','ArrowRight','Home','End'].includes(e.key))return;e.preventDefault();const tabs=['bp','osd','quantum','guide'];let i=tabs.indexOf(activeTab);i=e.key==='Home'?0:e.key==='End'?3:(i+(e.key==='ArrowRight'?1:3))%4;setTab(tabs[i]);$('tab-'+tabs[i]).focus()});
+document.querySelector('.tabs').addEventListener('click',e=>{let b=e.target.closest('[data-tab]');if(b){const scrolled=window.scrollY>document.querySelector('.intro').offsetHeight;setTab(b.dataset.tab);if(scrolled)document.querySelector('.tabs').scrollIntoView({block:'start'});}});
+document.querySelector('.tabs').addEventListener('keydown',e=>{if(!['ArrowLeft','ArrowRight','Home','End'].includes(e.key))return;e.preventDefault();const tabs=['bp','osd','quantum','study','guide'];let i=tabs.indexOf(activeTab);i=e.key==='Home'?0:e.key==='End'?tabs.length-1:(i+(e.key==='ArrowRight'?1:tabs.length-1))%tabs.length;setTab(tabs[i]);$('tab-'+tabs[i]).focus()});
 document.addEventListener('click',e=>{let el=e.target.closest('[data-go]');if(el){setTab(el.dataset.go);document.querySelector('.tabs').scrollIntoView({block:'start'})}});
-$('preset').addEventListener('change',loadPreset);$('reset').addEventListener('click',loadPreset);$('maxiter').addEventListener('change',()=>{modified=true;recompute()});$('order').addEventListener('change',()=>{modified=true;recompute(true)});$('prior').addEventListener('input',()=>{modified=true;priors=Array(7).fill(+$('prior').value/1000);$('preset-note').textContent='Custom channel setting. All results have been recomputed.';recompute()});
+$('damping').addEventListener('change',()=>{modified=true;recompute()});$('preset').addEventListener('change',loadPreset);$('reset').addEventListener('click',loadPreset);$('maxiter').addEventListener('change',()=>{modified=true;recompute()});$('order').addEventListener('change',()=>{modified=true;recompute(true)});$('prior').addEventListener('input',()=>{modified=true;priors=Array(7).fill(+$('prior').value/1000);$('preset-note').textContent='Custom channel setting. All results have been recomputed.';recompute()});
 $('prior-inputs').addEventListener('change',e=>{let v=+e.target.value,i=+e.target.dataset.prior;if(!Number.isFinite(v)||v<.001||v>.499){e.target.value=priors[i];return}modified=true;priors[i]=v;$('preset-note').textContent='Custom per-qubit priors. Scores use these original channel probabilities.';recompute()});
 $('error-bits').addEventListener('click',e=>{let b=e.target.closest('[data-bit]');if(b){const index=+b.dataset.bit;modified=true;error[index]^=1;$('preset-note').textContent='Custom injected error. Decoder inputs remain the syndrome and channel priors.';recompute();$('error-bits').querySelector(`[data-bit="${index}"]`).focus({preventScroll:true})}});
 $('prev').addEventListener('click',()=>{stop();step=Math.max(0,step-1);renderBP()});$('next').addEventListener('click',()=>{stop();advance()});$('play').addEventListener('click',()=>{if(timer)return stop();if(step>=bp.iterations*2)step=0;renderBP();$('play').textContent='Ⅱ Pause';timer=setInterval(advance,1600);renderGraph(frame())});$('timeline').addEventListener('input',()=>{stop();step=+$('timeline').value;renderBP()});$('edge-select').addEventListener('change',()=>{let [c,v]=$('edge-select').value.split(',').map(Number);edge={c,v};renderBP()});
@@ -818,6 +1348,16 @@ function rowAction(e){
  if(e.type==='keydown')document.querySelector(`[data-${key}="${value}"]`)?.focus({preventScroll:true});
 }
 ['history','candidates','cosets'].forEach(id=>{$(id).addEventListener('click',rowAction);$(id).addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();rowAction(e)}})});
-$('elim-prev').addEventListener('click',()=>{elimStep=Math.max(0,elimStep-1);renderElim()});$('elim-next').addEventListener('click',()=>{elimStep=Math.min(elim.steps.length-1,elimStep+1);renderElim()});$('elim-slider').addEventListener('input',()=>{elimStep=+$('elim-slider').value;renderElim()});document.addEventListener('visibilitychange',()=>{if(document.hidden)stop()});const compactLayout=matchMedia('(max-width: 1040px)');$('experiment-panel').open=!compactLayout.matches;compactLayout.addEventListener('change',e=>{$('experiment-panel').open=!e.matches});loadPreset();
+$('elim-prev').addEventListener('click',()=>{elimStep=Math.max(0,elimStep-1);renderElim()});$('elim-next').addEventListener('click',()=>{elimStep=Math.min(elim.steps.length-1,elimStep+1);renderElim()});$('elim-slider').addEventListener('input',()=>{elimStep=+$('elim-slider').value;renderElim()});document.addEventListener('visibilitychange',()=>{if(document.hidden)stop()});const compactLayout=matchMedia('(max-width: 1040px)');$('experiment-panel').open=!compactLayout.matches;compactLayout.addEventListener('change',e=>{$('experiment-panel').open=!e.matches});
+features=Features.create({
+ getState:()=>({H,priors,error,bp,osd,exact,syndrome,reference,step,edge,activeTab,elimStep,selectedCandidate,quantumCandidate,maxIterations:+$('maxiter').value,damping:+$('damping').value,order:+$('order').value}),
+ setIteration:i=>{stop();step=i*2;renderBP()},
+ setQubit:v=>{edge={v,c:H[edge.c][v]?edge.c:bp.variableNeighbors[v][0]};renderBP()},
+ setOrder:order=>{$('order').value=order;modified=true;recompute(true)},
+ applyConfig:config=>{stop();priors=config.priors.slice();error=config.error.slice();$('maxiter').value=config.maxIterations;$('damping').value=config.damping;$('order').value=config.order;modified=true;$('preset-note').textContent='Custom experiment. All results use the displayed channel and BP settings.';recompute();step=Math.min(config.step||0,bp.iterations*2);if(config.edge)edge=config.edge;if(config.view){elimStep=Math.min(config.view.elimStep,elim.steps.length-1);selectedCandidate=Math.min(config.view.selectedCandidate,osd.candidates.length-1);quantumCandidate=config.view.quantumCandidate.slice();}renderBP();renderOSD();renderQuantum();setTab(config.tab||'bp')}
+});
+loadPreset();
+features.restoreSharedExperiment();
 })();
+
 </script></body></html>

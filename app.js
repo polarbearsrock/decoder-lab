@@ -114,7 +114,7 @@ const {makeGraph,run,presets,minimumCorrection}=globalThis.__ufLessonModel;
     const s=trace.frames[index];
     const width=Math.max(280,svg.getBoundingClientRect().width || root.clientWidth || 736);
     const narrow=width<450,margin=narrow?25:42,minCol=graph.preset.boundary?0:1;
-    const dx=(width-2*margin)/(7-minCol),dy=narrow?72:80,top=62,height=top+2*dy+43;
+    const dx=(width-2*margin)/(7-minCol),dy=narrow?72:80,top=62,height=top+2*dy+($('ids').checked && s.phase==='done'?73:51);
     const position=id=>({x:margin+(graph.nodes[id].col-minCol)*dx,y:top+graph.nodes[id].row*dy});
     svg.setAttribute('viewBox',`0 0 ${width} ${height}`);svg.setAttribute('height',height);
     drawing.replaceChildren();
@@ -164,6 +164,7 @@ const {makeGraph,run,presets,minimumCorrection}=globalThis.__ufLessonModel;
     const showReference=$('reference').checked && reference?.available && s.phase==='done' && !editing;
     if(showReference)for(const eid of reference.edges){const e=graph.edges[eid];segment(position(e.a),position(e.b),{stroke:'var(--viz-series-5)','stroke-width':3,'stroke-dasharray':'7 5'});}
     $('reference-legend').style.display=showReference?'inline-flex':'none';
+    $('root-legend').hidden=!['forest','peel'].includes(s.phase);
     $('cut-legend').hidden=s.phase!=='forest'||!graph.edges.some(e=>s.support[e.id][0]+s.support[e.id][1]>=1-1e-9&&!s.forest.includes(e.id));
     if(s.phase==='forest')for(const e of graph.edges){if(s.support[e.id][0]+s.support[e.id][1]<1-1e-9||s.forest.includes(e.id))continue;const a=position(e.a),b=position(e.b);el('circle',{cx:(a.x+b.x)/2,cy:(a.y+b.y)/2,r:8,fill:'var(--background)'});el('text',{x:(a.x+b.x)/2,y:(a.y+b.y)/2+4,'text-anchor':'middle'},drawing,'×');}
     if(s.action==='inspect') {
@@ -173,6 +174,7 @@ const {makeGraph,run,presets,minimumCorrection}=globalThis.__ufLessonModel;
     for(const e of graph.edges){const hit=segment(position(e.a),position(e.b),{stroke:'transparent','stroke-width':18,class:'cursor-interaction','data-tooltip':`e${e.id} · v${e.a}–v${e.b} · ${Number((s.support[e.id][0]+s.support[e.id][1]).toFixed(2))}/1 grown`});hit.addEventListener('click',()=>{if(editing)return;$('inspect').value=`e${e.id}`;$('tab-inspect').click();draw();});}
     for(const v of graph.nodes) {
       const p=position(v.id),bit=peeling?s.bits[v.id]:v.syndrome;
+      if(['forest','peel'].includes(s.phase)&&s.peelRoots.includes(v.id)){if(v.boundary)el('rect',{x:p.x-8,y:p.y-11,width:16,height:22,rx:2,fill:'none',stroke:'var(--foreground)','stroke-width':1.3});else el('circle',{cx:p.x,cy:p.y,r:narrow?11:13,fill:'none',stroke:'var(--foreground)','stroke-width':1.3});}
       const faded=peeling && removed.has(v.id) && !focusNodes.has(v.id) && !v.syndrome;
       if(focusNodes.has(v.id)) el('circle',{cx:p.x,cy:p.y,r:narrow?15:19,fill:'none',stroke:'var(--foreground)','stroke-width':1.4,'stroke-dasharray':'3 4',opacity:0.7});
       if(v.boundary) {
@@ -191,7 +193,7 @@ const {makeGraph,run,presets,minimumCorrection}=globalThis.__ufLessonModel;
       hit.addEventListener('click',()=>{if(editing){if(!v.boundary)toggleDefect(v.id);}else{$('inspect').value=`v${v.id}`;$('tab-inspect').click();draw();}});
     }
     if(s.phase==='done') {
-      el('text',{x:width/2,y:height-8,'text-anchor':'middle'},drawing,`${s.correction.length} correction edge${s.correction.length===1?'':'s'} · syndrome matched`);
+      el('text',{x:width/2,y:height-8,'text-anchor':'middle'},drawing,`${s.correction.length} edge${s.correction.length===1?'':'s'} · syndrome matched`);
     }
     note.textContent=editing?'Edit the syndrome, then run the decoder.':s.note;
     counter.textContent=`${index+1} / ${trace.frames.length} · ${s.title}`;

@@ -1,6 +1,6 @@
 (() => {
   'use strict';
-  const M=globalThis.__surfaceModel, F=globalThis.__surfaceConfidence, patch=M.makePatch(5), presets=M.examples(patch);
+  const M=globalThis.__surfaceModel, F=globalThis.__surfaceConfidence, R=globalThis.__surfaceCatalog, dataset=globalThis.__surfaceCatalogReference, patch=M.makePatch(5), presets=M.examples(patch);
   const root=document.getElementById('logical-lab'), $=id=>document.getElementById('sc-'+id);
   const NS='http://www.w3.org/2000/svg';
   let selected='likelihood-crossover',error=presets.find(p=>p.id===selected).error.slice(),data,analysis;
@@ -247,7 +247,7 @@
       tableRow($('forest-rows'),[forestNames[variant.strategy],variant.correction.length,badge(variant.logical),button]).classList.toggle('sc-forest-selected',chosen);
       if(focusedForest===button.getAttribute('aria-label'))button.focus({preventScroll:true});
     }
-    $('run-metrics').textContent=`${analysis.rounds} half-edge growth rounds · ${analysis.unions} unions · ${analysis.reactivations} round${analysis.reactivations===1?'':'s'} with reactivation · ${data.trace.fullEdges.length} fully grown edges.`;
+    $('run-metrics').textContent=`${analysis.rounds} half-edge growth rounds · ${analysis.unions} unions · ${analysis.reactivations} merge batch${analysis.reactivations===1?'':'es'} with an even-to-odd transition · ${data.trace.fullEdges.length} fully grown edges.`;
   }
   const percent=value=>value===null?'—':value>0&&value<.000001?(value*100).toExponential(2)+'%':(value*100).toFixed(2)+'%';
   function drawConfidenceCurve(){
@@ -348,23 +348,62 @@
     if(!rows.length)tableRow($('neighbor-rows'),['No outcome-changing neighbors','—','—','—','Try “All 41 toggles”.','—']);
   }
   function changeForest(strategy){neighborOrigin=null;forestStrategy=strategy;$('forest').value=strategy;recompute({changed:$('example').value==='custom'});}
-  const catalog=presets.map(p=>{const d=M.decode(patch,p.error);return {preset:p,weight:d.error.length,defects:d.observed.reduce((a,b)=>a+b,0),logical:d.result.logical};});
+  const catalog=dataset.cases,caseById=new Map(catalog.map(c=>[c.id,c])),pageSize=25;
+  let catalogPage=0;
+  const catalogRisk=c=>c.conditionalFailure.find(v=>v.p===.1).failure;
+  function catalogFilters(){return {query:$('search').value.trim().toLowerCase(),category:$('category').value,outcome:$('outcome-filter').value,mechanism:$('mechanism').value,sort:$('catalog-sort').value};}
+  function catalogMatches(){
+    const f=catalogFilters();
+    const matches=catalog.filter(c=>(f.category==='all'||c.group===f.category)&&(f.outcome==='all'||!!c.metrics.logical===(f.outcome==='failure'))&&(f.mechanism==='all'||c.tags.includes(f.mechanism))&&(!f.query||(/^\d+$/.test(f.query)?c.number===Number(f.query):[c.id,c.name,c.group,c.title,c.note,...c.tags].join(' ').toLowerCase().includes(f.query))));
+    const score=c=>({number:c.number,correction:-c.metrics.correctionWeight,peeling:-c.metrics.peelingExcess,defects:-c.metrics.defects,ambiguity:Math.abs(catalogRisk(c)-.5),gap:c.metrics.gap}[f.sort]);
+    return matches.sort((a,b)=>score(a)-score(b)||a.number-b.number);
+  }
   function renderCatalog(){
     $('catalog-rows').replaceChildren();
-    const query=$('search').value.trim().toLowerCase(),outcome=$('outcome-filter').value;
-    const matches=catalog.filter(c=>($('category').value==='all'||c.preset.group===$('category').value)&&(outcome==='all'||!!c.logical===(outcome==='failure'))&&(!query||[c.preset.name,c.preset.group,c.preset.title,c.preset.note].join(' ').toLowerCase().includes(query)));
-    for(const c of matches){
-      const button=document.createElement('button');button.className='btn btn-ghost';button.textContent='Open';button.setAttribute('aria-label','Open example '+(presets.indexOf(c.preset)+1));
-      button.addEventListener('click',()=>{forestStrategy='bfs';$('forest').value=forestStrategy;chooseExample(c.preset.id);focusWorkspace();});
-      tableRow($('catalog-rows'),[c.preset.name,c.preset.group,c.weight,c.defects,badge(c.logical),button]);
+    $('catalog-rows').closest('.sc-table-scroll').scrollTop=0;
+    const matches=catalogMatches(),f=catalogFilters(),pages=Math.max(1,Math.ceil(matches.length/pageSize));
+    catalogPage=Math.min(catalogPage,pages-1);
+    for(const c of matches.slice(catalogPage*pageSize,(catalogPage+1)*pageSize)){
+      const button=document.createElement('button');button.className='btn btn-ghost';button.textContent='Open';button.setAttribute('aria-label','Open example '+c.number);
+      button.addEventListener('click',()=>{forestStrategy='bfs';$('forest').value=forestStrategy;chooseExample(c.id);focusWorkspace();});
+      const concept=document.createElement('div'),name=document.createElement('strong'),group=document.createElement('small');
+      name.textContent=c.name;group.textContent=c.group;concept.append(name,group);
+      const forests=document.createElement('span');forests.textContent=c.forests.map(v=>v.logical?'F':'S').join(' / ');
+      forests.setAttribute('aria-label',c.forests.map(v=>`${forestNames[v.strategy]}: ${v.logical?'failure':'success'}`).join('; '));
+      forests.title='BFS / Reverse BFS / DFS · S = success, F = failure';
+      tableRow($('catalog-rows'),[concept,c.metrics.errorWeight,c.metrics.defects,c.metrics.correctionWeight,c.metrics.gap>0?'+'+c.metrics.gap:c.metrics.gap,percent(catalogRisk(c)),forests,badge(c.metrics.logical),button]);
     }
-    if(!matches.length){const row=document.createElement('tr'),cell=document.createElement('td');cell.colSpan=6;cell.textContent='No matching examples. Try a broader search or clear the filters.';row.append(cell);$('catalog-rows').append(row);}
-    $('catalog-status').textContent=`${matches.length} of ${presets.length} examples${query?' match your search':''}.`;
-    $('clear-filters').disabled=!query&&outcome==='all'&&$('category').value==='all';
+    if(!matches.length){const row=document.createElement('tr'),cell=document.createElement('td');cell.colSpan=9;cell.textContent='No matching examples. Try a broader search or clear the filters.';row.append(cell);$('catalog-rows').append(row);}
+    $('catalog-status').textContent=`${matches.length} of ${catalog.length} examples${f.query?' match your search':''}.`;
+    $('catalog-page').textContent=matches.length?`Page ${catalogPage+1} of ${pages} · ${catalogPage*pageSize+1}–${Math.min((catalogPage+1)*pageSize,matches.length)} of ${matches.length}`:'No matching cases';
+    $('catalog-prev').disabled=catalogPage===0;$('catalog-next').disabled=catalogPage===pages-1;
+    $('catalog-csv').disabled=$('catalog-json').disabled=!matches.length;
+    $('clear-filters').disabled=!f.query&&f.outcome==='all'&&f.category==='all'&&f.mechanism==='all'&&f.sort==='number';
+  }
+  function resetCatalog(){catalogPage=0;renderCatalog();$('catalog-export-status').textContent='Exports include every matching case across all pages. JSON includes geometry, exact spectra, all three forests, and provenance.';}
+  function renderCaseRecord(changed){
+    const c=changed?null:caseById.get(selected);$('case-record').hidden=!c;if(!c)return;
+    $('record-id').textContent=`${c.id} · catalog ${dataset.catalogVersion}`;
+    $('record-keys').textContent=`E ${c.errorKey} / s ${c.syndromeKey}`;
+    $('record-criterion').textContent=c.provenance.criterion;
+    $('record-method').textContent=`Selection: ${c.provenance.method}${c.provenance.seed===undefined?'':` · source seed ${c.provenance.seed}`}. Full construction details are included in JSON exports.`;
+    $('record-tags').replaceChildren(...c.tags.map(tag=>{const span=document.createElement('span');span.textContent=tag.replace(/-/g,' ');return span;}));
+  }
+  function downloadRecord(content,type,filename){
+    const url=URL.createObjectURL(new Blob([content],{type})),link=document.createElement('a');
+    link.href=url;link.download=filename;link.click();setTimeout(()=>URL.revokeObjectURL(url),1000);
+  }
+  function exportCatalog(format){
+    const matches=catalogMatches();if(!matches.length)return;
+    const ids=new Set(matches.map(c=>c.id));
+    const filtered={...dataset,sourceSummary:dataset.summary,summary:{cases:matches.length,uniqueErrors:new Set(matches.map(c=>c.errorKey)).size,uniqueSyndromes:new Set(matches.map(c=>c.syndromeKey)).size,pairedStudies:new Set(matches.filter(c=>c.partner&&ids.has(c.partner)).map(c=>[c.id,c.partner].sort().join(':'))).size,groups:new Set(matches.map(c=>c.group)).size},filters:catalogFilters(),cases:matches};
+    downloadRecord(format==='csv'?R.csv(matches):JSON.stringify(filtered,null,2)+'\n',format==='csv'?'text/csv;charset=utf-8':'application/json',`decoder-lab-catalog-${dataset.catalogVersion}-${matches.length}-cases.${format}`);
+    $('catalog-export-status').textContent=`Exported ${matches.length} matching cases across all pages as ${format.toUpperCase()}. Reference metrics use BFS; probabilities use the four documented priors.`;
   }
   function experimentRecord(){return {
     format:'decoder-lab.surface-code.v3',model:{distance:5,dataQubits:41,logicalQubits:1,noise:'Z only; perfect syndrome; one round',edgeWeights:'uniform unit weights'},
     example:$('example').value==='custom'?null:selected,sampling:sampleOrigin,forestStrategy,view,error:data.error,syndrome:data.observed,correction:data.correction,residual:data.residual,
+    catalog:$('example').value==='custom'?null:{version:dataset.catalogVersion,caseId:selected,provenance:caseById.get(selected).provenance,tags:caseById.get(selected).tags,errorKey:R.errorKey(data.error),syndromeKey:R.syndromeKey(data.observed)},
     decomposition:data.result,reference:analysis,fullyGrownEdges:data.trace.fullEdges,
     confidence:{assumedNoise:'iid Z, independent of how this displayed E was selected',p:confidenceP,spectrum,posterior},localSensitivity:neighborRows,
     geometry:{qubits:patch.edges,checks:patch.nodes.filter(v=>!v.boundary),stabilizers:patch.faces,logicalZ:patch.logicalZ,logicalX:patch.logicalX},
@@ -397,7 +436,7 @@
     $('forest-note').hidden=changed||forestStrategy==='bfs';
     const preset=presets.find(p=>p.id===selected);$('companion').hidden=changed||!preset?.partner;
     if(!changed&&preset?.partner){$('companion-note').textContent=preset.partnerNote;$('open-companion').textContent='Open paired example '+(presets.findIndex(p=>p.id===preset.partner)+1);}
-    renderResult();renderResearch();renderConfidence();
+    renderCaseRecord(changed);renderResult();renderResearch();renderConfidence();
   }
   function chooseExample(id){
     const p=presets.find(p=>p.id===id);if(!p)return;
@@ -425,6 +464,9 @@
   }
   const custom=new Option('Custom / transformed error','custom');custom.disabled=true;$('example').append(custom);
   $('catalog-count').textContent=`${presets.length} WORKED CASES`;$('catalog-link').textContent=`All ${presets.length} examples`;
+  for(const [count,label] of [[catalog.length,'distinct error patterns'],[dataset.summary.uniqueSyndromes,'syndromes'],[dataset.summary.pairedStudies,'paired studies'],[catalog.filter(c=>c.metrics.forestSensitive).length,'forest-sensitive cases']]){
+    const item=document.createElement('div'),value=document.createElement('strong'),caption=document.createElement('span');value.textContent=count;caption.textContent=label;item.append(value,caption);$('catalog-stats').append(item);
+  }
   for(const e of patch.edges)$('qubit').append(new Option(`q${e.id} · ${e.kind==='h'?'horizontal':'vertical'} edge`,String(e.id)));
   for(const f of patch.faces)$('face').append(new Option(`S${f.id+1} · ${f.edges.length}-qubit ${f.edges.length===3?'boundary':'plaquette'} stabilizer`,String(f.id)));
   $('face').value='8';
@@ -443,9 +485,12 @@
   $('forest').addEventListener('change',()=>changeForest($('forest').value));
   $('previous-example').addEventListener('click',()=>chooseExample(presets[presets.findIndex(p=>p.id===selected)-1]?.id));
   $('next-example').addEventListener('click',()=>chooseExample(presets[presets.findIndex(p=>p.id===selected)+1]?.id));
-  $('category').addEventListener('change',renderCatalog);
-  $('search').addEventListener('input',renderCatalog);$('outcome-filter').addEventListener('change',renderCatalog);
-  $('clear-filters').addEventListener('click',()=>{$('search').value='';$('outcome-filter').value='all';$('category').value='all';renderCatalog();$('search').focus();});
+  for(const id of ['category','outcome-filter','mechanism','catalog-sort'])$(id).addEventListener('change',resetCatalog);
+  $('search').addEventListener('input',resetCatalog);
+  $('clear-filters').addEventListener('click',()=>{$('search').value='';for(const id of ['outcome-filter','category','mechanism'])$(id).value='all';$('catalog-sort').value='number';resetCatalog();$('search').focus();});
+  $('catalog-prev').addEventListener('click',()=>{catalogPage--;renderCatalog();});
+  $('catalog-next').addEventListener('click',()=>{catalogPage++;renderCatalog();});
+  for(const format of ['csv','json'])$('catalog-'+format).addEventListener('click',()=>exportCatalog(format));
   root.querySelectorAll('[data-sc-reference]').forEach(b=>b.addEventListener('click',()=>{referenceView=b.dataset.scReference;drawReferences();}));
   for(const [id,predicate] of [['jump-merge',f=>f.action==='merge'],['jump-forest',f=>f.phase==='forest']])$(id).addEventListener('click',()=>goTrace(frames.findIndex(predicate)));
   $('jump-reactivate').addEventListener('click',()=>{const next=frames.findIndex((f,i)=>i>traceIndex&&f.reactivated);goTrace(next<0?frames.findIndex(f=>f.reactivated):next);});
@@ -454,8 +499,7 @@
   $('sample-form').addEventListener('submit',event=>{event.preventDefault();generateSample();});
   $('next-seed').addEventListener('click',()=>{if(!$('sample-form').reportValidity())return;$('seed').value=(Number($('seed').value)+1)>>>0;generateSample();});
   $('export').addEventListener('click',()=>{
-    const blob=new Blob([JSON.stringify(experimentRecord(),null,2)+'\n'],{type:'application/json'}),url=URL.createObjectURL(blob),link=document.createElement('a');
-    link.href=url;link.download=`surface-code-d5-${$('example').value}.json`;link.click();setTimeout(()=>URL.revokeObjectURL(url),1000);
+    downloadRecord(JSON.stringify(experimentRecord(),null,2)+'\n','application/json',`surface-code-d5-${$('example').value}.json`);
     $('sample-status').textContent='Exported the current experiment, exact references, and geometry as JSON.';
   });
   $('share').addEventListener('click',()=>{

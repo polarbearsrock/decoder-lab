@@ -1,5 +1,7 @@
 from pathlib import Path
+import subprocess
 p=Path(__file__).parent
+subprocess.run(['node', str(p/'build_catalog.js')], check=True)
 source=p.joinpath('source.html').read_text()
 markup=source[:source.index('<script>')]
 style=markup[markup.index('<style>')+7:markup.index('</style>')]
@@ -42,7 +44,8 @@ nav='''</style></head><body><a class="skip-link" href="#main-content">Skip to de
 foot='''</main><footer class="site-footer"><span>Decoder lab / Union-Find · <a href="https://github.com/polarbearsrock/decoder-lab">Source &amp; documentation</a></span><span>Deterministic educational model · not a decoder performance benchmark</span></footer>'''
 styles=style+'\n'+p.joinpath('site.css').read_text()+'\n'+p.joinpath('surface.css').read_text()
 # Self-contained index supports local download and GitHub Pages without a build step.
-scripts='\n'.join('<script>\n'+p.joinpath(f).read_text()+'\n</script>' for f in ['model.js','extras.js','app.js','surface-model.js','surface-confidence.js','surface-app.js'])
+catalog_data='<script>globalThis.__surfaceExtraCases='+p.joinpath('surface-cases.json').read_text().replace('</','<\\/')+';globalThis.__surfaceCatalogReference='+p.joinpath('catalog-reference.json').read_text().replace('</','<\\/')+';</script>'
+scripts=catalog_data+'\n'+'\n'.join('<script>\n'+p.joinpath(f).read_text()+'\n</script>' for f in ['model.js','extras.js','app.js','surface-model.js','surface-confidence.js','surface-catalog.js','surface-app.js'])
 theme_script='<script>\n'+p.joinpath('theme.js').read_text()+'\n</script>'
 p.joinpath('index.html').write_text(head.replace('<style>',theme_script+'<style>')+styles+nav+p.joinpath('surface.html').read_text()+markup+foot+scripts+'</body></html>')
 print('Built',p/'index.html')

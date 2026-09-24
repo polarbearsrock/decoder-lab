@@ -1,0 +1,6455 @@
+[
+  {
+    "id": "growth-25",
+    "number": 25,
+    "name": "25 · Three reactivation batches, DFS rescue",
+    "group": "Growth stress tests",
+    "error": [
+      10,
+      11,
+      22,
+      25,
+      27,
+      31,
+      39
+    ],
+    "title": "Seven defects keep changing the parity of the growing region.",
+    "note": "Merge batches at ticks 1, 2, and 3 each contain an even-to-odd transition. The AC cluster waits through tick 2 before joining the five-defect cluster at tick 3. BFS and reverse BFS select 12 correction edges and fail; DFS selects 11 and succeeds. Both logical classes already have weight-six representatives inside the same 38 grown edges.",
+    "tags": [
+      "reactivation",
+      "forest-sensitive",
+      "peeling-excess"
+    ],
+    "provenance": {
+      "method": "deterministic search",
+      "seed": 29924,
+      "criterion": "Fixed-weight sample of 7 errors. Three reactivation-marked merge batches, four growth ticks, BFS peeling excess six, and DFS-only recovery."
+    },
+    "expected": {
+      "logical": 1,
+      "errorWeight": 7,
+      "defects": 7,
+      "correctionWeight": 12,
+      "rounds": 4,
+      "reactivations": 3,
+      "gap": 0,
+      "peelingExcess": 6,
+      "growthPenalty": 0,
+      "correctClassInGrowth": true,
+      "forestSensitive": true
+    }
+  },
+  {
+    "id": "growth-26",
+    "number": 26,
+    "name": "26 · A dormant four-defect core",
+    "group": "Growth stress tests",
+    "error": [
+      1,
+      2,
+      15,
+      16,
+      26,
+      35,
+      39
+    ],
+    "title": "Several parity reversals can still end in successful recovery.",
+    "note": "ABCD is even after tick 1 and remains inactive while EFG forms a three-defect cluster. Their tick-3 merger reactivates the seven-defect region; a rough boundary stops it at tick 4. All three forests recover this E, with correction weights 9, 9, and 10. The best correction in the selected class has weight six, so these extra peeling edges are not logical failures.",
+    "tags": [
+      "reactivation",
+      "boundary",
+      "peeling-excess"
+    ],
+    "provenance": {
+      "method": "deterministic search",
+      "seed": 24884,
+      "criterion": "Fixed-weight sample of 7 errors. Three reactivation-marked merge batches; a four-defect inactive core; all three forests succeed with positive peeling excess."
+    },
+    "expected": {
+      "logical": 0,
+      "errorWeight": 7,
+      "defects": 7,
+      "correctionWeight": 9,
+      "rounds": 4,
+      "reactivations": 3,
+      "gap": 1,
+      "peelingExcess": 3,
+      "growthPenalty": 0,
+      "correctClassInGrowth": true,
+      "forestSensitive": false
+    }
+  },
+  {
+    "id": "growth-27",
+    "number": 27,
+    "name": "27 · Growth alone adds two edges",
+    "group": "Growth stress tests",
+    "error": [
+      0,
+      5,
+      13,
+      27,
+      30,
+      34,
+      39
+    ],
+    "title": "Even a minimum-cost peel cannot undo an unnecessarily restrictive growth region.",
+    "note": "Ten defects form a ten-vertex tree after one half-edge growth tick. It is even and does not reach a rough boundary. The full patch has a weight-six correction in UF’s class, but its nine grown edges permit no correction lighter than eight. Every displayed forest returns eight edges and succeeds: the two-edge cost penalty comes entirely from restricting growth.",
+    "tags": [
+      "growth-penalty",
+      "even-stop",
+      "tree"
+    ],
+    "provenance": {
+      "method": "deterministic search",
+      "seed": 8554,
+      "criterion": "Fixed-weight sample of 7 errors. Growth penalty two, peeling excess zero, one growth tick, and a boundary-free ten-vertex grown tree."
+    },
+    "expected": {
+      "logical": 0,
+      "errorWeight": 7,
+      "defects": 10,
+      "correctionWeight": 8,
+      "rounds": 1,
+      "reactivations": 1,
+      "gap": 1,
+      "peelingExcess": 0,
+      "growthPenalty": 2,
+      "correctClassInGrowth": true,
+      "forestSensitive": false
+    }
+  },
+  {
+    "id": "growth-28",
+    "number": 28,
+    "name": "28 · One tick locks in the wrong tree",
+    "group": "Growth stress tests",
+    "error": [
+      10,
+      14,
+      31,
+      34
+    ],
+    "title": "A small even tree can exclude a lighter successful correction.",
+    "note": "Six defects become one even, boundary-free tree after the first growth tick. Its five grown edges force the same weight-five correction for all three forests, and each fails for this E. The full patch has a unique successful weight-four correction. Because that logical class is absent from the grown support, changing the peeling order cannot recover this shot.",
+    "tags": [
+      "growth-trap",
+      "even-stop",
+      "tree"
+    ],
+    "provenance": {
+      "method": "deterministic search",
+      "seed": 2251,
+      "criterion": "Fixed-weight sample of 4 errors. Successful class infeasible in growth despite being globally lighter; one-tick grown tree with six defects and five edges."
+    },
+    "expected": {
+      "logical": 1,
+      "errorWeight": 4,
+      "defects": 6,
+      "correctionWeight": 5,
+      "rounds": 1,
+      "reactivations": 1,
+      "gap": -1,
+      "peelingExcess": 0,
+      "growthPenalty": 0,
+      "correctClassInGrowth": false,
+      "forestSensitive": false
+    }
+  },
+  {
+    "id": "growth-29",
+    "number": 29,
+    "name": "29 · A frozen core and an isolated boundary defect",
+    "group": "Growth stress tests",
+    "error": [
+      0,
+      1,
+      2,
+      4,
+      17,
+      19,
+      26,
+      27,
+      28,
+      29,
+      35,
+      37
+    ],
+    "title": "One cluster can finish separately while the combined recovery remains logically wrong.",
+    "note": "Ten defects freeze together at tick 1; the eleventh reaches a rough boundary separately at tick 2. Both full-patch classes have minimum weight seven. The 13 grown edges admit only UF’s failing class, whose minimum has risen to nine. All three forests return nine edges: this case combines a two-edge growth penalty with exclusion of the successful class.",
+    "tags": [
+      "growth-trap",
+      "growth-penalty",
+      "multiple-clusters",
+      "boundary"
+    ],
+    "provenance": {
+      "method": "deterministic search",
+      "seed": 28829,
+      "criterion": "Fixed-weight sample of 12 errors. Two final clusters: ten-defect boundary-free core plus one boundary defect; growth penalty two and successful-class exclusion."
+    },
+    "expected": {
+      "logical": 1,
+      "errorWeight": 12,
+      "defects": 11,
+      "correctionWeight": 9,
+      "rounds": 2,
+      "reactivations": 1,
+      "gap": 0,
+      "peelingExcess": 0,
+      "growthPenalty": 2,
+      "correctClassInGrowth": false,
+      "forestSensitive": false
+    }
+  },
+  {
+    "id": "growth-30",
+    "number": 30,
+    "name": "30 · Five errors, fourteen correction edges",
+    "group": "Growth stress tests",
+    "error": [
+      2,
+      8,
+      9,
+      30,
+      35
+    ],
+    "title": "A large peeling penalty can hide a successful correction that growth already contains.",
+    "note": "Seven defects grow across 36 edges in four ticks. BFS and reverse BFS return 14 correction edges, nine more than the weight-five minimum in their own class. DFS reduces the weight to 11 but still fails for this E. A successful weight-five correction also exists inside the grown support, so failure of these three forests does not prove that growth made recovery impossible.",
+    "tags": [
+      "peeling-excess",
+      "forest-ensemble",
+      "large-region"
+    ],
+    "provenance": {
+      "method": "deterministic search",
+      "seed": 1562,
+      "criterion": "Fixed-weight sample of 5 errors. BFS peeling excess nine from a five-error input; all three forests fail despite successful-class feasibility."
+    },
+    "expected": {
+      "logical": 1,
+      "errorWeight": 5,
+      "defects": 7,
+      "correctionWeight": 14,
+      "rounds": 4,
+      "reactivations": 1,
+      "gap": 0,
+      "peelingExcess": 9,
+      "growthPenalty": 0,
+      "correctClassInGrowth": true,
+      "forestSensitive": false
+    }
+  },
+  {
+    "id": "growth-31",
+    "number": 31,
+    "name": "31 · Forty grown edges are still not enough",
+    "group": "Growth stress tests",
+    "error": [
+      10,
+      12,
+      13,
+      15,
+      19,
+      26,
+      28,
+      33,
+      38
+    ],
+    "title": "Almost complete growth does not guarantee a suitable peeling decision.",
+    "note": "The grown region contains 40 of the patch’s 41 edges after four ticks. Both logical classes retain weight-six representatives there. BFS and reverse BFS nevertheless choose 14 edges and fail; DFS chooses ten and also fails. For this selected shot, the obstruction is the three chosen forests, not missing access to the successful logical class.",
+    "tags": [
+      "large-region",
+      "peeling-excess",
+      "forest-ensemble"
+    ],
+    "provenance": {
+      "method": "deterministic search",
+      "seed": 7616,
+      "criterion": "Fixed-weight sample of 9 errors. Forty fully grown edges; BFS peeling excess eight; every displayed forest fails although both classes remain feasible at their global minima."
+    },
+    "expected": {
+      "logical": 1,
+      "errorWeight": 9,
+      "defects": 9,
+      "correctionWeight": 14,
+      "rounds": 4,
+      "reactivations": 2,
+      "gap": 0,
+      "peelingExcess": 8,
+      "growthPenalty": 0,
+      "correctClassInGrowth": true,
+      "forestSensitive": false
+    }
+  },
+  {
+    "id": "growth-32",
+    "number": 32,
+    "name": "32 · Fourteen frozen defects meet one late arrival",
+    "group": "Growth stress tests",
+    "error": [
+      2,
+      4,
+      15,
+      20,
+      22,
+      27,
+      29,
+      32,
+      35,
+      40
+    ],
+    "title": "One delayed merger expands the cluster to all decoding-graph vertices.",
+    "note": "Fourteen defects form an even cluster at tick 1 and stay inactive through tick 2. The remaining defect joins at tick 3, making the combined cluster odd. At tick 4 it includes all 20 measured vertices and ten virtual boundary vertices, with 40 edges fully grown. BFS and reverse BFS succeed using 11 correction edges; DFS uses 12 and fails.",
+    "tags": [
+      "reactivation",
+      "large-region",
+      "forest-sensitive"
+    ],
+    "provenance": {
+      "method": "deterministic search",
+      "seed": 477,
+      "criterion": "Fixed-weight sample of 10 errors. Fifteen defects; late merger of a frozen fourteen-defect cluster; all thirty graph vertices reached and forty edges grown."
+    },
+    "expected": {
+      "logical": 0,
+      "errorWeight": 10,
+      "defects": 15,
+      "correctionWeight": 11,
+      "rounds": 4,
+      "reactivations": 2,
+      "gap": 0,
+      "peelingExcess": 2,
+      "growthPenalty": 0,
+      "correctClassInGrowth": true,
+      "forestSensitive": true
+    }
+  },
+  {
+    "id": "growth-33",
+    "number": 33,
+    "name": "33 · A minimum-weight forest can lose this shot",
+    "group": "Growth stress tests",
+    "error": [
+      11,
+      13,
+      15,
+      22,
+      25,
+      26,
+      27,
+      28,
+      30,
+      34,
+      39,
+      40
+    ],
+    "title": "A longer correction can recover the encoded state that a minimum-weight correction misses.",
+    "note": "Seventeen defects produce 40 fully grown edges in two ticks. Both logical classes have minimum weight ten. BFS returns a ten-edge correction and fails for this E; reverse BFS uses 12 and also fails. DFS uses 11 edges and succeeds. The two minimum classes contain 111 and 75 weight-ten representatives, but this selected E determines the actual outcome.",
+    "tags": [
+      "dense-syndrome",
+      "forest-sensitive",
+      "degeneracy"
+    ],
+    "provenance": {
+      "method": "deterministic search",
+      "seed": 7819,
+      "criterion": "Fixed-weight sample of 12 errors. Seventeen defects; forty grown edges; BFS saturates its class minimum but DFS-only recovery uses a longer correction."
+    },
+    "expected": {
+      "logical": 1,
+      "errorWeight": 12,
+      "defects": 17,
+      "correctionWeight": 10,
+      "rounds": 2,
+      "reactivations": 1,
+      "gap": 0,
+      "peelingExcess": 0,
+      "growthPenalty": 0,
+      "correctClassInGrowth": true,
+      "forestSensitive": true
+    }
+  },
+  {
+    "id": "growth-34",
+    "number": 34,
+    "name": "34 · Three forest costs, two logical outcomes",
+    "group": "Growth stress tests",
+    "error": [
+      2,
+      7,
+      13,
+      14,
+      15,
+      22
+    ],
+    "title": "Reducing the correction weight can cross into the wrong logical class.",
+    "note": "Eight defects produce a 36-edge grown region in four ticks. BFS succeeds with 14 correction edges; reverse BFS also succeeds with 12. DFS shortens the correction to eight edges but fails for this E. Both logical classes have weight-six representatives within growth. Compare residuals as well as edge counts: the shortest of these three forest outputs is not the successful one.",
+    "tags": [
+      "forest-sensitive",
+      "peeling-excess",
+      "reactivation"
+    ],
+    "provenance": {
+      "method": "deterministic search",
+      "seed": 12243,
+      "criterion": "Fixed-weight sample of 6 errors. Three distinct correction costs 14, 12, and 8; BFS and reverse BFS succeed while the shortest DFS output fails."
+    },
+    "expected": {
+      "logical": 0,
+      "errorWeight": 6,
+      "defects": 8,
+      "correctionWeight": 14,
+      "rounds": 4,
+      "reactivations": 2,
+      "gap": 0,
+      "peelingExcess": 8,
+      "growthPenalty": 0,
+      "correctClassInGrowth": true,
+      "forestSensitive": true
+    }
+  },
+  {
+    "id": "growth-35",
+    "number": 35,
+    "name": "35 · Equal costs across a graph-wide cluster",
+    "group": "Growth stress tests",
+    "error": [
+      0,
+      3,
+      6,
+      7,
+      8,
+      21,
+      23,
+      31,
+      33,
+      36
+    ],
+    "title": "Identical correction weights need not imply identical logical recovery.",
+    "note": "Fifteen defects merge into one odd cluster at tick 1; by tick 2 it contains all 30 decoding-graph vertices. BFS, reverse BFS, and DFS each select ten correction edges on the same 37-edge grown support. The two BFS variants fail, while DFS succeeds. Both classes have weight-eight corrections, so all three outputs pay the same two-edge excess while disagreeing logically.",
+    "tags": [
+      "large-region",
+      "forest-sensitive",
+      "equal-weight"
+    ],
+    "provenance": {
+      "method": "deterministic search",
+      "seed": 6267,
+      "criterion": "Fixed-weight sample of 10 errors. All thirty graph vertices in one cluster after two ticks; all three outputs have weight ten but DFS alone succeeds."
+    },
+    "expected": {
+      "logical": 1,
+      "errorWeight": 10,
+      "defects": 15,
+      "correctionWeight": 10,
+      "rounds": 2,
+      "reactivations": 1,
+      "gap": 0,
+      "peelingExcess": 2,
+      "growthPenalty": 0,
+      "correctClassInGrowth": true,
+      "forestSensitive": true
+    }
+  },
+  {
+    "id": "growth-36",
+    "number": 36,
+    "name": "36 · Growth penalizes only the chosen class",
+    "group": "Growth stress tests",
+    "error": [
+      11,
+      16,
+      22,
+      27,
+      31,
+      36
+    ],
+    "title": "A class can remain feasible while losing its best global representative.",
+    "note": "Ten defects yield 28 fully grown edges after two ticks. In BFS’s failing class, the minimum increases from seven on the full patch to eight inside growth; BFS attains that restricted minimum. The successful class keeps a weight-six representative inside the same region. DFS selects a six-edge correction and recovers, while reverse BFS returns ten edges and fails.",
+    "tags": [
+      "growth-penalty",
+      "forest-sensitive",
+      "restricted-optimum"
+    ],
+    "provenance": {
+      "method": "deterministic search",
+      "seed": 7363,
+      "criterion": "Fixed-weight sample of 6 errors. Growth penalty one with zero BFS peeling excess; successful class retains its lighter global minimum and DFS attains it."
+    },
+    "expected": {
+      "logical": 1,
+      "errorWeight": 6,
+      "defects": 10,
+      "correctionWeight": 8,
+      "rounds": 2,
+      "reactivations": 1,
+      "gap": -1,
+      "peelingExcess": 0,
+      "growthPenalty": 1,
+      "correctClassInGrowth": true,
+      "forestSensitive": true
+    }
+  },
+  {
+    "id": "growth-37",
+    "number": 37,
+    "name": "37 · Optimal peeling inside the wrong class",
+    "group": "Growth stress tests",
+    "error": [
+      6,
+      10,
+      11,
+      19,
+      27,
+      31,
+      39
+    ],
+    "title": "Attaining a restricted minimum does not settle the logical decision.",
+    "note": "Both classes have full-patch minimum weight six, but growth raises the minimum of BFS’s selected class to seven while preserving a successful weight-six option. BFS and DFS each return seven edges; reverse BFS returns nine. All three fail for this E. This is not an infeasible-growth case: the exact restricted solve proves successful recovery remains possible.",
+    "tags": [
+      "growth-penalty",
+      "forest-ensemble",
+      "restricted-optimum"
+    ],
+    "provenance": {
+      "method": "deterministic search",
+      "seed": 19884,
+      "criterion": "Fixed-weight sample of 7 errors. Both classes globally tie at six; selected class incurs one growth edge; all forests fail although successful class stays feasible."
+    },
+    "expected": {
+      "logical": 1,
+      "errorWeight": 7,
+      "defects": 8,
+      "correctionWeight": 7,
+      "rounds": 2,
+      "reactivations": 1,
+      "gap": 0,
+      "peelingExcess": 0,
+      "growthPenalty": 1,
+      "correctClassInGrowth": true,
+      "forestSensitive": false
+    }
+  },
+  {
+    "id": "growth-38",
+    "number": 38,
+    "name": "38 · Three frozen pairs wait for one defect",
+    "group": "Growth stress tests",
+    "error": [
+      2,
+      13,
+      14,
+      29,
+      40
+    ],
+    "title": "A single active defect can reactivate several even clusters in one later merge batch.",
+    "note": "After tick 1, AB, CD, and FG are three separate even clusters; E is the only active defect. The pairs remain frozen through tick 2, then their tick-3 mergers produce one seven-defect odd cluster. BFS and reverse BFS recover using nine and seven edges. DFS uses only five edges but fails, despite both classes having weight-five minima.",
+    "tags": [
+      "reactivation",
+      "multiple-clusters",
+      "forest-sensitive"
+    ],
+    "provenance": {
+      "method": "deterministic search",
+      "seed": 4432,
+      "criterion": "Fixed-weight sample of 5 errors. Three simultaneously inactive even pairs after tick one; only tick-three batch reactivates; forest costs 9, 7, 5 with DFS failure."
+    },
+    "expected": {
+      "logical": 0,
+      "errorWeight": 5,
+      "defects": 7,
+      "correctionWeight": 9,
+      "rounds": 4,
+      "reactivations": 1,
+      "gap": 0,
+      "peelingExcess": 4,
+      "growthPenalty": 0,
+      "correctClassInGrowth": true,
+      "forestSensitive": true
+    }
+  },
+  {
+    "id": "growth-39",
+    "number": 39,
+    "name": "39 · A forest ambiguity without reactivation",
+    "group": "Growth stress tests",
+    "error": [
+      17,
+      30,
+      34,
+      36,
+      40
+    ],
+    "title": "Forest-sensitive recovery can arise even when no even cluster resumes growth.",
+    "note": "Only four measured defects remain from this five-error pattern. Growth takes four ticks and fills 26 edges without any reactivation-marked merge batch. All three forests return five-edge corrections. BFS and reverse BFS fail, while DFS succeeds. The global class minima also tie at five, with four and twelve distinct representatives.",
+    "tags": [
+      "forest-sensitive",
+      "equal-weight",
+      "no-reactivation"
+    ],
+    "provenance": {
+      "method": "deterministic search",
+      "seed": 20402,
+      "criterion": "Fixed-weight sample of 5 errors. No reactivation events across four ticks; four-defect syndrome; equal five-edge outputs with opposite logical outcomes."
+    },
+    "expected": {
+      "logical": 1,
+      "errorWeight": 5,
+      "defects": 4,
+      "correctionWeight": 5,
+      "rounds": 4,
+      "reactivations": 0,
+      "gap": 0,
+      "peelingExcess": 0,
+      "growthPenalty": 0,
+      "correctClassInGrowth": true,
+      "forestSensitive": true
+    }
+  },
+  {
+    "id": "growth-40",
+    "number": 40,
+    "name": "40 · One slow cluster beside three finished pairs",
+    "group": "Growth stress tests",
+    "error": [
+      1,
+      8,
+      23,
+      24,
+      33
+    ],
+    "title": "Total growth duration can be set by one remaining boundary search.",
+    "note": "AB, CD, and EF become even pairs after tick 1 and never merge again. The single defect G keeps growing until it reaches a rough boundary at tick 4. The four final clusters contain only 13 fully grown edges in total. All three forests recover with five-edge corrections. This separates the last active cluster’s growth duration from the number of clusters already finished.",
+    "tags": [
+      "multiple-clusters",
+      "boundary",
+      "no-reactivation"
+    ],
+    "provenance": {
+      "method": "deterministic search",
+      "seed": 2582,
+      "criterion": "Fixed-weight sample of 5 errors. Four final components, including three permanently frozen even pairs and one defect requiring four growth ticks to reach a boundary."
+    },
+    "expected": {
+      "logical": 0,
+      "errorWeight": 5,
+      "defects": 7,
+      "correctionWeight": 5,
+      "rounds": 4,
+      "reactivations": 0,
+      "gap": 1,
+      "peelingExcess": 0,
+      "growthPenalty": 0,
+      "correctClassInGrowth": true,
+      "forestSensitive": false
+    }
+  },
+  {
+    "id": "growth-41",
+    "number": 41,
+    "name": "41 · Shorter peeling cannot repair this growth trap",
+    "group": "Growth stress tests",
+    "error": [
+      3,
+      7,
+      10,
+      20,
+      24,
+      25,
+      32,
+      34,
+      39
+    ],
+    "title": "A forest improvement can remove four unnecessary edges without changing logical failure.",
+    "note": "Fifteen defects produce two final clusters and only 18 fully grown edges. BFS returns 12 correction edges; reverse BFS and DFS each reduce this to eight. All three still fail for this E. The full patch admits successful weight-nine corrections, but none fit inside the grown support. The shorter peeling outputs remove excess cost while preserving the growth-level logical obstruction.",
+    "tags": [
+      "growth-trap",
+      "peeling-excess",
+      "dense-syndrome"
+    ],
+    "provenance": {
+      "method": "deterministic search",
+      "seed": 9546,
+      "criterion": "Fixed-weight sample of 9 errors. Fifteen defects; successful class excluded; changing forests reduces correction weight 12 to 8 without changing failure."
+    },
+    "expected": {
+      "logical": 1,
+      "errorWeight": 9,
+      "defects": 15,
+      "correctionWeight": 12,
+      "rounds": 2,
+      "reactivations": 1,
+      "gap": 1,
+      "peelingExcess": 4,
+      "growthPenalty": 0,
+      "correctClassInGrowth": false,
+      "forestSensitive": false
+    }
+  },
+  {
+    "id": "growth-42",
+    "number": 42,
+    "name": "42 · Four components, one logical disagreement",
+    "group": "Growth stress tests",
+    "error": [
+      12,
+      14,
+      15,
+      19,
+      22,
+      25,
+      27,
+      35,
+      40
+    ],
+    "title": "A globally ambiguous choice can remain localized to one boundary component.",
+    "note": "The final grown support has four components: AC and BD are even pairs, HIJK has four defects, and the three-defect EFG component reaches a boundary. All three forests return eight correction edges. BFS and reverse BFS fail, while DFS succeeds. Inspect the separate components rather than assuming that forest sensitivity requires one giant connected cluster.",
+    "tags": [
+      "multiple-clusters",
+      "forest-sensitive",
+      "equal-weight",
+      "boundary"
+    ],
+    "provenance": {
+      "method": "deterministic search",
+      "seed": 14056,
+      "criterion": "Fixed-weight sample of 9 errors. Four final components with three even components and one boundary component; equal eight-edge outputs but opposite outcomes."
+    },
+    "expected": {
+      "logical": 1,
+      "errorWeight": 9,
+      "defects": 11,
+      "correctionWeight": 8,
+      "rounds": 2,
+      "reactivations": 1,
+      "gap": 0,
+      "peelingExcess": 0,
+      "growthPenalty": 0,
+      "correctClassInGrowth": true,
+      "forestSensitive": true
+    }
+  },
+  {
+    "id": "growth-43",
+    "number": 43,
+    "name": "43 · Twelve edges versus five, both successful",
+    "group": "Growth stress tests",
+    "error": [
+      0,
+      1,
+      7,
+      12,
+      37
+    ],
+    "title": "A large reduction in peeling cost can preserve the logical class exactly.",
+    "note": "Seven defects grow across 35 edges in four ticks, with reactivation in the tick-1 and tick-3 merge batches. BFS and reverse BFS each return 12 correction edges and succeed. DFS reduces the correction to five edges and also succeeds, attaining the successful class’s global minimum. The seven-edge difference in correction weight leaves the logical outcome unchanged; the two residuals differ only by a stabilizer.",
+    "tags": [
+      "peeling-excess",
+      "reactivation",
+      "same-class"
+    ],
+    "provenance": {
+      "method": "deterministic search",
+      "seed": 13122,
+      "criterion": "Fixed-weight sample of 5 errors. BFS peeling excess seven; DFS reduces correction weight from twelve to five while every displayed forest succeeds."
+    },
+    "expected": {
+      "logical": 0,
+      "errorWeight": 5,
+      "defects": 7,
+      "correctionWeight": 12,
+      "rounds": 4,
+      "reactivations": 2,
+      "gap": 0,
+      "peelingExcess": 7,
+      "growthPenalty": 0,
+      "correctClassInGrowth": true,
+      "forestSensitive": false
+    }
+  },
+  {
+    "id": "growth-44",
+    "number": 44,
+    "name": "44 · Vertical faults end at an even merger",
+    "group": "Growth stress tests",
+    "error": [
+      30,
+      32,
+      33,
+      34,
+      38,
+      40
+    ],
+    "title": "Growth can terminate at tick three without touching either rough boundary.",
+    "note": "All six physical errors lie on vertical data-qubit edges and create eight defects. Two even clusters wait while the remaining odd clusters expand; the tick-3 merge batch contains a reactivation before the final eight-defect cluster becomes even. Its 18 grown edges touch no rough boundary. BFS cancels E exactly using six edges. DFS uses a different six-edge correction, while reverse BFS uses eight; both also recover logically.",
+    "tags": [
+      "even-stop",
+      "reactivation",
+      "boundary-free",
+      "same-class"
+    ],
+    "provenance": {
+      "method": "deterministic search",
+      "seed": 4773,
+      "criterion": "Fixed-weight sample of 6 errors. Six vertical errors; final eight-defect cluster stops even at tick three without boundary contact; BFS exact recovery, a distinct weight-six DFS correction, and reverse BFS weight eight."
+    },
+    "expected": {
+      "logical": 0,
+      "errorWeight": 6,
+      "defects": 8,
+      "correctionWeight": 6,
+      "rounds": 3,
+      "reactivations": 2,
+      "gap": 1,
+      "peelingExcess": 0,
+      "growthPenalty": 0,
+      "correctClassInGrowth": true,
+      "forestSensitive": false
+    }
+  },
+  {
+    "id": "likelihood-45",
+    "number": 45,
+    "name": "45 · A one-edge advantage loses at 10%",
+    "group": "Likelihood stress tests",
+    "error": [
+      6,
+      8,
+      12,
+      33,
+      36
+    ],
+    "title": "A shorter class minimum does not determine the full posterior.",
+    "note": "Default BFS recovers this five-error shot with seven correction edges, leaving CE = S8. Its class has one weight-five minimum; the opposite class has thirteen weight-six minima. Conditional failure rises from 41.24% at p = 0.05 to 55.49% at p = 0.10 and 58.91% at p = 0.15. The preferred class changes while the actual recovery stays successful. Reverse BFS and DFS remove the two excess correction edges without changing the class.",
+    "tags": [
+      "prior dependence",
+      "minimum-weight mismatch",
+      "successful recovery"
+    ],
+    "provenance": {
+      "method": "Deterministic fixed-weight Fisher–Yates sampling, followed by exact-criterion selection; not iid noise sampling",
+      "seed": 714992,
+      "weight": 5,
+      "criterion": "Positive minimum-weight gap; conditional failure below 0.47 at p=.05 and above .52 at p=.10; default BFS has peeling excess."
+    },
+    "expected": {
+      "logical": 0,
+      "errorWeight": 5,
+      "defects": 10,
+      "correctionWeight": 7,
+      "rounds": 1,
+      "reactivations": 1,
+      "gap": 1,
+      "peelingExcess": 2,
+      "growthPenalty": 0,
+      "correctClassInGrowth": true,
+      "forestSensitive": false,
+      "pFailure01": 0.1182369819228182,
+      "pFailure05": 0.41239376800937766,
+      "pFailure10": 0.5548932506101173,
+      "pFailure15": 0.5891158596281693
+    }
+  },
+  {
+    "id": "likelihood-46",
+    "number": 46,
+    "name": "46 · Unique minima, changing class preference",
+    "group": "Likelihood stress tests",
+    "error": [
+      2,
+      3,
+      5,
+      8,
+      9,
+      12,
+      15,
+      21,
+      29,
+      31
+    ],
+    "title": "Even identical shortest representatives can hide a prior-dependent decision.",
+    "note": "Default BFS leaves a logical error. Both logical classes have exactly one minimum-weight correction of weight five. Nevertheless, their full spectra differ: conditional failure is 47.96% at p = 0.05, 48.97% at p = 0.10, and 51.57% at p = 0.15. The minimum weights and their multiplicities give no indication of this preference reversal. The displayed ten-error shot is a definite failure at every assumed p.",
+    "tags": [
+      "equal minima",
+      "prior dependence",
+      "logical failure"
+    ],
+    "provenance": {
+      "method": "Deterministic fixed-weight Fisher–Yates sampling, followed by exact-criterion selection; not iid noise sampling",
+      "seed": 700087,
+      "weight": 10,
+      "criterion": "Equal minimum weights and equal multiplicities of one; conditional failure below .49 at p=.10 and above .51 at p=.15."
+    },
+    "expected": {
+      "logical": 1,
+      "errorWeight": 10,
+      "defects": 7,
+      "correctionWeight": 5,
+      "rounds": 2,
+      "reactivations": 1,
+      "gap": 0,
+      "peelingExcess": 0,
+      "growthPenalty": 0,
+      "correctClassInGrowth": true,
+      "forestSensitive": false,
+      "pFailure01": 0.4931893021916135,
+      "pFailure05": 0.4796210988226667,
+      "pFailure10": 0.4897283622967787,
+      "pFailure15": 0.5156928991242578
+    }
+  },
+  {
+    "id": "likelihood-47",
+    "number": 47,
+    "name": "47 · Three shortest representatives lose their lead",
+    "group": "Likelihood stress tests",
+    "error": [
+      1,
+      2,
+      7,
+      11,
+      13,
+      19,
+      20,
+      28,
+      35,
+      37,
+      38
+    ],
+    "title": "A dense syndrome reverses the preference suggested by minimum multiplicity.",
+    "note": "Default BFS successfully corrects this eleven-error shot with fourteen defects. Both class minima have weight eight; UF’s class has three minimum representatives and the opposite class has one. A minima-only low-p limit would assign 25% failure, but the complete probability sum assigns 52.31% at p = 0.10. DFS chooses the other logical class and fails for this E. Compare the full spectrum before treating shortest-path multiplicity as confidence.",
+    "tags": [
+      "dense syndrome",
+      "degeneracy",
+      "forest sensitivity"
+    ],
+    "provenance": {
+      "method": "Deterministic fixed-weight Fisher–Yates sampling, followed by exact-criterion selection; not iid noise sampling",
+      "seed": 700048,
+      "weight": 11,
+      "criterion": "Tied minimum weights with multiplicity ratio 3:1 favoring BFS; full posterior favors the opposite class at p=.10; forest parity changes."
+    },
+    "expected": {
+      "logical": 0,
+      "errorWeight": 11,
+      "defects": 14,
+      "correctionWeight": 9,
+      "rounds": 2,
+      "reactivations": 1,
+      "gap": 0,
+      "peelingExcess": 1,
+      "growthPenalty": 0,
+      "correctClassInGrowth": true,
+      "forestSensitive": true,
+      "pFailure01": 0.3343227965338369,
+      "pFailure05": 0.4789319932952151,
+      "pFailure10": 0.5231359501602423,
+      "pFailure15": 0.5265466280977181
+    }
+  },
+  {
+    "id": "likelihood-48",
+    "number": 48,
+    "name": "48 · A heavier minimum becomes more likely",
+    "group": "Likelihood stress tests",
+    "error": [
+      5,
+      9,
+      12,
+      13,
+      26,
+      31,
+      36
+    ],
+    "title": "Class probability can favor the class that loses the minimum-weight comparison.",
+    "note": "Default BFS selects a class whose lightest correction has weight six; the opposite class has a weight-five correction. The respective minimum multiplicities are eighteen and one. Conditional failure falls from 85.00% at p = 0.01 to 43.75% at p = 0.10, so the assumed prior reverses which class is preferred. BFS still fails for this particular error. All three supplied forests retain this class despite using different correction weights.",
+    "tags": [
+      "negative gap",
+      "prior dependence",
+      "confidence versus truth"
+    ],
+    "provenance": {
+      "method": "Deterministic fixed-weight Fisher–Yates sampling, followed by exact-criterion selection; not iid noise sampling",
+      "seed": 702934,
+      "weight": 7,
+      "criterion": "Negative minimum-weight gap; conditional failure above .55 at p=.05 and below .49 at p=.10."
+    },
+    "expected": {
+      "logical": 1,
+      "errorWeight": 7,
+      "defects": 8,
+      "correctionWeight": 6,
+      "rounds": 2,
+      "reactivations": 1,
+      "gap": -1,
+      "peelingExcess": 0,
+      "growthPenalty": 0,
+      "correctClassInGrowth": true,
+      "forestSensitive": false,
+      "pFailure01": 0.8500277592606932,
+      "pFailure05": 0.5578775721700701,
+      "pFailure10": 0.43752790227804234,
+      "pFailure15": 0.41038853041823725
+    }
+  },
+  {
+    "id": "likelihood-49",
+    "number": 49,
+    "name": "49 · Equal minima conceal a 62% class preference",
+    "group": "Likelihood stress tests",
+    "error": [
+      4,
+      8,
+      19,
+      20,
+      39
+    ],
+    "title": "The higher-weight terms distinguish classes with identical minima.",
+    "note": "Default BFS fails on this five-error configuration. Both classes have a unique weight-five minimum, yet the opposite class has 62.19% conditional probability at p = 0.10 and 62.78% at p = 0.15. Those unequal probabilities arise entirely beyond the minimum-weight term. DFS chooses the opposite class and succeeds, using six correction edges. Equal gaps and equal minimum multiplicities do not imply a 50–50 posterior.",
+    "tags": [
+      "equal minima",
+      "higher-weight degeneracy",
+      "forest sensitivity"
+    ],
+    "provenance": {
+      "method": "Deterministic fixed-weight Fisher–Yates sampling, followed by exact-criterion selection; not iid noise sampling",
+      "seed": 700652,
+      "weight": 5,
+      "criterion": "Equal minimum weights and unit multiplicities; conditional failure above .62 at p=.10; DFS changes the logical outcome."
+    },
+    "expected": {
+      "logical": 1,
+      "errorWeight": 5,
+      "defects": 7,
+      "correctionWeight": 5,
+      "rounds": 2,
+      "reactivations": 1,
+      "gap": 0,
+      "peelingExcess": 0,
+      "growthPenalty": 0,
+      "correctClassInGrowth": true,
+      "forestSensitive": true,
+      "pFailure01": 0.5191404196297749,
+      "pFailure05": 0.579679742347994,
+      "pFailure10": 0.6219283212961345,
+      "pFailure15": 0.6278031025001846
+    }
+  },
+  {
+    "id": "likelihood-50",
+    "number": 50,
+    "name": "50 · Twenty-three minima are not a posterior",
+    "group": "Likelihood stress tests",
+    "error": [
+      1,
+      2,
+      5,
+      13,
+      15,
+      18,
+      30,
+      36,
+      38
+    ],
+    "title": "Minimum multiplicity is only the leading small-p contribution.",
+    "note": "Default BFS succeeds with nine correction edges. Each class has minimum weight seven, with twenty-three minimum representatives in UF’s class and one in the opposite class. The p approaching zero failure limit is 1/24, but the full conditional failure probability is 14.77% at p = 0.10 and 24.02% at p = 0.15. Reverse BFS and DFS shorten C to seven edges while preserving its class and confidence.",
+    "tags": [
+      "degeneracy",
+      "small-p limit",
+      "same-class forests"
+    ],
+    "provenance": {
+      "method": "Deterministic fixed-weight Fisher–Yates sampling, followed by exact-criterion selection; not iid noise sampling",
+      "seed": 701866,
+      "weight": 9,
+      "criterion": "Tied weight-seven minima with multiplicity ratio 23:1; all forests share logical parity and differ in correction weight."
+    },
+    "expected": {
+      "logical": 0,
+      "errorWeight": 9,
+      "defects": 10,
+      "correctionWeight": 9,
+      "rounds": 2,
+      "reactivations": 1,
+      "gap": 0,
+      "peelingExcess": 2,
+      "growthPenalty": 0,
+      "correctClassInGrowth": true,
+      "forestSensitive": false,
+      "pFailure01": 0.048153735816571626,
+      "pFailure05": 0.08214602181975826,
+      "pFailure10": 0.14766589681128894,
+      "pFailure15": 0.24016708967809342
+    }
+  },
+  {
+    "id": "likelihood-51",
+    "number": 51,
+    "name": "51 · A two-edge gap still leaves substantial uncertainty",
+    "group": "Likelihood stress tests",
+    "error": [
+      5,
+      17,
+      19,
+      24,
+      27,
+      31
+    ],
+    "title": "A positive gap must be interpreted with the complete class spectrum.",
+    "note": "Default BFS returns C = E and recovers exactly, although a weight-five representative exists in its class. The opposite class starts at weight seven with twenty-three minima. Despite the two-edge minimum gap, full conditional failure is 19.71% at p = 0.10 and 33.04% at p = 0.15. The successful outcome of this shot and the posterior uncertainty are different quantities.",
+    "tags": [
+      "positive gap",
+      "exact recovery",
+      "degeneracy"
+    ],
+    "provenance": {
+      "method": "Deterministic fixed-weight Fisher–Yates sampling, followed by exact-criterion selection; not iid noise sampling",
+      "seed": 701123,
+      "weight": 6,
+      "criterion": "Minimum-weight gap two; opposite class has twenty-three minima; conditional failure above .19 at p=.10."
+    },
+    "expected": {
+      "logical": 0,
+      "errorWeight": 6,
+      "defects": 7,
+      "correctionWeight": 6,
+      "rounds": 2,
+      "reactivations": 1,
+      "gap": 2,
+      "peelingExcess": 1,
+      "growthPenalty": 0,
+      "correctClassInGrowth": true,
+      "forestSensitive": false,
+      "pFailure01": 0.002341598054703796,
+      "pFailure05": 0.0583822583420598,
+      "pFailure10": 0.19708729230055116,
+      "pFailure15": 0.3303938738309387
+    }
+  },
+  {
+    "id": "likelihood-52",
+    "number": 52,
+    "name": "52 · 99.73% confident, but this shot fails",
+    "group": "Likelihood stress tests",
+    "error": [
+      11,
+      12,
+      13,
+      14
+    ],
+    "title": "A highly favored correction can still join an actual error into a logical string.",
+    "note": "Four Z errors run along q11 through q14. Default BFS sees one defect and returns q10, leaving CE = Z̄. Its class has a unique weight-one minimum while the opposite class starts at weight four. At p = 0.10 the model assigns 99.73% probability to UF’s class, yet this selected shot is a logical failure. The successful class is unavailable inside the grown support, so changing the peeling forest cannot repair it.",
+    "tags": [
+      "high confidence",
+      "boundary chain",
+      "growth exclusion"
+    ],
+    "provenance": {
+      "method": "Deterministic fixed-weight Fisher–Yates sampling, followed by exact-criterion selection; not iid noise sampling",
+      "seed": 700351,
+      "weight": 4,
+      "criterion": "Logical failure with one defect and a three-edge class gap; conditional failure below .003 at p=.10; successful class excluded from growth."
+    },
+    "expected": {
+      "logical": 1,
+      "errorWeight": 4,
+      "defects": 1,
+      "correctionWeight": 1,
+      "rounds": 2,
+      "reactivations": 0,
+      "gap": 3,
+      "peelingExcess": 0,
+      "growthPenalty": 0,
+      "correctClassInGrowth": false,
+      "forestSensitive": false,
+      "pFailure01": 1.0954035699306644e-06,
+      "pFailure05": 0.00020115356071672956,
+      "pFailure10": 0.002702061811801884,
+      "pFailure15": 0.015762008635183
+    }
+  },
+  {
+    "id": "likelihood-53",
+    "number": 53,
+    "name": "53 · A 13.62% class still recovers this error",
+    "group": "Likelihood stress tests",
+    "error": [
+      2,
+      9,
+      15,
+      21,
+      22,
+      26,
+      34
+    ],
+    "title": "A low-probability class may contain the actual error in an individual shot.",
+    "note": "Default BFS uses seven correction edges and leaves CE = S3, so this shot succeeds. Its class has minimum weight seven while the opposite class has minimum weight six. The full posterior assigns only 13.62% to BFS’s class at p = 0.10. DFS chooses a six-edge correction in the more likely class but fails for this E. This controlled counterexample does not compare average decoder performance.",
+    "tags": [
+      "unlikely success",
+      "negative gap",
+      "forest sensitivity"
+    ],
+    "provenance": {
+      "method": "Deterministic fixed-weight Fisher–Yates sampling, followed by exact-criterion selection; not iid noise sampling",
+      "seed": 704754,
+      "weight": 7,
+      "criterion": "Successful BFS shot with conditional failure above .86 at p=.10; DFS chooses the opposite logical class."
+    },
+    "expected": {
+      "logical": 0,
+      "errorWeight": 7,
+      "defects": 8,
+      "correctionWeight": 7,
+      "rounds": 2,
+      "reactivations": 1,
+      "gap": -1,
+      "peelingExcess": 0,
+      "growthPenalty": 0,
+      "correctClassInGrowth": true,
+      "forestSensitive": true,
+      "pFailure01": 0.9927280552032715,
+      "pFailure05": 0.9501072839982322,
+      "pFailure10": 0.8637648208004217,
+      "pFailure15": 0.7511088162065005
+    }
+  },
+  {
+    "id": "likelihood-54",
+    "number": 54,
+    "name": "54 · The preferred class changes twice",
+    "group": "Likelihood stress tests",
+    "error": [
+      13,
+      14,
+      20,
+      24,
+      26,
+      29,
+      31,
+      34,
+      36
+    ],
+    "title": "Logical-class preference need not vary monotonically with the noise prior.",
+    "note": "Default BFS fails on this nine-error configuration. Its class minimum is weight eight with thirty-eight representatives; the opposite class has two weight-seven minima. The conditional failure curve crosses 50% near p = 0.080465 and again near p = 0.323799. It is 84.43% at p = 0.01, 47.17% at p = 0.15, and 50.01% at p = 0.40. The second reversal is small but nonzero; at p = 0.50 the classes are exactly equal.",
+    "tags": [
+      "two preference reversals",
+      "nonmonotonic confidence",
+      "negative gap"
+    ],
+    "provenance": {
+      "method": "Deterministic fixed-weight Fisher–Yates sampling, followed by exact-criterion selection; not iid noise sampling",
+      "seed": 702596,
+      "weight": 9,
+      "criterion": "Conditional failure above .55 at p=.01, below .48 at p=.15, and above .50005 at p=.40; two interior roots verified by bisection."
+    },
+    "expected": {
+      "logical": 1,
+      "errorWeight": 9,
+      "defects": 11,
+      "correctionWeight": 9,
+      "rounds": 2,
+      "reactivations": 1,
+      "gap": -1,
+      "peelingExcess": 1,
+      "growthPenalty": 0,
+      "correctClassInGrowth": true,
+      "forestSensitive": true,
+      "pFailure01": 0.8443164112683839,
+      "pFailure05": 0.5681095382282714,
+      "pFailure10": 0.48110269385311477,
+      "pFailure15": 0.4716846496383764
+    }
+  },
+  {
+    "id": "likelihood-55",
+    "number": 55,
+    "name": "55 · Growth blocks the more probable class",
+    "group": "Likelihood stress tests",
+    "error": [
+      0,
+      4,
+      5,
+      9,
+      10,
+      27,
+      30,
+      36,
+      37,
+      40
+    ],
+    "title": "Improving peeling cost cannot restore a class omitted by growth.",
+    "note": "Default BFS fails with eleven correction edges. At p = 0.10 the opposite class has 58.64% conditional probability, although its minimum weight is eight versus seven in UF’s class. The exact restricted solve finds no correction in that opposite, successful class inside the fully grown support. Reverse BFS and DFS shorten C to seven edges, but all three still fail. Both the probability comparison and the growth feasibility result are computed exactly for this patch.",
+    "tags": [
+      "growth exclusion",
+      "likelihood mismatch",
+      "peeling cost"
+    ],
+    "provenance": {
+      "method": "Deterministic fixed-weight Fisher–Yates sampling, followed by exact-criterion selection; not iid noise sampling",
+      "seed": 700447,
+      "weight": 10,
+      "criterion": "Successful class excluded from growth while full posterior favors it at p=.10; BFS has four edges of peeling excess."
+    },
+    "expected": {
+      "logical": 1,
+      "errorWeight": 10,
+      "defects": 13,
+      "correctionWeight": 11,
+      "rounds": 2,
+      "reactivations": 1,
+      "gap": 1,
+      "peelingExcess": 4,
+      "growthPenalty": 0,
+      "correctClassInGrowth": false,
+      "forestSensitive": false,
+      "pFailure01": 0.16691283116993827,
+      "pFailure05": 0.4806893797624382,
+      "pFailure10": 0.5863767012783401,
+      "pFailure15": 0.5944774515152249
+    }
+  },
+  {
+    "id": "likelihood-56",
+    "number": 56,
+    "name": "56 · DFS rescues the less likely class",
+    "group": "Likelihood stress tests",
+    "error": [
+      1,
+      8,
+      10,
+      22,
+      26,
+      31,
+      34,
+      39
+    ],
+    "title": "Changing forest parity relabels the same two absolute class probabilities.",
+    "note": "Default BFS fails with six correction edges; DFS succeeds with eight. At p = 0.10 BFS’s class has probability 73.63%, but it is the wrong class for this selected E. Switching to DFS makes conditional failure change from 26.37% to 73.63% because C₀ now names the other class. The syndrome and both absolute class masses remain unchanged. A confidence estimate and the ground-truth success flag need not agree on one shot.",
+    "tags": [
+      "forest sensitivity",
+      "reference relabeling",
+      "confidence versus truth"
+    ],
+    "provenance": {
+      "method": "Deterministic fixed-weight Fisher–Yates sampling, followed by exact-criterion selection; not iid noise sampling",
+      "seed": 700675,
+      "weight": 8,
+      "criterion": "BFS fails and DFS succeeds; BFS conditional failure below .30 at p=.10; both class minima have weight six."
+    },
+    "expected": {
+      "logical": 1,
+      "errorWeight": 8,
+      "defects": 9,
+      "correctionWeight": 6,
+      "rounds": 2,
+      "reactivations": 1,
+      "gap": 0,
+      "peelingExcess": 0,
+      "growthPenalty": 0,
+      "correctClassInGrowth": true,
+      "forestSensitive": true,
+      "pFailure01": 0.19773379702782137,
+      "pFailure05": 0.2087108071235558,
+      "pFailure10": 0.26369197513381604,
+      "pFailure15": 0.3398383852661798
+    }
+  },
+  {
+    "id": "likelihood-57",
+    "number": 57,
+    "name": "57 · Equal correction costs, opposite outcomes",
+    "group": "Likelihood stress tests",
+    "error": [
+      11,
+      24,
+      32,
+      34,
+      35,
+      39
+    ],
+    "title": "A small posterior imbalance can accompany a forest-dependent logical decision.",
+    "note": "Default BFS and DFS both return five correction edges, but BFS succeeds and DFS fails. Both logical classes have two weight-five minima. At p = 0.10 conditional failure is 49.14% for BFS and 50.86% for DFS. The underlying absolute class probabilities do not change when the forest changes; only which class is labeled C₀ changes. Correction weight alone misses the different logical decisions.",
+    "tags": [
+      "forest sensitivity",
+      "equal costs",
+      "near-tied confidence"
+    ],
+    "provenance": {
+      "method": "Deterministic fixed-weight Fisher–Yates sampling, followed by exact-criterion selection; not iid noise sampling",
+      "seed": 700153,
+      "weight": 6,
+      "criterion": "All three forests return weight-five corrections; DFS changes parity; conditional failure within .02 of .5 at p=.10."
+    },
+    "expected": {
+      "logical": 0,
+      "errorWeight": 6,
+      "defects": 7,
+      "correctionWeight": 5,
+      "rounds": 2,
+      "reactivations": 1,
+      "gap": 0,
+      "peelingExcess": 0,
+      "growthPenalty": 0,
+      "correctClassInGrowth": true,
+      "forestSensitive": true,
+      "pFailure01": 0.49768565571897627,
+      "pFailure05": 0.49193432125977843,
+      "pFailure10": 0.4913873401407925,
+      "pFailure15": 0.49531236116037336
+    }
+  },
+  {
+    "id": "likelihood-58",
+    "number": 58,
+    "name": "58 · Six to eleven correction edges, identical confidence",
+    "group": "Likelihood stress tests",
+    "error": [
+      9,
+      14,
+      15,
+      23,
+      30,
+      33,
+      34,
+      35
+    ],
+    "title": "Changing correction cost within a class leaves its posterior unchanged.",
+    "note": "Default BFS succeeds using seven correction edges. Reverse BFS uses eleven and DFS uses six, but all three corrections belong to the same logical class and recover this E. Their exact conditional failure probability is therefore identical: 44.39% at p = 0.10. A confidence heuristic based only on the returned correction’s weight would change even though the syndrome-conditioned class probability does not.",
+    "tags": [
+      "same-class forests",
+      "correction-cost proxy",
+      "successful recovery"
+    ],
+    "provenance": {
+      "method": "Deterministic fixed-weight Fisher–Yates sampling, followed by exact-criterion selection; not iid noise sampling",
+      "seed": 700185,
+      "weight": 8,
+      "criterion": "All forests share logical parity; correction weights span six through eleven; exact confidence is invariant."
+    },
+    "expected": {
+      "logical": 0,
+      "errorWeight": 8,
+      "defects": 9,
+      "correctionWeight": 7,
+      "rounds": 2,
+      "reactivations": 1,
+      "gap": 0,
+      "peelingExcess": 1,
+      "growthPenalty": 0,
+      "correctClassInGrowth": true,
+      "forestSensitive": false,
+      "pFailure01": 0.3469634184946952,
+      "pFailure05": 0.39608251445346415,
+      "pFailure10": 0.4439350480345896,
+      "pFailure15": 0.4751709049630487
+    }
+  },
+  {
+    "id": "likelihood-59",
+    "number": 59,
+    "name": "59 · A heavy error hidden behind two defects",
+    "group": "Likelihood stress tests",
+    "error": [
+      13,
+      14,
+      16,
+      17,
+      20,
+      26,
+      35,
+      37
+    ],
+    "title": "Logical and stabilizer factors can hide a large error from the syndrome.",
+    "note": "Default BFS sees only two defects and returns q26 for this eight-error configuration. The residual is CE = Z̄ S11 S12 S13 S16. UF’s class has a weight-one minimum; the opposite class starts at weight five. At p = 0.10 the assumed model assigns 99.93% probability to UF’s class, but this selected error fails logically. The grown region excludes the successful class, and every supplied forest returns the same correction.",
+    "tags": [
+      "high confidence",
+      "logical dressing",
+      "growth exclusion"
+    ],
+    "provenance": {
+      "method": "Deterministic fixed-weight Fisher–Yates sampling, followed by exact-criterion selection; not iid noise sampling",
+      "seed": 700955,
+      "weight": 8,
+      "criterion": "Eight-error logical failure with two defects, a four-edge class gap, and conditional failure below .001 at p=.10."
+    },
+    "expected": {
+      "logical": 1,
+      "errorWeight": 8,
+      "defects": 2,
+      "correctionWeight": 1,
+      "rounds": 1,
+      "reactivations": 0,
+      "gap": 4,
+      "peelingExcess": 0,
+      "growthPenalty": 0,
+      "correctClassInGrowth": false,
+      "forestSensitive": false,
+      "pFailure01": 2.2563778476582394e-08,
+      "pFailure05": 2.3155293235521762e-05,
+      "pFailure10": 0.0007115512582259355,
+      "pFailure15": 0.007117107642102821
+    }
+  },
+  {
+    "id": "likelihood-60",
+    "number": 60,
+    "name": "60 · Minimum-only probabilities overstate the risk",
+    "group": "Likelihood stress tests",
+    "error": [
+      3,
+      4,
+      22,
+      23,
+      24,
+      29
+    ],
+    "title": "Summing only the shortest representatives can distort class likelihood.",
+    "note": "Default BFS fails with a weight-five correction. UF’s class has one weight-five minimum; the opposite class has nineteen weight-six minima. Keeping only these terms would predict 67.86% conditional failure at p = 0.10. Summing all weights gives 52.62% instead. The omitted terms alter both class masses. The actual failure of this selected shot does not make either number an observed error rate.",
+    "tags": [
+      "minimum-only approximation",
+      "full spectrum",
+      "logical failure"
+    ],
+    "provenance": {
+      "method": "Deterministic fixed-weight Fisher–Yates sampling, followed by exact-criterion selection; not iid noise sampling",
+      "seed": 700993,
+      "weight": 6,
+      "criterion": "Gap one with minimum multiplicities 1:19; minimum-only posterior .678571 differs from full posterior .526165 at p=.10."
+    },
+    "expected": {
+      "logical": 1,
+      "errorWeight": 6,
+      "defects": 4,
+      "correctionWeight": 5,
+      "rounds": 4,
+      "reactivations": 0,
+      "gap": 1,
+      "peelingExcess": 0,
+      "growthPenalty": 0,
+      "correctClassInGrowth": false,
+      "forestSensitive": false,
+      "pFailure01": 0.15264953730602607,
+      "pFailure05": 0.4210040308687385,
+      "pFailure10": 0.5261647693339371,
+      "pFailure15": 0.5586037071751602
+    }
+  },
+  {
+    "id": "likelihood-61",
+    "number": 61,
+    "name": "61 · One minimum representative contains the successful class",
+    "group": "Likelihood stress tests",
+    "error": [
+      0,
+      6,
+      8,
+      9,
+      27,
+      34,
+      35,
+      37,
+      38
+    ],
+    "title": "A strong multiplicity imbalance does not determine an individual outcome.",
+    "note": "Default BFS succeeds with ten correction edges. Both class minima have weight seven, but UF’s class has one minimum representative and the opposite class has twenty-three. Conditional failure is 85.87% at p = 0.10, even though CE is a stabilizer for this E. DFS returns seven correction edges in the more probable class and fails. Compare class likelihood, correction length, and the displayed outcome separately.",
+    "tags": [
+      "minority multiplicity",
+      "unlikely success",
+      "forest sensitivity"
+    ],
+    "provenance": {
+      "method": "Deterministic fixed-weight Fisher–Yates sampling, followed by exact-criterion selection; not iid noise sampling",
+      "seed": 712836,
+      "weight": 9,
+      "criterion": "Tied minima with multiplicity ratio 1:23; successful BFS shot and failing DFS shot; conditional failure above .85 at p=.10."
+    },
+    "expected": {
+      "logical": 0,
+      "errorWeight": 9,
+      "defects": 10,
+      "correctionWeight": 10,
+      "rounds": 4,
+      "reactivations": 2,
+      "gap": 0,
+      "peelingExcess": 3,
+      "growthPenalty": 0,
+      "correctClassInGrowth": true,
+      "forestSensitive": true,
+      "pFailure01": 0.9519533384470581,
+      "pFailure05": 0.9195888445400872,
+      "pFailure10": 0.8586926674609365,
+      "pFailure15": 0.7714555143410347
+    }
+  },
+  {
+    "id": "likelihood-62",
+    "number": 62,
+    "name": "62 · Shortening C does not change its logical class",
+    "group": "Likelihood stress tests",
+    "error": [
+      10,
+      11,
+      24,
+      30,
+      31,
+      38
+    ],
+    "title": "Large peeling-cost changes need not change either confidence or recovery.",
+    "note": "Default BFS uses eight correction edges, reverse BFS uses ten, and DFS uses five. All three remain in the same logical class and fail for this error. Their conditional failure probability stays 23.09% at p = 0.10. The grown region does contain a successful correction in the other class, but none of these three forest strategies selects it. A shorter correction does not by itself fix a logical mistake.",
+    "tags": [
+      "same-class forests",
+      "peeling cost",
+      "logical failure"
+    ],
+    "provenance": {
+      "method": "Deterministic fixed-weight Fisher–Yates sampling, followed by exact-criterion selection; not iid noise sampling",
+      "seed": 700353,
+      "weight": 6,
+      "criterion": "All forests fail in the same class with correction weights 8,10,5; successful class remains feasible in the grown region."
+    },
+    "expected": {
+      "logical": 1,
+      "errorWeight": 6,
+      "defects": 6,
+      "correctionWeight": 8,
+      "rounds": 4,
+      "reactivations": 2,
+      "gap": 0,
+      "peelingExcess": 3,
+      "growthPenalty": 0,
+      "correctClassInGrowth": true,
+      "forestSensitive": false,
+      "pFailure01": 0.1340538149175236,
+      "pFailure05": 0.17344272087787208,
+      "pFailure10": 0.23088698603117222,
+      "pFailure15": 0.29837255374577487
+    }
+  },
+  {
+    "id": "likelihood-63",
+    "number": 63,
+    "name": "63 · Same summary metrics, 38.43% conditional failure",
+    "group": "Likelihood stress tests",
+    "error": [
+      4,
+      5,
+      26,
+      34,
+      37
+    ],
+    "title": "Identical scalar summaries can hide different weight spectra.",
+    "note": "Compare Example 64. In both default BFS runs, |E| = 5, |C| = 6, and eight checks are violated. Both class minima have weight five with one minimum representative each. Here the full conditional failure probability is 38.43% at p = 0.10, and the displayed shot succeeds. The two examples have different syndromes and different higher-weight spectra despite agreeing on all those summary metrics.",
+    "tags": [
+      "matched summaries",
+      "higher-weight spectrum",
+      "successful recovery"
+    ],
+    "provenance": {
+      "method": "Deterministic fixed-weight Fisher–Yates sampling, followed by exact-criterion selection; not iid noise sampling",
+      "seed": 701252,
+      "weight": 5,
+      "criterion": "Matched to Example64 on error weight, correction weight, defect count, both class minima, and both minimum multiplicities; posterior differs by over .22 at p=.10."
+    },
+    "expected": {
+      "logical": 0,
+      "errorWeight": 5,
+      "defects": 8,
+      "correctionWeight": 6,
+      "rounds": 2,
+      "reactivations": 1,
+      "gap": 0,
+      "peelingExcess": 1,
+      "growthPenalty": 0,
+      "correctClassInGrowth": true,
+      "forestSensitive": true,
+      "pFailure01": 0.48306592081563804,
+      "pFailure05": 0.42694792340611426,
+      "pFailure10": 0.3843416310612929,
+      "pFailure15": 0.3750919721067516
+    },
+    "partner": "likelihood-64",
+    "partnerNote": "Different syndromes share |E|, |C|, defect count, both class minima, and minimum multiplicities, but their full posteriors differ."
+  },
+  {
+    "id": "likelihood-64",
+    "number": 64,
+    "name": "64 · Same summary metrics, 60.58% conditional failure",
+    "group": "Likelihood stress tests",
+    "error": [
+      5,
+      11,
+      20,
+      35,
+      40
+    ],
+    "title": "The full syndrome geometry carries information absent from those scalar summaries.",
+    "note": "Compare Example 63. Default BFS again has |E| = 5, |C| = 6, eight defects, and a unique weight-five minimum in each class. This syndrome instead gives 60.58% conditional failure at p = 0.10, and the displayed shot fails. The difference from 38.43% cannot be recovered from the shared weights, counts, or defect total alone; the remaining spectrum matters. These are two selected cases, not a measured logical-error-rate comparison.",
+    "tags": [
+      "matched summaries",
+      "higher-weight spectrum",
+      "logical failure"
+    ],
+    "provenance": {
+      "method": "Deterministic fixed-weight Fisher–Yates sampling, followed by exact-criterion selection; not iid noise sampling",
+      "seed": 715202,
+      "weight": 5,
+      "criterion": "Matched to Example63 on error weight, correction weight, defect count, both class minima, and both minimum multiplicities; posterior differs by over .22 at p=.10."
+    },
+    "expected": {
+      "logical": 1,
+      "errorWeight": 5,
+      "defects": 8,
+      "correctionWeight": 6,
+      "rounds": 2,
+      "reactivations": 1,
+      "gap": 0,
+      "peelingExcess": 1,
+      "growthPenalty": 0,
+      "correctClassInGrowth": true,
+      "forestSensitive": true,
+      "pFailure01": 0.5187339975830284,
+      "pFailure05": 0.5728620110690834,
+      "pFailure10": 0.6058449476754457,
+      "pFailure15": 0.6091119296072139
+    },
+    "partner": "likelihood-63",
+    "partnerNote": "Different syndromes share |E|, |C|, defect count, both class minima, and minimum multiplicities, but their full posteriors differ."
+  },
+  {
+    "id": "perturbation-65",
+    "number": 65,
+    "name": "65 · Dense growth trap before q4",
+    "group": "Perturbation studies",
+    "error": [
+      3,
+      9,
+      14,
+      20,
+      22,
+      23,
+      24,
+      25,
+      26,
+      31,
+      33,
+      34,
+      35,
+      40
+    ],
+    "title": "A nearly saturated syndrome can still hide the successful class from growth.",
+    "note": "E has weight 14 and creates 18 defects. UF finishes growth in one tick, but its grown support admits no correction in the successful class. Adding q4 in the companion removes one defect and rewrites 20 correction edges. Exact residual witness: CE = Z̄ · S2 S3 S7 S8 S10 S11 S14 S15 S16 S18 S19 S20.",
+    "tags": [
+      "single-qubit",
+      "growth exclusion",
+      "dense syndrome"
+    ],
+    "partner": "perturbation-66",
+    "partnerNote": "The paired case changes only q4; 20 correction-edge selections change. Adding q4 changes the default BFS outcome from failure to success.",
+    "provenance": {
+      "method": "deterministic search",
+      "seed": 965171,
+      "mode": "fixed",
+      "weight": 14,
+      "toggledQubits": [],
+      "criterion": "A boundary toggle restores the successful class after a 20-edge correction rewrite."
+    },
+    "expected": {
+      "logical": 1,
+      "errorWeight": 14,
+      "defects": 18,
+      "correctionWeight": 12,
+      "rounds": 1,
+      "reactivations": 1,
+      "gap": 0,
+      "peelingExcess": 2,
+      "growthPenalty": 0,
+      "correctClassInGrowth": false,
+      "forestSensitive": false,
+      "correction": [
+        1,
+        2,
+        3,
+        17,
+        26,
+        27,
+        29,
+        32,
+        34,
+        37,
+        38,
+        40
+      ],
+      "stabilizers": [
+        1,
+        2,
+        6,
+        7,
+        9,
+        10,
+        13,
+        14,
+        15,
+        17,
+        18,
+        19
+      ],
+      "forestOutcomes": [
+        {
+          "strategy": "bfs",
+          "logical": 1,
+          "correctionWeight": 12
+        },
+        {
+          "strategy": "reverse-bfs",
+          "logical": 1,
+          "correctionWeight": 10
+        },
+        {
+          "strategy": "dfs",
+          "logical": 1,
+          "correctionWeight": 10
+        }
+      ]
+    },
+    "pair": {
+      "qubit": 4,
+      "changedCorrection": 20,
+      "changedCorrectionEdges": [
+        0,
+        1,
+        3,
+        6,
+        8,
+        11,
+        14,
+        16,
+        17,
+        18,
+        21,
+        24,
+        26,
+        27,
+        29,
+        32,
+        34,
+        37,
+        38,
+        40
+      ],
+      "residualChange": [
+        0,
+        1,
+        3,
+        4,
+        6,
+        8,
+        11,
+        14,
+        16,
+        17,
+        18,
+        21,
+        24,
+        26,
+        27,
+        29,
+        32,
+        34,
+        37,
+        38,
+        40
+      ],
+      "relation": "single-qubit"
+    }
+  },
+  {
+    "id": "perturbation-66",
+    "number": 66,
+    "name": "66 · Add q4: a boundary rescue",
+    "group": "Perturbation studies",
+    "error": [
+      3,
+      4,
+      9,
+      14,
+      20,
+      22,
+      23,
+      24,
+      25,
+      26,
+      31,
+      33,
+      34,
+      35,
+      40
+    ],
+    "title": "One extra boundary error reopens the successful class.",
+    "note": "Adding only q4 to Example 65 raises |E| from 14 to 15 while reducing the syndrome from 18 to 17 defects. Growth now takes two ticks, and the successful class becomes feasible. The correction shrinks from 12 to 10 edges even though 20 edge selections change. Exact residual witness: CE = S1 S3 S4 S5 S6 S7 S8 S11 S13 S16 S17 S18 S19.",
+    "tags": [
+      "single-qubit",
+      "growth exclusion",
+      "dense syndrome"
+    ],
+    "partner": "perturbation-65",
+    "partnerNote": "The paired case changes only q4; 20 correction-edge selections change. Adding q4 changes the default BFS outcome from failure to success.",
+    "provenance": {
+      "method": "deterministic search",
+      "seed": 965171,
+      "mode": "fixed",
+      "weight": 14,
+      "toggledQubits": [
+        4
+      ],
+      "criterion": "A boundary toggle restores the successful class after a 20-edge correction rewrite."
+    },
+    "expected": {
+      "logical": 0,
+      "errorWeight": 15,
+      "defects": 17,
+      "correctionWeight": 10,
+      "rounds": 2,
+      "reactivations": 1,
+      "gap": 0,
+      "peelingExcess": 1,
+      "growthPenalty": 0,
+      "correctClassInGrowth": true,
+      "forestSensitive": false,
+      "correction": [
+        0,
+        2,
+        6,
+        8,
+        11,
+        14,
+        16,
+        18,
+        21,
+        24
+      ],
+      "stabilizers": [
+        0,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        10,
+        12,
+        15,
+        16,
+        17,
+        18
+      ],
+      "forestOutcomes": [
+        {
+          "strategy": "bfs",
+          "logical": 0,
+          "correctionWeight": 10
+        },
+        {
+          "strategy": "reverse-bfs",
+          "logical": 0,
+          "correctionWeight": 10
+        },
+        {
+          "strategy": "dfs",
+          "logical": 0,
+          "correctionWeight": 10
+        }
+      ]
+    },
+    "pair": {
+      "qubit": 4,
+      "changedCorrection": 20,
+      "changedCorrectionEdges": [
+        0,
+        1,
+        3,
+        6,
+        8,
+        11,
+        14,
+        16,
+        17,
+        18,
+        21,
+        24,
+        26,
+        27,
+        29,
+        32,
+        34,
+        37,
+        38,
+        40
+      ],
+      "residualChange": [
+        0,
+        1,
+        3,
+        4,
+        6,
+        8,
+        11,
+        14,
+        16,
+        17,
+        18,
+        21,
+        24,
+        26,
+        27,
+        29,
+        32,
+        34,
+        37,
+        38,
+        40
+      ],
+      "relation": "single-qubit"
+    }
+  },
+  {
+    "id": "perturbation-67",
+    "number": 67,
+    "name": "67 · Before q14: successful dense recovery",
+    "group": "Perturbation studies",
+    "error": [
+      3,
+      6,
+      8,
+      9,
+      11,
+      13,
+      16,
+      19,
+      20,
+      23,
+      25,
+      29,
+      32,
+      36,
+      40
+    ],
+    "title": "A successful dense configuration can sit next to a growth trap.",
+    "note": "The 15-qubit error creates 15 defects. Default BFS succeeds after four growth ticks with an 11-edge correction. The companion adds only q14 and changes 20 correction edges. Exact residual witness: CE = S1 S7 S10 S15 S20.",
+    "tags": [
+      "single-qubit",
+      "growth exclusion",
+      "boundary"
+    ],
+    "partner": "perturbation-68",
+    "partnerNote": "The paired case changes only q14; 20 correction-edge selections change. Adding q14 changes the default BFS outcome from success to failure.",
+    "provenance": {
+      "method": "deterministic search",
+      "seed": 965106,
+      "mode": "fixed",
+      "weight": 15,
+      "toggledQubits": [],
+      "criterion": "A boundary toggle excludes the successful class and shortens growth, changing 20 correction edges."
+    },
+    "expected": {
+      "logical": 0,
+      "errorWeight": 15,
+      "defects": 15,
+      "correctionWeight": 11,
+      "rounds": 4,
+      "reactivations": 2,
+      "gap": 0,
+      "peelingExcess": 2,
+      "growthPenalty": 0,
+      "correctClassInGrowth": true,
+      "forestSensitive": false,
+      "correction": [
+        0,
+        3,
+        5,
+        8,
+        13,
+        16,
+        19,
+        20,
+        23,
+        24,
+        30
+      ],
+      "stabilizers": [
+        0,
+        6,
+        9,
+        14,
+        19
+      ],
+      "forestOutcomes": [
+        {
+          "strategy": "bfs",
+          "logical": 0,
+          "correctionWeight": 11
+        },
+        {
+          "strategy": "reverse-bfs",
+          "logical": 0,
+          "correctionWeight": 13
+        },
+        {
+          "strategy": "dfs",
+          "logical": 0,
+          "correctionWeight": 9
+        }
+      ]
+    },
+    "pair": {
+      "qubit": 14,
+      "changedCorrection": 20,
+      "changedCorrectionEdges": [
+        0,
+        3,
+        5,
+        7,
+        8,
+        13,
+        16,
+        18,
+        19,
+        20,
+        23,
+        24,
+        25,
+        27,
+        28,
+        30,
+        31,
+        34,
+        37,
+        39
+      ],
+      "residualChange": [
+        0,
+        3,
+        5,
+        7,
+        8,
+        13,
+        14,
+        16,
+        18,
+        19,
+        20,
+        23,
+        24,
+        25,
+        27,
+        28,
+        30,
+        31,
+        34,
+        37,
+        39
+      ],
+      "relation": "single-qubit"
+    }
+  },
+  {
+    "id": "perturbation-68",
+    "number": 68,
+    "name": "68 · Add q14: shorter growth, logical failure",
+    "group": "Perturbation studies",
+    "error": [
+      3,
+      6,
+      8,
+      9,
+      11,
+      13,
+      14,
+      16,
+      19,
+      20,
+      23,
+      25,
+      29,
+      32,
+      36,
+      40
+    ],
+    "title": "Less growth can exclude every successful correction.",
+    "note": "Adding q14 removes one boundary-adjacent defect. Growth drops from four ticks to two and the correction shrinks from 11 to 9 edges, but the new grown support excludes the successful class. No choice of peeling forest confined to that support can repair this shot. Exact residual witness: CE = Z̄ · S4 S7 S8 S10 S11 S12 S15 S16 S19.",
+    "tags": [
+      "single-qubit",
+      "growth exclusion",
+      "boundary"
+    ],
+    "partner": "perturbation-67",
+    "partnerNote": "The paired case changes only q14; 20 correction-edge selections change. Adding q14 changes the default BFS outcome from success to failure.",
+    "provenance": {
+      "method": "deterministic search",
+      "seed": 965106,
+      "mode": "fixed",
+      "weight": 15,
+      "toggledQubits": [
+        14
+      ],
+      "criterion": "A boundary toggle excludes the successful class and shortens growth, changing 20 correction edges."
+    },
+    "expected": {
+      "logical": 1,
+      "errorWeight": 16,
+      "defects": 14,
+      "correctionWeight": 9,
+      "rounds": 2,
+      "reactivations": 1,
+      "gap": 0,
+      "peelingExcess": 0,
+      "growthPenalty": 0,
+      "correctClassInGrowth": false,
+      "forestSensitive": false,
+      "correction": [
+        7,
+        18,
+        25,
+        27,
+        28,
+        31,
+        34,
+        37,
+        39
+      ],
+      "stabilizers": [
+        3,
+        6,
+        7,
+        9,
+        10,
+        11,
+        14,
+        15,
+        18
+      ],
+      "forestOutcomes": [
+        {
+          "strategy": "bfs",
+          "logical": 1,
+          "correctionWeight": 9
+        },
+        {
+          "strategy": "reverse-bfs",
+          "logical": 1,
+          "correctionWeight": 9
+        },
+        {
+          "strategy": "dfs",
+          "logical": 1,
+          "correctionWeight": 9
+        }
+      ]
+    },
+    "pair": {
+      "qubit": 14,
+      "changedCorrection": 20,
+      "changedCorrectionEdges": [
+        0,
+        3,
+        5,
+        7,
+        8,
+        13,
+        16,
+        18,
+        19,
+        20,
+        23,
+        24,
+        25,
+        27,
+        28,
+        30,
+        31,
+        34,
+        37,
+        39
+      ],
+      "residualChange": [
+        0,
+        3,
+        5,
+        7,
+        8,
+        13,
+        14,
+        16,
+        18,
+        19,
+        20,
+        23,
+        24,
+        25,
+        27,
+        28,
+        30,
+        31,
+        34,
+        37,
+        39
+      ],
+      "relation": "single-qubit"
+    }
+  },
+  {
+    "id": "perturbation-69",
+    "number": 69,
+    "name": "69 · Five errors, eleven correction edges",
+    "group": "Perturbation studies",
+    "error": [
+      11,
+      27,
+      33,
+      35,
+      37
+    ],
+    "title": "A small error can induce a much heavier correction.",
+    "note": "The error has weight five, but BFS selects eleven correction edges: six more than the minimum in its class on the grown support. All three implemented forests nevertheless succeed. Adding q17 produces the companion. Exact residual witness: CE = S4 S5 S11 S14 S15 S16.",
+    "tags": [
+      "single-qubit",
+      "peeling cost",
+      "logical success"
+    ],
+    "partner": "perturbation-70",
+    "partnerNote": "The paired case changes only q17; 17 correction-edge selections change. Adding q17 changes the default BFS outcome from success to success.",
+    "provenance": {
+      "method": "deterministic search",
+      "seed": 965547,
+      "mode": "fixed",
+      "weight": 5,
+      "toggledQubits": [],
+      "criterion": "A cut-qubit toggle changes 17 correction edges and removes five selected edges while both shots succeed."
+    },
+    "expected": {
+      "logical": 0,
+      "errorWeight": 5,
+      "defects": 6,
+      "correctionWeight": 11,
+      "rounds": 4,
+      "reactivations": 1,
+      "gap": 0,
+      "peelingExcess": 6,
+      "growthPenalty": 0,
+      "correctClassInGrowth": true,
+      "forestSensitive": false,
+      "correction": [
+        3,
+        4,
+        8,
+        9,
+        10,
+        11,
+        13,
+        14,
+        18,
+        19,
+        20
+      ],
+      "stabilizers": [
+        3,
+        4,
+        10,
+        13,
+        14,
+        15
+      ],
+      "forestOutcomes": [
+        {
+          "strategy": "bfs",
+          "logical": 0,
+          "correctionWeight": 11
+        },
+        {
+          "strategy": "reverse-bfs",
+          "logical": 0,
+          "correctionWeight": 11
+        },
+        {
+          "strategy": "dfs",
+          "logical": 0,
+          "correctionWeight": 7
+        }
+      ]
+    },
+    "pair": {
+      "qubit": 17,
+      "changedCorrection": 17,
+      "changedCorrectionEdges": [
+        3,
+        4,
+        8,
+        9,
+        10,
+        11,
+        13,
+        14,
+        17,
+        18,
+        19,
+        20,
+        21,
+        27,
+        34,
+        35,
+        38
+      ],
+      "residualChange": [
+        3,
+        4,
+        8,
+        9,
+        10,
+        11,
+        13,
+        14,
+        18,
+        19,
+        20,
+        21,
+        27,
+        34,
+        35,
+        38
+      ],
+      "relation": "single-qubit"
+    }
+  },
+  {
+    "id": "perturbation-70",
+    "number": 70,
+    "name": "70 · Add q17: seventeen edge choices change",
+    "group": "Perturbation studies",
+    "error": [
+      11,
+      17,
+      27,
+      33,
+      35,
+      37
+    ],
+    "title": "A large correction rewrite can preserve logical success.",
+    "note": "The one-qubit addition rewrites 17 correction edges and lowers |C| from 11 to 6. The defect count stays at six and growth falls from four ticks to two. Both members succeed: q17 changes the error cut parity and the correction cut parity together. Exact residual witness: CE = S12 S17.",
+    "tags": [
+      "single-qubit",
+      "peeling cost",
+      "logical success"
+    ],
+    "partner": "perturbation-69",
+    "partnerNote": "The paired case changes only q17; 17 correction-edge selections change. Adding q17 changes the default BFS outcome from success to success.",
+    "provenance": {
+      "method": "deterministic search",
+      "seed": 965547,
+      "mode": "fixed",
+      "weight": 5,
+      "toggledQubits": [
+        17
+      ],
+      "criterion": "A cut-qubit toggle changes 17 correction edges and removes five selected edges while both shots succeed."
+    },
+    "expected": {
+      "logical": 0,
+      "errorWeight": 6,
+      "defects": 6,
+      "correctionWeight": 6,
+      "rounds": 2,
+      "reactivations": 1,
+      "gap": 1,
+      "peelingExcess": 2,
+      "growthPenalty": 0,
+      "correctClassInGrowth": true,
+      "forestSensitive": false,
+      "correction": [
+        17,
+        21,
+        27,
+        34,
+        35,
+        38
+      ],
+      "stabilizers": [
+        11,
+        16
+      ],
+      "forestOutcomes": [
+        {
+          "strategy": "bfs",
+          "logical": 0,
+          "correctionWeight": 6
+        },
+        {
+          "strategy": "reverse-bfs",
+          "logical": 0,
+          "correctionWeight": 4
+        },
+        {
+          "strategy": "dfs",
+          "logical": 0,
+          "correctionWeight": 4
+        }
+      ]
+    },
+    "pair": {
+      "qubit": 17,
+      "changedCorrection": 17,
+      "changedCorrectionEdges": [
+        3,
+        4,
+        8,
+        9,
+        10,
+        11,
+        13,
+        14,
+        17,
+        18,
+        19,
+        20,
+        21,
+        27,
+        34,
+        35,
+        38
+      ],
+      "residualChange": [
+        3,
+        4,
+        8,
+        9,
+        10,
+        11,
+        13,
+        14,
+        18,
+        19,
+        20,
+        21,
+        27,
+        34,
+        35,
+        38
+      ],
+      "relation": "single-qubit"
+    }
+  },
+  {
+    "id": "perturbation-71",
+    "number": 71,
+    "name": "71 · Failure with a tied class minimum",
+    "group": "Perturbation studies",
+    "error": [
+      3,
+      4,
+      11,
+      12,
+      22,
+      23,
+      25,
+      28,
+      34,
+      36
+    ],
+    "title": "A failed shot can have an available successful class.",
+    "note": "UF fails with a ten-edge correction, although the successful logical class fits inside the grown support. Both global class minima have the same weight. The companion adds q10 and rewrites 14 correction edges. Exact residual witness: CE = Z̄ · S1 S5 S15.",
+    "tags": [
+      "single-qubit",
+      "misleading gap",
+      "logical failure"
+    ],
+    "partner": "perturbation-72",
+    "partnerNote": "The paired case changes only q10; 14 correction-edge selections change. Adding q10 changes the default BFS outcome from failure to failure.",
+    "provenance": {
+      "method": "deterministic search",
+      "seed": 965376,
+      "mode": "fixed",
+      "weight": 10,
+      "toggledQubits": [],
+      "criterion": "A boundary toggle makes the selected correction four edges shorter and increases its minimum-weight class advantage while failure persists."
+    },
+    "expected": {
+      "logical": 1,
+      "errorWeight": 10,
+      "defects": 13,
+      "correctionWeight": 10,
+      "rounds": 2,
+      "reactivations": 1,
+      "gap": 0,
+      "peelingExcess": 3,
+      "growthPenalty": 0,
+      "correctClassInGrowth": true,
+      "forestSensitive": false,
+      "correction": [
+        0,
+        3,
+        5,
+        9,
+        10,
+        13,
+        19,
+        22,
+        23,
+        34
+      ],
+      "stabilizers": [
+        0,
+        4,
+        14
+      ],
+      "forestOutcomes": [
+        {
+          "strategy": "bfs",
+          "logical": 1,
+          "correctionWeight": 10
+        },
+        {
+          "strategy": "reverse-bfs",
+          "logical": 1,
+          "correctionWeight": 12
+        },
+        {
+          "strategy": "dfs",
+          "logical": 1,
+          "correctionWeight": 11
+        }
+      ]
+    },
+    "pair": {
+      "qubit": 10,
+      "changedCorrection": 14,
+      "changedCorrectionEdges": [
+        0,
+        5,
+        9,
+        10,
+        12,
+        13,
+        19,
+        22,
+        23,
+        25,
+        32,
+        34,
+        38,
+        40
+      ],
+      "residualChange": [
+        0,
+        5,
+        9,
+        12,
+        13,
+        19,
+        22,
+        23,
+        25,
+        32,
+        34,
+        38,
+        40
+      ],
+      "relation": "single-qubit"
+    }
+  },
+  {
+    "id": "perturbation-72",
+    "number": 72,
+    "name": "72 · Add q10: a larger gap still fails",
+    "group": "Perturbation studies",
+    "error": [
+      3,
+      4,
+      10,
+      11,
+      12,
+      22,
+      23,
+      25,
+      28,
+      34,
+      36
+    ],
+    "title": "A larger minimum-weight gap does not certify this shot.",
+    "note": "After adding q10, |C| drops from 10 to 6 and the signed minimum-weight gap increases from zero to two in favor of UF’s class. The shot still fails; now the successful class is absent from grown support. This selected pair is not a calibration or error-rate estimate. Exact residual witness: CE = Z̄ · S5 S10 S13 S14 S18 S19.",
+    "tags": [
+      "single-qubit",
+      "misleading gap",
+      "logical failure"
+    ],
+    "partner": "perturbation-71",
+    "partnerNote": "The paired case changes only q10; 14 correction-edge selections change. Adding q10 changes the default BFS outcome from failure to failure.",
+    "provenance": {
+      "method": "deterministic search",
+      "seed": 965376,
+      "mode": "fixed",
+      "weight": 10,
+      "toggledQubits": [
+        10
+      ],
+      "criterion": "A boundary toggle makes the selected correction four edges shorter and increases its minimum-weight class advantage while failure persists."
+    },
+    "expected": {
+      "logical": 1,
+      "errorWeight": 11,
+      "defects": 12,
+      "correctionWeight": 6,
+      "rounds": 1,
+      "reactivations": 1,
+      "gap": 2,
+      "peelingExcess": 0,
+      "growthPenalty": 0,
+      "correctClassInGrowth": false,
+      "forestSensitive": false,
+      "correction": [
+        3,
+        12,
+        25,
+        32,
+        38,
+        40
+      ],
+      "stabilizers": [
+        4,
+        9,
+        12,
+        13,
+        17,
+        18
+      ],
+      "forestOutcomes": [
+        {
+          "strategy": "bfs",
+          "logical": 1,
+          "correctionWeight": 6
+        },
+        {
+          "strategy": "reverse-bfs",
+          "logical": 1,
+          "correctionWeight": 6
+        },
+        {
+          "strategy": "dfs",
+          "logical": 1,
+          "correctionWeight": 6
+        }
+      ]
+    },
+    "pair": {
+      "qubit": 10,
+      "changedCorrection": 14,
+      "changedCorrectionEdges": [
+        0,
+        5,
+        9,
+        10,
+        12,
+        13,
+        19,
+        22,
+        23,
+        25,
+        32,
+        34,
+        38,
+        40
+      ],
+      "residualChange": [
+        0,
+        5,
+        9,
+        12,
+        13,
+        19,
+        22,
+        23,
+        25,
+        32,
+        34,
+        38,
+        40
+      ],
+      "relation": "single-qubit"
+    }
+  },
+  {
+    "id": "perturbation-73",
+    "number": 73,
+    "name": "73 · Before q22: six-edge successful recovery",
+    "group": "Perturbation studies",
+    "error": [
+      2,
+      6,
+      7,
+      13,
+      14,
+      15,
+      16,
+      21,
+      23,
+      24,
+      29,
+      33,
+      34,
+      39
+    ],
+    "title": "An economical correction can be highly sensitive to one local change.",
+    "note": "All three implemented forests succeed on this weight-14 error. BFS needs six correction edges, with no excess over the minimum inside its grown class. Adding q22 preserves the nine-defect count but changes the growth and forest. Exact residual witness: CE = S7 S8 S12 S14 S15 S19 S20.",
+    "tags": [
+      "single-qubit",
+      "forest sensitivity",
+      "peeling cost"
+    ],
+    "partner": "perturbation-74",
+    "partnerNote": "The paired case changes only q22; 20 correction-edge selections change. Adding q22 changes the default BFS outcome from success to failure.",
+    "provenance": {
+      "method": "deterministic search",
+      "seed": 965204,
+      "mode": "fixed",
+      "weight": 14,
+      "toggledQubits": [],
+      "criterion": "A cut toggle preserves nine defects but changes 20 correction edges and raises BFS peeling excess from zero to ten."
+    },
+    "expected": {
+      "logical": 0,
+      "errorWeight": 14,
+      "defects": 9,
+      "correctionWeight": 6,
+      "rounds": 2,
+      "reactivations": 1,
+      "gap": 1,
+      "peelingExcess": 0,
+      "growthPenalty": 0,
+      "correctClassInGrowth": true,
+      "forestSensitive": false,
+      "correction": [
+        2,
+        12,
+        15,
+        21,
+        31,
+        35
+      ],
+      "stabilizers": [
+        6,
+        7,
+        11,
+        13,
+        14,
+        18,
+        19
+      ],
+      "forestOutcomes": [
+        {
+          "strategy": "bfs",
+          "logical": 0,
+          "correctionWeight": 6
+        },
+        {
+          "strategy": "reverse-bfs",
+          "logical": 0,
+          "correctionWeight": 6
+        },
+        {
+          "strategy": "dfs",
+          "logical": 0,
+          "correctionWeight": 6
+        }
+      ]
+    },
+    "pair": {
+      "qubit": 22,
+      "changedCorrection": 20,
+      "changedCorrectionEdges": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        18,
+        19,
+        20,
+        21,
+        23,
+        24,
+        31,
+        35
+      ],
+      "residualChange": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        18,
+        19,
+        20,
+        21,
+        22,
+        23,
+        24,
+        31,
+        35
+      ],
+      "relation": "single-qubit"
+    }
+  },
+  {
+    "id": "perturbation-74",
+    "number": 74,
+    "name": "74 · Add q22: ten excess peeling edges",
+    "group": "Perturbation studies",
+    "error": [
+      2,
+      6,
+      7,
+      13,
+      14,
+      15,
+      16,
+      21,
+      22,
+      23,
+      24,
+      29,
+      33,
+      34,
+      39
+    ],
+    "title": "One extra error can make the peeling forest decisive.",
+    "note": "Only q22 is added, yet 20 correction-edge choices change and BFS grows |C| from 6 to 16. Its peeling excess is ten; the successful class remains feasible in grown support, and forest choice changes the logical outcome. Nine defects in each shot therefore conceal very different decoder decisions. Exact residual witness: CE = Z̄ · S1 S2 S3 S4 S5 S6 S11 S13 S14 S15 S16 S17 S18.",
+    "tags": [
+      "single-qubit",
+      "forest sensitivity",
+      "peeling cost"
+    ],
+    "partner": "perturbation-73",
+    "partnerNote": "The paired case changes only q22; 20 correction-edge selections change. Adding q22 changes the default BFS outcome from success to failure.",
+    "provenance": {
+      "method": "deterministic search",
+      "seed": 965204,
+      "mode": "fixed",
+      "weight": 14,
+      "toggledQubits": [
+        22
+      ],
+      "criterion": "A cut toggle preserves nine defects but changes 20 correction edges and raises BFS peeling excess from zero to ten."
+    },
+    "expected": {
+      "logical": 1,
+      "errorWeight": 15,
+      "defects": 9,
+      "correctionWeight": 16,
+      "rounds": 4,
+      "reactivations": 2,
+      "gap": 0,
+      "peelingExcess": 10,
+      "growthPenalty": 0,
+      "correctClassInGrowth": true,
+      "forestSensitive": true,
+      "correction": [
+        0,
+        1,
+        3,
+        4,
+        8,
+        9,
+        10,
+        11,
+        13,
+        14,
+        15,
+        18,
+        19,
+        20,
+        23,
+        24
+      ],
+      "stabilizers": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        10,
+        12,
+        13,
+        14,
+        15,
+        16,
+        17
+      ],
+      "forestOutcomes": [
+        {
+          "strategy": "bfs",
+          "logical": 1,
+          "correctionWeight": 16
+        },
+        {
+          "strategy": "reverse-bfs",
+          "logical": 1,
+          "correctionWeight": 16
+        },
+        {
+          "strategy": "dfs",
+          "logical": 0,
+          "correctionWeight": 10
+        }
+      ]
+    },
+    "pair": {
+      "qubit": 22,
+      "changedCorrection": 20,
+      "changedCorrectionEdges": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        18,
+        19,
+        20,
+        21,
+        23,
+        24,
+        31,
+        35
+      ],
+      "residualChange": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        18,
+        19,
+        20,
+        21,
+        22,
+        23,
+        24,
+        31,
+        35
+      ],
+      "relation": "single-qubit"
+    }
+  },
+  {
+    "id": "perturbation-75",
+    "number": 75,
+    "name": "75 · Before removing q33: all forests succeed",
+    "group": "Perturbation studies",
+    "error": [
+      0,
+      2,
+      3,
+      4,
+      6,
+      8,
+      12,
+      15,
+      19,
+      26,
+      30,
+      33,
+      34,
+      37,
+      39
+    ],
+    "title": "A heavier error can be recovered by every implemented forest.",
+    "note": "This is the heavier member of the pair: |E| = 15, with 14 defects and a nine-edge BFS correction. All three implemented forests succeed. Remove q33 in the companion to see 16 correction-edge choices change. Exact residual witness: CE = S1 S3 S4 S5 S6 S8 S9 S10 S11 S14 S15.",
+    "tags": [
+      "single-qubit",
+      "forest sensitivity",
+      "nonmonotonic outcome"
+    ],
+    "partner": "perturbation-76",
+    "partnerNote": "The paired case changes only q33; 16 correction-edge selections change. Removing q33 changes the default BFS outcome from success to failure.",
+    "provenance": {
+      "method": "deterministic search",
+      "seed": 965281,
+      "mode": "fixed",
+      "weight": 14,
+      "toggledQubits": [
+        33
+      ],
+      "criterion": "Removing a single interior error changes 16 correction edges at constant correction weight and turns forest-independent success into BFS failure."
+    },
+    "expected": {
+      "logical": 0,
+      "errorWeight": 15,
+      "defects": 14,
+      "correctionWeight": 9,
+      "rounds": 1,
+      "reactivations": 1,
+      "gap": 0,
+      "peelingExcess": 0,
+      "growthPenalty": 0,
+      "correctClassInGrowth": true,
+      "forestSensitive": false,
+      "correction": [
+        6,
+        8,
+        18,
+        25,
+        29,
+        34,
+        35,
+        37,
+        39
+      ],
+      "stabilizers": [
+        0,
+        2,
+        3,
+        4,
+        5,
+        7,
+        8,
+        9,
+        10,
+        13,
+        14
+      ],
+      "forestOutcomes": [
+        {
+          "strategy": "bfs",
+          "logical": 0,
+          "correctionWeight": 9
+        },
+        {
+          "strategy": "reverse-bfs",
+          "logical": 0,
+          "correctionWeight": 9
+        },
+        {
+          "strategy": "dfs",
+          "logical": 0,
+          "correctionWeight": 9
+        }
+      ]
+    },
+    "pair": {
+      "qubit": 33,
+      "changedCorrection": 16,
+      "changedCorrectionEdges": [
+        0,
+        5,
+        6,
+        8,
+        9,
+        20,
+        22,
+        25,
+        29,
+        30,
+        31,
+        34,
+        35,
+        37,
+        38,
+        39
+      ],
+      "residualChange": [
+        0,
+        5,
+        6,
+        8,
+        9,
+        20,
+        22,
+        25,
+        29,
+        30,
+        31,
+        33,
+        34,
+        35,
+        37,
+        38,
+        39
+      ],
+      "relation": "single-qubit"
+    }
+  },
+  {
+    "id": "perturbation-76",
+    "number": 76,
+    "name": "76 · Remove q33: recovery becomes ambiguous",
+    "group": "Perturbation studies",
+    "error": [
+      0,
+      2,
+      3,
+      4,
+      6,
+      8,
+      12,
+      15,
+      19,
+      26,
+      30,
+      34,
+      37,
+      39
+    ],
+    "title": "Removing one physical error can worsen this particular outcome.",
+    "note": "Removing q33 reduces |E| from 15 to 14 and the defect count from 14 to 12. The correction weight stays at nine, but BFS now fails and the three forest strategies disagree. The signed minimum-weight gap remains zero in both shots. Exact residual witness: CE = Z̄ · S3 S4 S5 S6 S7 S8 S13 S14 S15 S16 S18.",
+    "tags": [
+      "single-qubit",
+      "forest sensitivity",
+      "nonmonotonic outcome"
+    ],
+    "partner": "perturbation-75",
+    "partnerNote": "The paired case changes only q33; 16 correction-edge selections change. Removing q33 changes the default BFS outcome from success to failure.",
+    "provenance": {
+      "method": "deterministic search",
+      "seed": 965281,
+      "mode": "fixed",
+      "weight": 14,
+      "toggledQubits": [],
+      "criterion": "Removing a single interior error changes 16 correction edges at constant correction weight and turns forest-independent success into BFS failure."
+    },
+    "expected": {
+      "logical": 1,
+      "errorWeight": 14,
+      "defects": 12,
+      "correctionWeight": 9,
+      "rounds": 2,
+      "reactivations": 1,
+      "gap": 0,
+      "peelingExcess": 1,
+      "growthPenalty": 0,
+      "correctClassInGrowth": true,
+      "forestSensitive": true,
+      "correction": [
+        0,
+        5,
+        9,
+        18,
+        20,
+        22,
+        30,
+        31,
+        38
+      ],
+      "stabilizers": [
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        12,
+        13,
+        14,
+        15,
+        17
+      ],
+      "forestOutcomes": [
+        {
+          "strategy": "bfs",
+          "logical": 1,
+          "correctionWeight": 9
+        },
+        {
+          "strategy": "reverse-bfs",
+          "logical": 1,
+          "correctionWeight": 15
+        },
+        {
+          "strategy": "dfs",
+          "logical": 0,
+          "correctionWeight": 10
+        }
+      ]
+    },
+    "pair": {
+      "qubit": 33,
+      "changedCorrection": 16,
+      "changedCorrectionEdges": [
+        0,
+        5,
+        6,
+        8,
+        9,
+        20,
+        22,
+        25,
+        29,
+        30,
+        31,
+        34,
+        35,
+        37,
+        38,
+        39
+      ],
+      "residualChange": [
+        0,
+        5,
+        6,
+        8,
+        9,
+        20,
+        22,
+        25,
+        29,
+        30,
+        31,
+        33,
+        34,
+        35,
+        37,
+        38,
+        39
+      ],
+      "relation": "single-qubit"
+    }
+  },
+  {
+    "id": "perturbation-77",
+    "number": 77,
+    "name": "77 · Fourteen defects, successful recovery",
+    "group": "Perturbation studies",
+    "error": [
+      0,
+      5,
+      8,
+      9,
+      17,
+      21,
+      24,
+      28,
+      30,
+      33,
+      34,
+      36,
+      38
+    ],
+    "title": "A negative minimum-weight gap can accompany a successful UF shot.",
+    "note": "The weight-13 error has 14 defects. BFS returns nine correction edges and succeeds despite a signed minimum-weight gap of −1. The companion adds only q6. Exact residual witness: CE = S1 S7 S10 S12 S15 S17 S20.",
+    "tags": [
+      "single-qubit",
+      "fewer defects",
+      "misleading gap"
+    ],
+    "partner": "perturbation-78",
+    "partnerNote": "The paired case changes only q6; 16 correction-edge selections change. Adding q6 changes the default BFS outcome from success to failure.",
+    "provenance": {
+      "method": "deterministic search",
+      "seed": 965269,
+      "mode": "fixed",
+      "weight": 13,
+      "toggledQubits": [],
+      "criterion": "Adding an interior qubit annihilates two defects while correction weight and signed gap stay fixed and BFS changes from success to failure."
+    },
+    "expected": {
+      "logical": 0,
+      "errorWeight": 13,
+      "defects": 14,
+      "correctionWeight": 9,
+      "rounds": 1,
+      "reactivations": 1,
+      "gap": -1,
+      "peelingExcess": 0,
+      "growthPenalty": 0,
+      "correctClassInGrowth": true,
+      "forestSensitive": false,
+      "correction": [
+        6,
+        8,
+        17,
+        25,
+        28,
+        29,
+        32,
+        37,
+        40
+      ],
+      "stabilizers": [
+        0,
+        6,
+        9,
+        11,
+        14,
+        16,
+        19
+      ],
+      "forestOutcomes": [
+        {
+          "strategy": "bfs",
+          "logical": 0,
+          "correctionWeight": 9
+        },
+        {
+          "strategy": "reverse-bfs",
+          "logical": 0,
+          "correctionWeight": 9
+        },
+        {
+          "strategy": "dfs",
+          "logical": 0,
+          "correctionWeight": 9
+        }
+      ]
+    },
+    "pair": {
+      "qubit": 6,
+      "changedCorrection": 16,
+      "changedCorrectionEdges": [
+        0,
+        4,
+        6,
+        10,
+        14,
+        16,
+        17,
+        18,
+        20,
+        24,
+        25,
+        28,
+        29,
+        32,
+        37,
+        40
+      ],
+      "residualChange": [
+        0,
+        4,
+        10,
+        14,
+        16,
+        17,
+        18,
+        20,
+        24,
+        25,
+        28,
+        29,
+        32,
+        37,
+        40
+      ],
+      "relation": "single-qubit"
+    }
+  },
+  {
+    "id": "perturbation-78",
+    "number": 78,
+    "name": "78 · Add q6: fewer defects, logical failure",
+    "group": "Perturbation studies",
+    "error": [
+      0,
+      5,
+      6,
+      8,
+      9,
+      17,
+      21,
+      24,
+      28,
+      30,
+      33,
+      34,
+      36,
+      38
+    ],
+    "title": "Annihilating two defects can change the logical decision.",
+    "note": "Adding q6 annihilates its two endpoint defects, reducing the syndrome from 14 defects to 12. Sixteen correction-edge choices change, but |C| remains nine and the signed gap remains −1. BFS now fails; the successful class still fits in grown support, and another implemented forest can recover it. Exact residual witness: CE = Z̄ · S5 S6 S7 S11 S13 S14 S16 S17.",
+    "tags": [
+      "single-qubit",
+      "fewer defects",
+      "misleading gap"
+    ],
+    "partner": "perturbation-77",
+    "partnerNote": "The paired case changes only q6; 16 correction-edge selections change. Adding q6 changes the default BFS outcome from success to failure.",
+    "provenance": {
+      "method": "deterministic search",
+      "seed": 965269,
+      "mode": "fixed",
+      "weight": 13,
+      "toggledQubits": [
+        6
+      ],
+      "criterion": "Adding an interior qubit annihilates two defects while correction weight and signed gap stay fixed and BFS changes from success to failure."
+    },
+    "expected": {
+      "logical": 1,
+      "errorWeight": 14,
+      "defects": 12,
+      "correctionWeight": 9,
+      "rounds": 2,
+      "reactivations": 1,
+      "gap": -1,
+      "peelingExcess": 0,
+      "growthPenalty": 0,
+      "correctClassInGrowth": true,
+      "forestSensitive": true,
+      "correction": [
+        0,
+        4,
+        8,
+        10,
+        14,
+        16,
+        18,
+        20,
+        24
+      ],
+      "stabilizers": [
+        4,
+        5,
+        6,
+        10,
+        12,
+        13,
+        15,
+        16
+      ],
+      "forestOutcomes": [
+        {
+          "strategy": "bfs",
+          "logical": 1,
+          "correctionWeight": 9
+        },
+        {
+          "strategy": "reverse-bfs",
+          "logical": 1,
+          "correctionWeight": 9
+        },
+        {
+          "strategy": "dfs",
+          "logical": 0,
+          "correctionWeight": 8
+        }
+      ]
+    },
+    "pair": {
+      "qubit": 6,
+      "changedCorrection": 16,
+      "changedCorrectionEdges": [
+        0,
+        4,
+        6,
+        10,
+        14,
+        16,
+        17,
+        18,
+        20,
+        24,
+        25,
+        28,
+        29,
+        32,
+        37,
+        40
+      ],
+      "residualChange": [
+        0,
+        4,
+        10,
+        14,
+        16,
+        17,
+        18,
+        20,
+        24,
+        25,
+        28,
+        29,
+        32,
+        37,
+        40
+      ],
+      "relation": "single-qubit"
+    }
+  },
+  {
+    "id": "perturbation-79",
+    "number": 79,
+    "name": "79 · Six errors, costly successful recovery",
+    "group": "Perturbation studies",
+    "error": [
+      6,
+      13,
+      17,
+      19,
+      22,
+      36
+    ],
+    "title": "A heavy correction can still recover the logical state.",
+    "note": "This six-qubit error creates seven defects. BFS succeeds using eleven correction edges, although its grown-class minimum uses five. The companion removes q17. Exact residual witness: CE = S15 S16 S17 S18 S19 S20.",
+    "tags": [
+      "single-qubit",
+      "nonmonotonic outcome",
+      "peeling cost"
+    ],
+    "partner": "perturbation-80",
+    "partnerNote": "The paired case changes only q17; 17 correction-edge selections change. Removing q17 changes the default BFS outcome from success to failure.",
+    "provenance": {
+      "method": "deterministic search",
+      "seed": 965118,
+      "mode": "fixed",
+      "weight": 5,
+      "toggledQubits": [
+        17
+      ],
+      "criterion": "Removing a cut qubit saves five correction edges and two defects while turning successful BFS recovery into failure."
+    },
+    "expected": {
+      "logical": 0,
+      "errorWeight": 6,
+      "defects": 7,
+      "correctionWeight": 11,
+      "rounds": 4,
+      "reactivations": 2,
+      "gap": 0,
+      "peelingExcess": 6,
+      "growthPenalty": 0,
+      "correctClassInGrowth": true,
+      "forestSensitive": true,
+      "correction": [
+        6,
+        13,
+        14,
+        15,
+        16,
+        18,
+        19,
+        20,
+        21,
+        23,
+        24
+      ],
+      "stabilizers": [
+        14,
+        15,
+        16,
+        17,
+        18,
+        19
+      ],
+      "forestOutcomes": [
+        {
+          "strategy": "bfs",
+          "logical": 0,
+          "correctionWeight": 11
+        },
+        {
+          "strategy": "reverse-bfs",
+          "logical": 0,
+          "correctionWeight": 11
+        },
+        {
+          "strategy": "dfs",
+          "logical": 1,
+          "correctionWeight": 7
+        }
+      ]
+    },
+    "pair": {
+      "qubit": 17,
+      "changedCorrection": 17,
+      "changedCorrectionEdges": [
+        5,
+        6,
+        13,
+        14,
+        15,
+        16,
+        18,
+        19,
+        20,
+        21,
+        23,
+        24,
+        30,
+        34,
+        35,
+        38,
+        39
+      ],
+      "residualChange": [
+        5,
+        6,
+        13,
+        14,
+        15,
+        16,
+        17,
+        18,
+        19,
+        20,
+        21,
+        23,
+        24,
+        30,
+        34,
+        35,
+        38,
+        39
+      ],
+      "relation": "single-qubit"
+    }
+  },
+  {
+    "id": "perturbation-80",
+    "number": 80,
+    "name": "80 · Remove q17: cheaper correction fails",
+    "group": "Perturbation studies",
+    "error": [
+      6,
+      13,
+      19,
+      22,
+      36
+    ],
+    "title": "A cheaper correction after removing an error can fail.",
+    "note": "Removing q17 reduces |E| from six to five and the syndrome from seven defects to five. Seventeen correction-edge choices change; |C| falls from eleven to six, but logical recovery becomes a failure. Both shots have a zero signed minimum-weight gap and require four growth ticks. Exact residual witness: CE = Z̄ · S6 S7 S13 S15 S18.",
+    "tags": [
+      "single-qubit",
+      "nonmonotonic outcome",
+      "peeling cost"
+    ],
+    "partner": "perturbation-79",
+    "partnerNote": "The paired case changes only q17; 17 correction-edge selections change. Removing q17 changes the default BFS outcome from success to failure.",
+    "provenance": {
+      "method": "deterministic search",
+      "seed": 965118,
+      "mode": "fixed",
+      "weight": 5,
+      "toggledQubits": [],
+      "criterion": "Removing a cut qubit saves five correction edges and two defects while turning successful BFS recovery into failure."
+    },
+    "expected": {
+      "logical": 1,
+      "errorWeight": 5,
+      "defects": 5,
+      "correctionWeight": 6,
+      "rounds": 4,
+      "reactivations": 1,
+      "gap": 0,
+      "peelingExcess": 2,
+      "growthPenalty": 0,
+      "correctClassInGrowth": true,
+      "forestSensitive": false,
+      "correction": [
+        5,
+        30,
+        34,
+        35,
+        38,
+        39
+      ],
+      "stabilizers": [
+        5,
+        6,
+        12,
+        14,
+        17
+      ],
+      "forestOutcomes": [
+        {
+          "strategy": "bfs",
+          "logical": 1,
+          "correctionWeight": 6
+        },
+        {
+          "strategy": "reverse-bfs",
+          "logical": 1,
+          "correctionWeight": 10
+        },
+        {
+          "strategy": "dfs",
+          "logical": 1,
+          "correctionWeight": 6
+        }
+      ]
+    },
+    "pair": {
+      "qubit": 17,
+      "changedCorrection": 17,
+      "changedCorrectionEdges": [
+        5,
+        6,
+        13,
+        14,
+        15,
+        16,
+        18,
+        19,
+        20,
+        21,
+        23,
+        24,
+        30,
+        34,
+        35,
+        38,
+        39
+      ],
+      "residualChange": [
+        5,
+        6,
+        13,
+        14,
+        15,
+        16,
+        17,
+        18,
+        19,
+        20,
+        21,
+        23,
+        24,
+        30,
+        34,
+        35,
+        38,
+        39
+      ],
+      "relation": "single-qubit"
+    }
+  },
+  {
+    "id": "perturbation-81",
+    "number": 81,
+    "name": "81 · Before q19: boundary recovery succeeds",
+    "group": "Perturbation studies",
+    "error": [
+      7,
+      10,
+      16,
+      18,
+      21,
+      23,
+      25,
+      26,
+      30,
+      31,
+      34,
+      36,
+      38
+    ],
+    "title": "Boundary behavior depends on the geometry of the whole syndrome.",
+    "note": "UF succeeds on this 13-qubit error with 13 defects, using eight correction edges after two growth ticks. Adding the single boundary qubit q19 changes 18 correction-edge choices. Exact residual witness: CE = S2 S8 S13 S14 S16 S17.",
+    "tags": [
+      "single-qubit",
+      "boundary",
+      "growth exclusion"
+    ],
+    "partner": "perturbation-82",
+    "partnerNote": "The paired case changes only q19; 18 correction-edge selections change. Adding q19 changes the default BFS outcome from success to failure.",
+    "provenance": {
+      "method": "deterministic search",
+      "seed": 965181,
+      "mode": "fixed",
+      "weight": 13,
+      "toggledQubits": [],
+      "criterion": "Adding a boundary qubit increases syndrome density, reduces growth to one tick, and excludes the successful class."
+    },
+    "expected": {
+      "logical": 0,
+      "errorWeight": 13,
+      "defects": 13,
+      "correctionWeight": 8,
+      "rounds": 2,
+      "reactivations": 1,
+      "gap": 1,
+      "peelingExcess": 1,
+      "growthPenalty": 0,
+      "correctClassInGrowth": true,
+      "forestSensitive": false,
+      "correction": [
+        1,
+        6,
+        10,
+        13,
+        15,
+        17,
+        20,
+        23
+      ],
+      "stabilizers": [
+        1,
+        7,
+        12,
+        13,
+        15,
+        16
+      ],
+      "forestOutcomes": [
+        {
+          "strategy": "bfs",
+          "logical": 0,
+          "correctionWeight": 8
+        },
+        {
+          "strategy": "reverse-bfs",
+          "logical": 0,
+          "correctionWeight": 8
+        },
+        {
+          "strategy": "dfs",
+          "logical": 0,
+          "correctionWeight": 7
+        }
+      ]
+    },
+    "pair": {
+      "qubit": 19,
+      "changedCorrection": 18,
+      "changedCorrectionEdges": [
+        1,
+        6,
+        10,
+        13,
+        15,
+        16,
+        17,
+        18,
+        20,
+        23,
+        25,
+        26,
+        33,
+        35,
+        36,
+        37,
+        39,
+        40
+      ],
+      "residualChange": [
+        1,
+        6,
+        10,
+        13,
+        15,
+        16,
+        17,
+        18,
+        19,
+        20,
+        23,
+        25,
+        26,
+        33,
+        35,
+        36,
+        37,
+        39,
+        40
+      ],
+      "relation": "single-qubit"
+    }
+  },
+  {
+    "id": "perturbation-82",
+    "number": 82,
+    "name": "82 · Add q19: a single-tick growth trap",
+    "group": "Perturbation studies",
+    "error": [
+      7,
+      10,
+      16,
+      18,
+      19,
+      21,
+      23,
+      25,
+      26,
+      30,
+      31,
+      34,
+      36,
+      38
+    ],
+    "title": "Denser boundary-adjacent defects can stop growth too early for this shot.",
+    "note": "The added q19 creates one extra defect. Growth now stops after one tick and BFS selects ten edges, but the successful class is absent from the fully grown support. All three implemented forests fail. More defects, fewer growth ticks, and a heavier correction occur together. Exact residual witness: CE = Z̄ · S8 S12 S14 S15 S17 S19.",
+    "tags": [
+      "single-qubit",
+      "boundary",
+      "growth exclusion"
+    ],
+    "partner": "perturbation-81",
+    "partnerNote": "The paired case changes only q19; 18 correction-edge selections change. Adding q19 changes the default BFS outcome from success to failure.",
+    "provenance": {
+      "method": "deterministic search",
+      "seed": 965181,
+      "mode": "fixed",
+      "weight": 13,
+      "toggledQubits": [
+        19
+      ],
+      "criterion": "Adding a boundary qubit increases syndrome density, reduces growth to one tick, and excludes the successful class."
+    },
+    "expected": {
+      "logical": 1,
+      "errorWeight": 14,
+      "defects": 14,
+      "correctionWeight": 10,
+      "rounds": 1,
+      "reactivations": 1,
+      "gap": 0,
+      "peelingExcess": 2,
+      "growthPenalty": 0,
+      "correctClassInGrowth": false,
+      "forestSensitive": false,
+      "correction": [
+        16,
+        18,
+        25,
+        26,
+        33,
+        35,
+        36,
+        37,
+        39,
+        40
+      ],
+      "stabilizers": [
+        7,
+        11,
+        13,
+        14,
+        16,
+        18
+      ],
+      "forestOutcomes": [
+        {
+          "strategy": "bfs",
+          "logical": 1,
+          "correctionWeight": 10
+        },
+        {
+          "strategy": "reverse-bfs",
+          "logical": 1,
+          "correctionWeight": 8
+        },
+        {
+          "strategy": "dfs",
+          "logical": 1,
+          "correctionWeight": 8
+        }
+      ]
+    },
+    "pair": {
+      "qubit": 19,
+      "changedCorrection": 18,
+      "changedCorrectionEdges": [
+        1,
+        6,
+        10,
+        13,
+        15,
+        16,
+        17,
+        18,
+        20,
+        23,
+        25,
+        26,
+        33,
+        35,
+        36,
+        37,
+        39,
+        40
+      ],
+      "residualChange": [
+        1,
+        6,
+        10,
+        13,
+        15,
+        16,
+        17,
+        18,
+        19,
+        20,
+        23,
+        25,
+        26,
+        33,
+        35,
+        36,
+        37,
+        39,
+        40
+      ],
+      "relation": "single-qubit"
+    }
+  },
+  {
+    "id": "perturbation-83",
+    "number": 83,
+    "name": "83 · Same scalar diagnostics: logical failure",
+    "group": "Perturbation studies",
+    "error": [
+      1,
+      6,
+      7,
+      9,
+      12,
+      17,
+      21,
+      22,
+      23,
+      30,
+      33,
+      40
+    ],
+    "title": "Several matching scalar diagnostics can accompany a failed shot.",
+    "note": "This weight-12 error has 13 defects, an eight-edge correction, zero signed gap, two growth ticks, one reactivation frame, and zero peeling and growth penalties. All three implemented forests fail. The successful class nevertheless fits inside grown support. Exact residual witness: CE = Z̄ · S8 S9 S10 S11 S16 S17 S18 S19.",
+    "tags": [
+      "single-qubit",
+      "same diagnostics",
+      "logical ambiguity"
+    ],
+    "partner": "perturbation-84",
+    "partnerNote": "The paired case changes only q28; 12 correction-edge selections change. Adding q28 changes the default BFS outcome from failure to success.",
+    "provenance": {
+      "method": "deterministic search",
+      "seed": 965268,
+      "mode": "fixed",
+      "weight": 12,
+      "toggledQubits": [],
+      "criterion": "A one-qubit toggle flips the actual outcome while defect count, correction weight, signed gap, rounds, reactivations and peeling/growth penalties remain equal."
+    },
+    "expected": {
+      "logical": 1,
+      "errorWeight": 12,
+      "defects": 13,
+      "correctionWeight": 8,
+      "rounds": 2,
+      "reactivations": 1,
+      "gap": 0,
+      "peelingExcess": 0,
+      "growthPenalty": 0,
+      "correctClassInGrowth": true,
+      "forestSensitive": false,
+      "correction": [
+        1,
+        6,
+        8,
+        11,
+        12,
+        16,
+        18,
+        20
+      ],
+      "stabilizers": [
+        7,
+        8,
+        9,
+        10,
+        15,
+        16,
+        17,
+        18
+      ],
+      "forestOutcomes": [
+        {
+          "strategy": "bfs",
+          "logical": 1,
+          "correctionWeight": 8
+        },
+        {
+          "strategy": "reverse-bfs",
+          "logical": 1,
+          "correctionWeight": 8
+        },
+        {
+          "strategy": "dfs",
+          "logical": 1,
+          "correctionWeight": 10
+        }
+      ]
+    },
+    "pair": {
+      "qubit": 28,
+      "changedCorrection": 12,
+      "changedCorrectionEdges": [
+        1,
+        4,
+        6,
+        8,
+        11,
+        12,
+        20,
+        25,
+        26,
+        31,
+        33,
+        37
+      ],
+      "residualChange": [
+        1,
+        4,
+        6,
+        8,
+        11,
+        12,
+        20,
+        25,
+        26,
+        28,
+        31,
+        33,
+        37
+      ],
+      "relation": "single-qubit"
+    }
+  },
+  {
+    "id": "perturbation-84",
+    "number": 84,
+    "name": "84 · Add q28: identical metrics, logical success",
+    "group": "Perturbation studies",
+    "error": [
+      1,
+      6,
+      7,
+      9,
+      12,
+      17,
+      21,
+      22,
+      23,
+      28,
+      30,
+      33,
+      40
+    ],
+    "title": "Identical scalar summaries can conceal a different logical outcome.",
+    "note": "Adding q28 changes 12 correction-edge choices and makes all three implemented forests succeed. The defect count, correction weight, signed gap, growth ticks, reactivation-batch count, and peeling/growth penalties stay unchanged. The syndrome geometry and physical error differ, so those equal summaries do not determine either the actual outcome or the full conditional likelihood. Exact residual witness: CE = S2 S5 S8 S17 S18 S19.",
+    "tags": [
+      "single-qubit",
+      "same diagnostics",
+      "logical ambiguity"
+    ],
+    "partner": "perturbation-83",
+    "partnerNote": "The paired case changes only q28; 12 correction-edge selections change. Adding q28 changes the default BFS outcome from failure to success.",
+    "provenance": {
+      "method": "deterministic search",
+      "seed": 965268,
+      "mode": "fixed",
+      "weight": 12,
+      "toggledQubits": [
+        28
+      ],
+      "criterion": "A one-qubit toggle flips the actual outcome while defect count, correction weight, signed gap, rounds, reactivations and peeling/growth penalties remain equal."
+    },
+    "expected": {
+      "logical": 0,
+      "errorWeight": 13,
+      "defects": 13,
+      "correctionWeight": 8,
+      "rounds": 2,
+      "reactivations": 1,
+      "gap": 0,
+      "peelingExcess": 0,
+      "growthPenalty": 0,
+      "correctClassInGrowth": true,
+      "forestSensitive": false,
+      "correction": [
+        4,
+        16,
+        18,
+        25,
+        26,
+        31,
+        33,
+        37
+      ],
+      "stabilizers": [
+        1,
+        4,
+        7,
+        16,
+        17,
+        18
+      ],
+      "forestOutcomes": [
+        {
+          "strategy": "bfs",
+          "logical": 0,
+          "correctionWeight": 8
+        },
+        {
+          "strategy": "reverse-bfs",
+          "logical": 0,
+          "correctionWeight": 8
+        },
+        {
+          "strategy": "dfs",
+          "logical": 0,
+          "correctionWeight": 8
+        }
+      ]
+    },
+    "pair": {
+      "qubit": 28,
+      "changedCorrection": 12,
+      "changedCorrectionEdges": [
+        1,
+        4,
+        6,
+        8,
+        11,
+        12,
+        20,
+        25,
+        26,
+        31,
+        33,
+        37
+      ],
+      "residualChange": [
+        1,
+        4,
+        6,
+        8,
+        11,
+        12,
+        20,
+        25,
+        26,
+        28,
+        31,
+        33,
+        37
+      ],
+      "relation": "single-qubit"
+    }
+  },
+  {
+    "id": "topology-85",
+    "number": 85,
+    "name": "85 · Dense syndrome before ten stabilizers",
+    "group": "Topology and symmetry",
+    "error": [
+      2,
+      17,
+      19,
+      25,
+      31,
+      32,
+      36,
+      37,
+      38,
+      39,
+      40
+    ],
+    "title": "A stabilizer dressing leaves every decoder observation unchanged.",
+    "note": "Thirteen defects drive the same two growth ticks in Examples 85 and 86. Here the eleven-qubit error gives an eight-qubit BFS correction and CE = S1 S10 S15 S18. Multiplying E by ten specified face stabilizers toggles 36 qubits but cannot change the syndrome, selected correction, or logical outcome for a fixed forest. DFS fails on both members; changing E within a stabilizer coset does not fix a decoder decision.",
+    "tags": [
+      "stabilizer-equivalence",
+      "same-syndrome",
+      "dense-syndrome",
+      "forest-sensitive"
+    ],
+    "partner": "topology-86",
+    "partnerNote": "Compare Examples 85 and 86: a stabilizer product changes the physical support while preserving the syndrome, correction, and logical result for each fixed forest.",
+    "provenance": {
+      "method": "constructed",
+      "seed": 88000,
+      "generator": "surfaceModel.sample fixed-weight LCG + documented involution",
+      "baseErrorWeight": 11,
+      "criterion": "A fixed seed followed by an explicitly specified stabilizer or logical product."
+    },
+    "expected": {
+      "logical": 0,
+      "errorWeight": 11,
+      "defects": 13,
+      "correctionWeight": 8,
+      "rounds": 2,
+      "reactivations": 1,
+      "gap": 1,
+      "peelingExcess": 1,
+      "growthPenalty": 0,
+      "correctClassInGrowth": true,
+      "forestSensitive": true,
+      "residualWitness": {
+        "logical": 0,
+        "stabilizers": [
+          0,
+          9,
+          14,
+          17
+        ]
+      },
+      "forests": [
+        {
+          "strategy": "bfs",
+          "logical": 0,
+          "weight": 8
+        },
+        {
+          "strategy": "reverse-bfs",
+          "logical": 0,
+          "weight": 10
+        },
+        {
+          "strategy": "dfs",
+          "logical": 1,
+          "weight": 9
+        }
+      ]
+    },
+    "pair": {
+      "relation": "stabilizer",
+      "base": "topology-85",
+      "transformed": "topology-86",
+      "support": [
+        0,
+        2,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15,
+        16,
+        17,
+        18,
+        19,
+        21,
+        23,
+        25,
+        26,
+        27,
+        28,
+        29,
+        30,
+        31,
+        32,
+        33,
+        34,
+        35,
+        36,
+        37,
+        38,
+        39,
+        40
+      ],
+      "stabilizers": [
+        0,
+        2,
+        4,
+        6,
+        8,
+        10,
+        12,
+        14,
+        16,
+        18
+      ],
+      "logical": 0,
+      "syndromeUnchanged": true
+    }
+  },
+  {
+    "id": "topology-86",
+    "number": 86,
+    "name": "86 · 36 toggled qubits, identical decoding",
+    "group": "Topology and symmetry",
+    "error": [
+      0,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12,
+      13,
+      14,
+      15,
+      16,
+      18,
+      21,
+      23,
+      26,
+      27,
+      28,
+      29,
+      30,
+      33,
+      34,
+      35
+    ],
+    "title": "A large geometric deformation can remain in the same logical class.",
+    "note": "Example 85 is multiplied by S1 S3 S5 S7 S9 S11 S13 S15 S17 S19. Its error weight rises from 11 to 25, yet all thirteen defects, growth events, and the eight-qubit BFS correction are identical. The new residual is a product of ten stabilizers and has no logical Z̄. The error drawing changes on 36 of 41 qubits while every syndrome-only confidence estimate stays fixed.",
+    "tags": [
+      "stabilizer-equivalence",
+      "same-syndrome",
+      "dense-support",
+      "forest-sensitive"
+    ],
+    "partner": "topology-85",
+    "partnerNote": "Compare Examples 85 and 86: a stabilizer product changes the physical support while preserving the syndrome, correction, and logical result for each fixed forest.",
+    "provenance": {
+      "method": "constructed",
+      "seed": 88000,
+      "generator": "surfaceModel.sample fixed-weight LCG + documented involution",
+      "baseErrorWeight": 11,
+      "criterion": "A fixed seed followed by an explicitly specified stabilizer or logical product."
+    },
+    "expected": {
+      "logical": 0,
+      "errorWeight": 25,
+      "defects": 13,
+      "correctionWeight": 8,
+      "rounds": 2,
+      "reactivations": 1,
+      "gap": 1,
+      "peelingExcess": 1,
+      "growthPenalty": 0,
+      "correctClassInGrowth": true,
+      "forestSensitive": true,
+      "residualWitness": {
+        "logical": 0,
+        "stabilizers": [
+          2,
+          4,
+          6,
+          8,
+          9,
+          10,
+          12,
+          16,
+          17,
+          18
+        ]
+      },
+      "forests": [
+        {
+          "strategy": "bfs",
+          "logical": 0,
+          "weight": 8
+        },
+        {
+          "strategy": "reverse-bfs",
+          "logical": 0,
+          "weight": 10
+        },
+        {
+          "strategy": "dfs",
+          "logical": 1,
+          "weight": 9
+        }
+      ]
+    },
+    "pair": {
+      "relation": "stabilizer",
+      "base": "topology-85",
+      "transformed": "topology-86",
+      "support": [
+        0,
+        2,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15,
+        16,
+        17,
+        18,
+        19,
+        21,
+        23,
+        25,
+        26,
+        27,
+        28,
+        29,
+        30,
+        31,
+        32,
+        33,
+        34,
+        35,
+        36,
+        37,
+        38,
+        39,
+        40
+      ],
+      "stabilizers": [
+        0,
+        2,
+        4,
+        6,
+        8,
+        10,
+        12,
+        14,
+        16,
+        18
+      ],
+      "logical": 0,
+      "syndromeUnchanged": true
+    }
+  },
+  {
+    "id": "topology-87",
+    "number": 87,
+    "name": "87 · Dressed logical hidden behind seven defects",
+    "group": "Topology and symmetry",
+    "error": [
+      4,
+      6,
+      7,
+      8,
+      14,
+      15,
+      16,
+      17,
+      19,
+      20,
+      25,
+      28,
+      30,
+      39
+    ],
+    "title": "A substantial logical component can be invisible to the syndrome.",
+    "note": "Seven defects lead every available forest to the same weight-five correction. This fourteen-qubit E fails: its residual contains Z̄ and eleven face stabilizers. The correct class has weight-six global representatives but none inside the fully grown support. Example 88 toggles a 22-qubit dressed logical operator; all decoder information stays unchanged while the actual logical result reverses.",
+    "tags": [
+      "logical-equivalence",
+      "same-syndrome",
+      "growth-trap",
+      "dressed-logical"
+    ],
+    "partner": "topology-88",
+    "partnerNote": "Compare Examples 87 and 88: the specified logical operator preserves the syndrome and correction but reverses the actual logical result.",
+    "provenance": {
+      "method": "constructed",
+      "seed": 88001,
+      "generator": "surfaceModel.sample fixed-weight LCG + documented involution",
+      "baseErrorWeight": 14,
+      "criterion": "A fixed seed followed by an explicitly specified stabilizer or logical product."
+    },
+    "expected": {
+      "logical": 1,
+      "errorWeight": 14,
+      "defects": 7,
+      "correctionWeight": 5,
+      "rounds": 2,
+      "reactivations": 0,
+      "gap": 1,
+      "peelingExcess": 0,
+      "growthPenalty": 0,
+      "correctClassInGrowth": false,
+      "forestSensitive": false,
+      "residualWitness": {
+        "logical": 1,
+        "stabilizers": [
+          0,
+          4,
+          5,
+          6,
+          7,
+          8,
+          9,
+          14,
+          15,
+          16,
+          17
+        ]
+      },
+      "forests": [
+        {
+          "strategy": "bfs",
+          "logical": 1,
+          "weight": 5
+        },
+        {
+          "strategy": "reverse-bfs",
+          "logical": 1,
+          "weight": 5
+        },
+        {
+          "strategy": "dfs",
+          "logical": 1,
+          "weight": 5
+        }
+      ]
+    },
+    "pair": {
+      "relation": "logical",
+      "base": "topology-87",
+      "transformed": "topology-88",
+      "support": [
+        0,
+        3,
+        4,
+        5,
+        6,
+        10,
+        11,
+        17,
+        18,
+        21,
+        23,
+        25,
+        27,
+        29,
+        30,
+        31,
+        33,
+        35,
+        37,
+        38,
+        39,
+        40
+      ],
+      "stabilizers": [
+        0,
+        3,
+        4,
+        6,
+        8,
+        9,
+        11,
+        12,
+        16,
+        18
+      ],
+      "logical": 1,
+      "syndromeUnchanged": true
+    }
+  },
+  {
+    "id": "topology-88",
+    "number": 88,
+    "name": "88 · Add a dressed logical: same syndrome, success",
+    "group": "Topology and symmetry",
+    "error": [
+      0,
+      3,
+      5,
+      7,
+      8,
+      10,
+      11,
+      14,
+      15,
+      16,
+      18,
+      19,
+      20,
+      21,
+      23,
+      27,
+      28,
+      29,
+      31,
+      33,
+      35,
+      37,
+      38,
+      40
+    ],
+    "title": "A logical transformation reverses the hidden outcome without changing decoding.",
+    "note": "Multiply Example 87 by Z̄ S1 S4 S5 S7 S9 S10 S12 S13 S17 S19. The resulting twenty-four-qubit error produces the same seven defects and the same five-qubit correction for BFS, reverse BFS, and DFS. All three now succeed, leaving only nine stabilizers. Logical success and physical error weight are different properties; the decoder cannot distinguish the two actual errors.",
+    "tags": [
+      "logical-equivalence",
+      "same-syndrome",
+      "dense-support",
+      "dressed-logical"
+    ],
+    "partner": "topology-87",
+    "partnerNote": "Compare Examples 87 and 88: the specified logical operator preserves the syndrome and correction but reverses the actual logical result.",
+    "provenance": {
+      "method": "constructed",
+      "seed": 88001,
+      "generator": "surfaceModel.sample fixed-weight LCG + documented involution",
+      "baseErrorWeight": 14,
+      "criterion": "A fixed seed followed by an explicitly specified stabilizer or logical product."
+    },
+    "expected": {
+      "logical": 0,
+      "errorWeight": 24,
+      "defects": 7,
+      "correctionWeight": 5,
+      "rounds": 2,
+      "reactivations": 0,
+      "gap": 1,
+      "peelingExcess": 0,
+      "growthPenalty": 0,
+      "correctClassInGrowth": true,
+      "forestSensitive": false,
+      "residualWitness": {
+        "logical": 0,
+        "stabilizers": [
+          3,
+          5,
+          7,
+          11,
+          12,
+          14,
+          15,
+          17,
+          18
+        ]
+      },
+      "forests": [
+        {
+          "strategy": "bfs",
+          "logical": 0,
+          "weight": 5
+        },
+        {
+          "strategy": "reverse-bfs",
+          "logical": 0,
+          "weight": 5
+        },
+        {
+          "strategy": "dfs",
+          "logical": 0,
+          "weight": 5
+        }
+      ]
+    },
+    "pair": {
+      "relation": "logical",
+      "base": "topology-87",
+      "transformed": "topology-88",
+      "support": [
+        0,
+        3,
+        4,
+        5,
+        6,
+        10,
+        11,
+        17,
+        18,
+        21,
+        23,
+        25,
+        27,
+        29,
+        30,
+        31,
+        33,
+        35,
+        37,
+        38,
+        39,
+        40
+      ],
+      "stabilizers": [
+        0,
+        3,
+        4,
+        6,
+        8,
+        9,
+        11,
+        12,
+        16,
+        18
+      ],
+      "logical": 1,
+      "syndromeUnchanged": true
+    }
+  },
+  {
+    "id": "topology-89",
+    "number": 89,
+    "name": "89 · Left-right study: original orientation",
+    "group": "Topology and symmetry",
+    "error": [
+      4,
+      5,
+      8,
+      9,
+      13,
+      17,
+      20,
+      23,
+      27,
+      29,
+      30,
+      31,
+      33
+    ],
+    "title": "A symmetric patch does not force deterministic peeling to respect symmetry.",
+    "note": "This thirteen-qubit error creates twelve defects. BFS succeeds with eight correction edges and CE = S6 S9 S10 S11. Its left-right reflection in Example 90 has exactly reflected syndrome and fully grown support, and identical weight spectra in the fixed-cut classes. The reflected deterministic BFS forest nevertheless chooses a different logical class. Reverse BFS succeeds here too; DFS succeeds in both orientations.",
+    "tags": [
+      "horizontal-reflection",
+      "symmetry-breaking",
+      "dense-syndrome",
+      "forest-tie"
+    ],
+    "partner": "topology-90",
+    "partnerNote": "Reflect left to right: the grown support mirrors exactly, while the default correction changes logical class.",
+    "provenance": {
+      "method": "constructed",
+      "seed": 70394,
+      "generator": "surfaceModel.sample fixed-weight LCG + documented involution",
+      "baseErrorWeight": 13,
+      "criterion": "Dense reflected syndrome; different BFS logical outcomes with equivariant growth."
+    },
+    "expected": {
+      "logical": 0,
+      "errorWeight": 13,
+      "defects": 12,
+      "correctionWeight": 8,
+      "rounds": 2,
+      "reactivations": 1,
+      "gap": 1,
+      "peelingExcess": 1,
+      "growthPenalty": 0,
+      "correctClassInGrowth": true,
+      "forestSensitive": false,
+      "residualWitness": {
+        "logical": 0,
+        "stabilizers": [
+          5,
+          8,
+          9,
+          10
+        ]
+      },
+      "forests": [
+        {
+          "strategy": "bfs",
+          "logical": 0,
+          "weight": 8
+        },
+        {
+          "strategy": "reverse-bfs",
+          "logical": 0,
+          "weight": 10
+        },
+        {
+          "strategy": "dfs",
+          "logical": 0,
+          "weight": 9
+        }
+      ]
+    },
+    "pair": {
+      "relation": "horizontal-reflection",
+      "base": "topology-89",
+      "transformed": "topology-90",
+      "boundaryTypesPreserved": true,
+      "grownSupportEquivariant": true,
+      "defaultCorrectionDifference": [
+        0,
+        1,
+        2,
+        12,
+        17,
+        18,
+        19,
+        27,
+        31,
+        34
+      ],
+      "defaultDifferenceLogical": 1,
+      "defaultDifferenceStabilizers": [
+        0,
+        1,
+        2,
+        5,
+        6,
+        7,
+        12,
+        13,
+        14
+      ]
+    }
+  },
+  {
+    "id": "topology-90",
+    "number": 90,
+    "name": "90 · Left-right reflection changes the logical class",
+    "group": "Topology and symmetry",
+    "error": [
+      0,
+      5,
+      6,
+      9,
+      11,
+      17,
+      21,
+      24,
+      26,
+      30,
+      31,
+      32,
+      36
+    ],
+    "title": "The mirrored grown support permits a different deterministic correction.",
+    "note": "Reflect Example 89 left to right, exchanging the two rough boundaries while preserving their type. BFS now uses ten correction edges and fails. Its correction differs from the reflected original correction on ten edges; that closed difference contains a logical Z̄. Both logical classes remain available in the grown support, so this is a forest-selection effect. Reverse BFS also fails here, while DFS succeeds.",
+    "tags": [
+      "horizontal-reflection",
+      "symmetry-breaking",
+      "dense-syndrome",
+      "forest-sensitive"
+    ],
+    "partner": "topology-89",
+    "partnerNote": "Reflect left to right: the grown support mirrors exactly, while the default correction changes logical class.",
+    "provenance": {
+      "method": "constructed",
+      "seed": 70394,
+      "generator": "surfaceModel.sample fixed-weight LCG + documented involution",
+      "baseErrorWeight": 13,
+      "criterion": "Dense reflected syndrome; different BFS logical outcomes with equivariant growth."
+    },
+    "expected": {
+      "logical": 1,
+      "errorWeight": 13,
+      "defects": 12,
+      "correctionWeight": 10,
+      "rounds": 2,
+      "reactivations": 1,
+      "gap": -1,
+      "peelingExcess": 2,
+      "growthPenalty": 0,
+      "correctClassInGrowth": true,
+      "forestSensitive": true,
+      "residualWitness": {
+        "logical": 1,
+        "stabilizers": [
+          0,
+          1,
+          2,
+          7,
+          9,
+          12,
+          13
+        ]
+      },
+      "forests": [
+        {
+          "strategy": "bfs",
+          "logical": 1,
+          "weight": 10
+        },
+        {
+          "strategy": "reverse-bfs",
+          "logical": 1,
+          "weight": 10
+        },
+        {
+          "strategy": "dfs",
+          "logical": 0,
+          "weight": 9
+        }
+      ]
+    },
+    "pair": {
+      "relation": "horizontal-reflection",
+      "base": "topology-89",
+      "transformed": "topology-90",
+      "boundaryTypesPreserved": true,
+      "grownSupportEquivariant": true,
+      "defaultCorrectionDifference": [
+        0,
+        1,
+        2,
+        12,
+        17,
+        18,
+        19,
+        27,
+        31,
+        34
+      ],
+      "defaultDifferenceLogical": 1,
+      "defaultDifferenceStabilizers": [
+        0,
+        1,
+        2,
+        5,
+        6,
+        7,
+        12,
+        13,
+        14
+      ]
+    }
+  },
+  {
+    "id": "topology-91",
+    "number": 91,
+    "name": "91 · Top-bottom study: original orientation",
+    "group": "Topology and symmetry",
+    "error": [
+      1,
+      2,
+      3,
+      7,
+      8,
+      10,
+      16,
+      18,
+      23,
+      27,
+      32,
+      34,
+      37,
+      38,
+      39
+    ],
+    "title": "Equal correction costs can conceal different geometric representatives.",
+    "note": "This fifteen-qubit error gives thirteen defects and BFS returns ten edges, leaving CE = S3 S4 S5 S10 S17 S19 S20. Reflection across the horizontal centerline preserves the rough/smooth boundary types, syndrome geometry, and full logical-class weight spectra. Example 92 shows that deterministic BFS can still select a correction other than the reflected one, even when cost and logical recovery agree.",
+    "tags": [
+      "vertical-reflection",
+      "symmetry-breaking",
+      "dense-syndrome",
+      "stabilizer-equivalence"
+    ],
+    "partner": "topology-92",
+    "partnerNote": "Reflect top to bottom: the default correction is not simply reflected, but its logical outcome is preserved.",
+    "provenance": {
+      "method": "constructed",
+      "seed": 70009,
+      "generator": "surfaceModel.sample fixed-weight LCG + documented involution",
+      "baseErrorWeight": 15,
+      "criterion": "Dense reflected syndrome; a nonzero stabilizer difference between reflected and selected corrections."
+    },
+    "expected": {
+      "logical": 0,
+      "errorWeight": 15,
+      "defects": 13,
+      "correctionWeight": 10,
+      "rounds": 2,
+      "reactivations": 1,
+      "gap": -1,
+      "peelingExcess": 1,
+      "growthPenalty": 0,
+      "correctClassInGrowth": true,
+      "forestSensitive": false,
+      "residualWitness": {
+        "logical": 0,
+        "stabilizers": [
+          2,
+          3,
+          4,
+          9,
+          16,
+          18,
+          19
+        ]
+      },
+      "forests": [
+        {
+          "strategy": "bfs",
+          "logical": 0,
+          "weight": 10
+        },
+        {
+          "strategy": "reverse-bfs",
+          "logical": 0,
+          "weight": 14
+        },
+        {
+          "strategy": "dfs",
+          "logical": 0,
+          "weight": 9
+        }
+      ]
+    },
+    "pair": {
+      "relation": "vertical-reflection",
+      "base": "topology-91",
+      "transformed": "topology-92",
+      "boundaryTypesPreserved": true,
+      "grownSupportEquivariant": true,
+      "defaultCorrectionDifference": [
+        0,
+        1,
+        13,
+        14,
+        20,
+        21,
+        23,
+        24,
+        26,
+        30,
+        34,
+        35,
+        38,
+        39
+      ],
+      "defaultDifferenceLogical": 0,
+      "defaultDifferenceStabilizers": [
+        0,
+        1,
+        5,
+        6,
+        10,
+        11,
+        13,
+        14,
+        15,
+        16,
+        18,
+        19
+      ]
+    }
+  },
+  {
+    "id": "topology-92",
+    "number": 92,
+    "name": "92 · Top-bottom reflection changes the paths",
+    "group": "Topology and symmetry",
+    "error": [
+      3,
+      6,
+      8,
+      10,
+      17,
+      18,
+      21,
+      22,
+      23,
+      25,
+      26,
+      27,
+      30,
+      36,
+      39
+    ],
+    "title": "Fourteen changed correction edges need not change the logical outcome.",
+    "note": "Relative to the reflected correction from Example 91, the BFS correction changes on fourteen qubits. Their difference is a product of twelve stabilizers, so the two corrections occupy the same logical class. Both orientations use ten BFS edges and recover successfully; all three tested forests succeed. DFS uses nine edges before reflection and eleven afterward, illustrating a cost effect without a logical failure.",
+    "tags": [
+      "vertical-reflection",
+      "symmetry-breaking",
+      "dense-syndrome",
+      "peeling-cost"
+    ],
+    "partner": "topology-91",
+    "partnerNote": "Reflect top to bottom: the default correction is not simply reflected, but its logical outcome is preserved.",
+    "provenance": {
+      "method": "constructed",
+      "seed": 70009,
+      "generator": "surfaceModel.sample fixed-weight LCG + documented involution",
+      "baseErrorWeight": 15,
+      "criterion": "Dense reflected syndrome; a nonzero stabilizer difference between reflected and selected corrections."
+    },
+    "expected": {
+      "logical": 0,
+      "errorWeight": 15,
+      "defects": 13,
+      "correctionWeight": 10,
+      "rounds": 2,
+      "reactivations": 1,
+      "gap": -1,
+      "peelingExcess": 1,
+      "growthPenalty": 0,
+      "correctClassInGrowth": true,
+      "forestSensitive": false,
+      "residualWitness": {
+        "logical": 0,
+        "stabilizers": [
+          0,
+          3,
+          4,
+          5,
+          6,
+          10,
+          11,
+          13,
+          15,
+          16,
+          17
+        ]
+      },
+      "forests": [
+        {
+          "strategy": "bfs",
+          "logical": 0,
+          "weight": 10
+        },
+        {
+          "strategy": "reverse-bfs",
+          "logical": 0,
+          "weight": 14
+        },
+        {
+          "strategy": "dfs",
+          "logical": 0,
+          "weight": 11
+        }
+      ]
+    },
+    "pair": {
+      "relation": "vertical-reflection",
+      "base": "topology-91",
+      "transformed": "topology-92",
+      "boundaryTypesPreserved": true,
+      "grownSupportEquivariant": true,
+      "defaultCorrectionDifference": [
+        0,
+        1,
+        13,
+        14,
+        20,
+        21,
+        23,
+        24,
+        26,
+        30,
+        34,
+        35,
+        38,
+        39
+      ],
+      "defaultDifferenceLogical": 0,
+      "defaultDifferenceStabilizers": [
+        0,
+        1,
+        5,
+        6,
+        10,
+        11,
+        13,
+        14,
+        15,
+        16,
+        18,
+        19
+      ]
+    }
+  },
+  {
+    "id": "topology-93",
+    "number": 93,
+    "name": "93 · Half-turn study: successful minimum",
+    "group": "Topology and symmetry",
+    "error": [
+      4,
+      6,
+      7,
+      13,
+      17,
+      21,
+      22,
+      24,
+      26,
+      30,
+      38
+    ],
+    "title": "A degenerate minimum can be selected successfully in one orientation.",
+    "note": "Twelve defects produce a weight-nine BFS correction with CE = S14 S15 S18 S19 S20. Both global logical classes have weight-nine minima: 28 representatives in fixed-cut parity zero and 62 in parity one. BFS is globally minimum weight and succeeds for this E. Example 94 rotates the entire physical error by 180 degrees and obtains another global minimum with the opposite actual outcome.",
+    "tags": [
+      "rotation-180",
+      "symmetry-breaking",
+      "degenerate-minima",
+      "zero-gap"
+    ],
+    "partner": "topology-94",
+    "partnerNote": "Rotate 180 degrees: equally minimum-weight BFS corrections have opposite actual logical outcomes.",
+    "provenance": {
+      "method": "constructed",
+      "seed": 71227,
+      "generator": "surfaceModel.sample fixed-weight LCG + documented involution",
+      "baseErrorWeight": 11,
+      "criterion": "Dense rotated syndrome; different BFS logical outcomes despite globally minimum-weight corrections."
+    },
+    "expected": {
+      "logical": 0,
+      "errorWeight": 11,
+      "defects": 12,
+      "correctionWeight": 9,
+      "rounds": 2,
+      "reactivations": 1,
+      "gap": 0,
+      "peelingExcess": 0,
+      "growthPenalty": 0,
+      "correctClassInGrowth": true,
+      "forestSensitive": false,
+      "residualWitness": {
+        "logical": 0,
+        "stabilizers": [
+          13,
+          14,
+          17,
+          18,
+          19
+        ]
+      },
+      "forests": [
+        {
+          "strategy": "bfs",
+          "logical": 0,
+          "weight": 9
+        },
+        {
+          "strategy": "reverse-bfs",
+          "logical": 0,
+          "weight": 13
+        },
+        {
+          "strategy": "dfs",
+          "logical": 0,
+          "weight": 9
+        }
+      ]
+    },
+    "pair": {
+      "relation": "rotation-180",
+      "base": "topology-93",
+      "transformed": "topology-94",
+      "boundaryTypesPreserved": true,
+      "grownSupportEquivariant": true,
+      "defaultCorrectionDifference": [
+        0,
+        1,
+        10,
+        11,
+        12,
+        17,
+        18,
+        19,
+        20,
+        21,
+        22,
+        26,
+        30,
+        34,
+        35,
+        39
+      ],
+      "defaultDifferenceLogical": 1,
+      "defaultDifferenceStabilizers": [
+        0,
+        1,
+        5,
+        6,
+        10,
+        11,
+        13,
+        14,
+        15,
+        16,
+        17
+      ]
+    }
+  },
+  {
+    "id": "topology-94",
+    "number": 94,
+    "name": "94 · Half-turn selects a failing minimum",
+    "group": "Topology and symmetry",
+    "error": [
+      0,
+      2,
+      3,
+      7,
+      11,
+      17,
+      18,
+      20,
+      27,
+      35,
+      39
+    ],
+    "title": "The same optimal weight does not make deterministic choices rotation invariant.",
+    "note": "Rotate Example 93 by 180 degrees. The grown support rotates exactly, and both classes retain their weight-nine minima and counts 28 and 62. BFS still returns nine edges, but now CE contains Z̄. Its correction differs on sixteen edges from the rotated original correction, and that closed difference is logically nontrivial. Reverse BFS also fails in this orientation; DFS selects nine edges and succeeds.",
+    "tags": [
+      "rotation-180",
+      "symmetry-breaking",
+      "degenerate-minima",
+      "forest-sensitive"
+    ],
+    "partner": "topology-93",
+    "partnerNote": "Rotate 180 degrees: equally minimum-weight BFS corrections have opposite actual logical outcomes.",
+    "provenance": {
+      "method": "constructed",
+      "seed": 71227,
+      "generator": "surfaceModel.sample fixed-weight LCG + documented involution",
+      "baseErrorWeight": 11,
+      "criterion": "Dense rotated syndrome; different BFS logical outcomes despite globally minimum-weight corrections."
+    },
+    "expected": {
+      "logical": 1,
+      "errorWeight": 11,
+      "defects": 12,
+      "correctionWeight": 9,
+      "rounds": 2,
+      "reactivations": 1,
+      "gap": 0,
+      "peelingExcess": 0,
+      "growthPenalty": 0,
+      "correctClassInGrowth": true,
+      "forestSensitive": true,
+      "residualWitness": {
+        "logical": 1,
+        "stabilizers": [
+          2,
+          10,
+          11,
+          13,
+          14,
+          15,
+          16,
+          17
+        ]
+      },
+      "forests": [
+        {
+          "strategy": "bfs",
+          "logical": 1,
+          "weight": 9
+        },
+        {
+          "strategy": "reverse-bfs",
+          "logical": 1,
+          "weight": 11
+        },
+        {
+          "strategy": "dfs",
+          "logical": 0,
+          "weight": 9
+        }
+      ]
+    },
+    "pair": {
+      "relation": "rotation-180",
+      "base": "topology-93",
+      "transformed": "topology-94",
+      "boundaryTypesPreserved": true,
+      "grownSupportEquivariant": true,
+      "defaultCorrectionDifference": [
+        0,
+        1,
+        10,
+        11,
+        12,
+        17,
+        18,
+        19,
+        20,
+        21,
+        22,
+        26,
+        30,
+        34,
+        35,
+        39
+      ],
+      "defaultDifferenceLogical": 1,
+      "defaultDifferenceStabilizers": [
+        0,
+        1,
+        5,
+        6,
+        10,
+        11,
+        13,
+        14,
+        15,
+        16,
+        17
+      ]
+    }
+  },
+  {
+    "id": "topology-95",
+    "number": 95,
+    "name": "95 · Complement study: seven-qubit seed",
+    "group": "Topology and symmetry",
+    "error": [
+      4,
+      12,
+      13,
+      16,
+      18,
+      27,
+      30
+    ],
+    "title": "Complementing the physical support is different from adding a logical operator.",
+    "note": "This seven-qubit error has nine defects and BFS succeeds with five correction edges. Example 96 toggles every one of the 41 data qubits. The all-qubit chain has eight detection events at the top and bottom check rows, so the complement changes the syndrome instead of preserving it. The two errors have complementary weights, but their selected corrections need not be complements.",
+    "tags": [
+      "complement",
+      "boundary-checks",
+      "support-extreme",
+      "zero-gap"
+    ],
+    "partner": "topology-96",
+    "partnerNote": "Toggle every data qubit: the supports complement each other, but the syndrome changes at eight boundary-row checks.",
+    "provenance": {
+      "method": "constructed",
+      "seed": 88013,
+      "generator": "surfaceModel.sample fixed-weight LCG + documented involution",
+      "baseErrorWeight": 7,
+      "criterion": "Complementary physical supports with nonempty syndromes and a reversed BFS logical outcome."
+    },
+    "expected": {
+      "logical": 0,
+      "errorWeight": 7,
+      "defects": 9,
+      "correctionWeight": 5,
+      "rounds": 2,
+      "reactivations": 1,
+      "gap": 0,
+      "peelingExcess": 0,
+      "growthPenalty": 0,
+      "correctClassInGrowth": true,
+      "forestSensitive": true,
+      "residualWitness": {
+        "logical": 0,
+        "stabilizers": [
+          3,
+          4,
+          7,
+          8,
+          9
+        ]
+      },
+      "forests": [
+        {
+          "strategy": "bfs",
+          "logical": 0,
+          "weight": 5
+        },
+        {
+          "strategy": "reverse-bfs",
+          "logical": 0,
+          "weight": 5
+        },
+        {
+          "strategy": "dfs",
+          "logical": 1,
+          "weight": 5
+        }
+      ]
+    },
+    "pair": {
+      "relation": "complement",
+      "base": "topology-95",
+      "transformed": "topology-96",
+      "support": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15,
+        16,
+        17,
+        18,
+        19,
+        20,
+        21,
+        22,
+        23,
+        24,
+        25,
+        26,
+        27,
+        28,
+        29,
+        30,
+        31,
+        32,
+        33,
+        34,
+        35,
+        36,
+        37,
+        38,
+        39,
+        40
+      ],
+      "stabilizers": [],
+      "logical": null,
+      "syndromeDifference": [
+        0,
+        1,
+        2,
+        3,
+        16,
+        17,
+        18,
+        19
+      ],
+      "classParityDifference": 1
+    }
+  },
+  {
+    "id": "topology-96",
+    "number": 96,
+    "name": "96 · Complement study: 34-qubit support",
+    "group": "Topology and symmetry",
+    "error": [
+      0,
+      1,
+      2,
+      3,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      14,
+      15,
+      17,
+      19,
+      20,
+      21,
+      22,
+      23,
+      24,
+      25,
+      26,
+      28,
+      29,
+      31,
+      32,
+      33,
+      34,
+      35,
+      36,
+      37,
+      38,
+      39,
+      40
+    ],
+    "title": "A nearly filled error support still requires a syndrome and topology calculation.",
+    "note": "The complement of Example 95 occupies 34 qubits and produces thirteen defects. BFS uses seven correction edges and fails; DFS succeeds. The syndrome difference is exactly the eight top- and bottom-row checks because each has odd incidence in the all-qubit chain. Across all compatible errors, complementation maps weight k to 41 − k and flips fixed-cut parity; it is a bijection between two different syndrome problems.",
+    "tags": [
+      "complement",
+      "boundary-checks",
+      "support-extreme",
+      "forest-sensitive"
+    ],
+    "partner": "topology-95",
+    "partnerNote": "Toggle every data qubit: the supports complement each other, but the syndrome changes at eight boundary-row checks.",
+    "provenance": {
+      "method": "constructed",
+      "seed": 88013,
+      "generator": "surfaceModel.sample fixed-weight LCG + documented involution",
+      "baseErrorWeight": 7,
+      "criterion": "Complementary physical supports with nonempty syndromes and a reversed BFS logical outcome."
+    },
+    "expected": {
+      "logical": 1,
+      "errorWeight": 34,
+      "defects": 13,
+      "correctionWeight": 7,
+      "rounds": 2,
+      "reactivations": 1,
+      "gap": 0,
+      "peelingExcess": 0,
+      "growthPenalty": 0,
+      "correctClassInGrowth": true,
+      "forestSensitive": true,
+      "residualWitness": {
+        "logical": 1,
+        "stabilizers": [
+          0,
+          2,
+          3,
+          6,
+          7,
+          9,
+          11,
+          13,
+          15,
+          17,
+          19
+        ]
+      },
+      "forests": [
+        {
+          "strategy": "bfs",
+          "logical": 1,
+          "weight": 7
+        },
+        {
+          "strategy": "reverse-bfs",
+          "logical": 1,
+          "weight": 7
+        },
+        {
+          "strategy": "dfs",
+          "logical": 0,
+          "weight": 7
+        }
+      ]
+    },
+    "pair": {
+      "relation": "complement",
+      "base": "topology-95",
+      "transformed": "topology-96",
+      "support": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15,
+        16,
+        17,
+        18,
+        19,
+        20,
+        21,
+        22,
+        23,
+        24,
+        25,
+        26,
+        27,
+        28,
+        29,
+        30,
+        31,
+        32,
+        33,
+        34,
+        35,
+        36,
+        37,
+        38,
+        39,
+        40
+      ],
+      "stabilizers": [],
+      "logical": null,
+      "syndromeDifference": [
+        0,
+        1,
+        2,
+        3,
+        16,
+        17,
+        18,
+        19
+      ],
+      "classParityDifference": 1
+    }
+  },
+  {
+    "id": "topology-97",
+    "number": 97,
+    "name": "97 · Equal-weight stabilizer orbit: member A",
+    "group": "Topology and symmetry",
+    "error": [
+      1,
+      2,
+      3,
+      4,
+      6,
+      8,
+      9,
+      10,
+      11,
+      13,
+      14,
+      16,
+      20,
+      21,
+      22,
+      28,
+      32,
+      34,
+      36,
+      38
+    ],
+    "title": "Equal physical weight can coexist with many indistinguishable geometric errors.",
+    "note": "This twenty-qubit support and Example 98 differ by twelve face stabilizers yet both have weight twenty. Their eleven defects and all decoder computations are identical. BFS and reverse BFS succeed with eight correction edges; DFS uses eight edges too but fails on both. The paired construction isolates a stabilizer deformation from the separate logical ambiguity introduced by choosing a different forest.",
+    "tags": [
+      "stabilizer-equivalence",
+      "equal-weight",
+      "same-syndrome",
+      "forest-sensitive"
+    ],
+    "partner": "topology-98",
+    "partnerNote": "Compare Examples 97 and 98: a stabilizer product changes the physical support while preserving the syndrome, correction, and logical result for each fixed forest.",
+    "provenance": {
+      "method": "constructed",
+      "seed": 89100,
+      "generator": "surfaceModel.sample fixed-weight LCG + documented involution",
+      "baseErrorWeight": 20,
+      "criterion": "Equal-weight stabilizer-related supports with at least ten defects and forest-sensitive logical outcomes."
+    },
+    "expected": {
+      "logical": 0,
+      "errorWeight": 20,
+      "defects": 11,
+      "correctionWeight": 8,
+      "rounds": 2,
+      "reactivations": 1,
+      "gap": 0,
+      "peelingExcess": 1,
+      "growthPenalty": 0,
+      "correctClassInGrowth": true,
+      "forestSensitive": true,
+      "residualWitness": {
+        "logical": 0,
+        "stabilizers": [
+          0,
+          1,
+          2,
+          3,
+          9,
+          10,
+          11,
+          13,
+          15,
+          16
+        ]
+      },
+      "forests": [
+        {
+          "strategy": "bfs",
+          "logical": 0,
+          "weight": 8
+        },
+        {
+          "strategy": "reverse-bfs",
+          "logical": 0,
+          "weight": 8
+        },
+        {
+          "strategy": "dfs",
+          "logical": 1,
+          "weight": 8
+        }
+      ]
+    },
+    "pair": {
+      "relation": "stabilizer",
+      "base": "topology-97",
+      "transformed": "topology-98",
+      "support": [
+        1,
+        2,
+        3,
+        5,
+        6,
+        8,
+        9,
+        15,
+        16,
+        18,
+        19,
+        21,
+        22,
+        23,
+        25,
+        28,
+        29,
+        30,
+        31,
+        32,
+        33,
+        34,
+        35,
+        36,
+        37,
+        40
+      ],
+      "stabilizers": [
+        1,
+        2,
+        3,
+        5,
+        7,
+        9,
+        10,
+        12,
+        14,
+        16,
+        17,
+        18
+      ],
+      "logical": 0,
+      "syndromeUnchanged": true
+    }
+  },
+  {
+    "id": "topology-98",
+    "number": 98,
+    "name": "98 · Equal-weight stabilizer orbit: member B",
+    "group": "Topology and symmetry",
+    "error": [
+      4,
+      5,
+      10,
+      11,
+      13,
+      14,
+      15,
+      18,
+      19,
+      20,
+      23,
+      25,
+      29,
+      30,
+      31,
+      33,
+      35,
+      37,
+      38,
+      40
+    ],
+    "title": "A 26-qubit deformation preserves both syndrome and physical error weight.",
+    "note": "Multiply Example 97 by S2 S3 S4 S6 S8 S10 S11 S13 S15 S17 S18 S19. Exactly thirteen occupied edges are removed and thirteen unoccupied edges are added. The support changes on 26 qubits, but |E| stays twenty and the same eight-qubit BFS correction succeeds. Both global logical classes start at weight seven; choosing DFS changes the logical result without changing correction weight.",
+    "tags": [
+      "stabilizer-equivalence",
+      "equal-weight",
+      "same-syndrome",
+      "forest-sensitive"
+    ],
+    "partner": "topology-97",
+    "partnerNote": "Compare Examples 97 and 98: a stabilizer product changes the physical support while preserving the syndrome, correction, and logical result for each fixed forest.",
+    "provenance": {
+      "method": "constructed",
+      "seed": 89100,
+      "generator": "surfaceModel.sample fixed-weight LCG + documented involution",
+      "baseErrorWeight": 20,
+      "criterion": "Equal-weight stabilizer-related supports with at least ten defects and forest-sensitive logical outcomes."
+    },
+    "expected": {
+      "logical": 0,
+      "errorWeight": 20,
+      "defects": 11,
+      "correctionWeight": 8,
+      "rounds": 2,
+      "reactivations": 1,
+      "gap": 0,
+      "peelingExcess": 1,
+      "growthPenalty": 0,
+      "correctClassInGrowth": true,
+      "forestSensitive": true,
+      "residualWitness": {
+        "logical": 0,
+        "stabilizers": [
+          0,
+          5,
+          7,
+          11,
+          12,
+          13,
+          14,
+          15,
+          17,
+          18
+        ]
+      },
+      "forests": [
+        {
+          "strategy": "bfs",
+          "logical": 0,
+          "weight": 8
+        },
+        {
+          "strategy": "reverse-bfs",
+          "logical": 0,
+          "weight": 8
+        },
+        {
+          "strategy": "dfs",
+          "logical": 1,
+          "weight": 8
+        }
+      ]
+    },
+    "pair": {
+      "relation": "stabilizer",
+      "base": "topology-97",
+      "transformed": "topology-98",
+      "support": [
+        1,
+        2,
+        3,
+        5,
+        6,
+        8,
+        9,
+        15,
+        16,
+        18,
+        19,
+        21,
+        22,
+        23,
+        25,
+        28,
+        29,
+        30,
+        31,
+        32,
+        33,
+        34,
+        35,
+        36,
+        37,
+        40
+      ],
+      "stabilizers": [
+        1,
+        2,
+        3,
+        5,
+        7,
+        9,
+        10,
+        12,
+        14,
+        16,
+        17,
+        18
+      ],
+      "logical": 0,
+      "syndromeUnchanged": true
+    }
+  },
+  {
+    "id": "topology-99",
+    "number": 99,
+    "name": "99 · Five-string study: initial logical failure",
+    "group": "Topology and symmetry",
+    "error": [
+      1,
+      2,
+      4,
+      8,
+      9,
+      15,
+      16,
+      23,
+      25,
+      27,
+      31,
+      32,
+      33,
+      37,
+      38,
+      39,
+      40
+    ],
+    "title": "A hidden odd number of rough-to-rough strings changes the actual logical class.",
+    "note": "Eleven defects lead all three forests to the same weight-six correction, which fails for this seventeen-qubit error. The correct class is unavailable inside the grown support. Example 100 toggles all 25 horizontal edges: five complete rough-to-rough strings. Their product has zero syndrome and odd logical parity, so it reverses the actual outcome while leaving every decoder-side result unchanged.",
+    "tags": [
+      "logical-equivalence",
+      "multiple-strings",
+      "same-syndrome",
+      "growth-trap"
+    ],
+    "partner": "topology-100",
+    "partnerNote": "Compare Examples 99 and 100: the specified logical operator preserves the syndrome and correction but reverses the actual logical result.",
+    "provenance": {
+      "method": "constructed",
+      "seed": 90120,
+      "generator": "surfaceModel.sample fixed-weight LCG + documented involution",
+      "baseErrorWeight": 17,
+      "criterion": "At least eleven defects and nonzero minimum-weight gap; toggle all five horizontal strings."
+    },
+    "expected": {
+      "logical": 1,
+      "errorWeight": 17,
+      "defects": 11,
+      "correctionWeight": 6,
+      "rounds": 2,
+      "reactivations": 1,
+      "gap": 1,
+      "peelingExcess": 0,
+      "growthPenalty": 0,
+      "correctClassInGrowth": false,
+      "forestSensitive": false,
+      "residualWitness": {
+        "logical": 1,
+        "stabilizers": [
+          1,
+          2,
+          6,
+          7,
+          9,
+          10,
+          16,
+          18
+        ]
+      },
+      "forests": [
+        {
+          "strategy": "bfs",
+          "logical": 1,
+          "weight": 6
+        },
+        {
+          "strategy": "reverse-bfs",
+          "logical": 1,
+          "weight": 6
+        },
+        {
+          "strategy": "dfs",
+          "logical": 1,
+          "weight": 6
+        }
+      ]
+    },
+    "pair": {
+      "relation": "logical",
+      "base": "topology-99",
+      "transformed": "topology-100",
+      "support": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15,
+        16,
+        17,
+        18,
+        19,
+        20,
+        21,
+        22,
+        23,
+        24
+      ],
+      "stabilizers": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        15,
+        16,
+        17,
+        18,
+        19
+      ],
+      "logical": 1,
+      "syndromeUnchanged": true
+    }
+  },
+  {
+    "id": "topology-100",
+    "number": 100,
+    "name": "100 · Toggle all five rows: logical success",
+    "group": "Topology and symmetry",
+    "error": [
+      0,
+      3,
+      5,
+      6,
+      7,
+      10,
+      11,
+      12,
+      13,
+      14,
+      17,
+      18,
+      19,
+      20,
+      21,
+      22,
+      24,
+      25,
+      27,
+      31,
+      32,
+      33,
+      37,
+      38,
+      39,
+      40
+    ],
+    "title": "Five hidden logical strings reduce to one logical operator times stabilizers.",
+    "note": "Multiplying Example 99 by all five horizontal strings changes the error weight from 17 to 26 while preserving its eleven defects and weight-six correction. The added chain equals Z̄ S1 S2 S3 S4 S5 S16 S17 S18 S19 S20. Because five is odd, this toggles the logical class; BFS, reverse BFS, and DFS now all succeed. The large residual is an explicitly verified product of ten stabilizers.",
+    "tags": [
+      "logical-equivalence",
+      "multiple-strings",
+      "same-syndrome",
+      "dense-support"
+    ],
+    "partner": "topology-99",
+    "partnerNote": "Compare Examples 99 and 100: the specified logical operator preserves the syndrome and correction but reverses the actual logical result.",
+    "provenance": {
+      "method": "constructed",
+      "seed": 90120,
+      "generator": "surfaceModel.sample fixed-weight LCG + documented involution",
+      "baseErrorWeight": 17,
+      "criterion": "At least eleven defects and nonzero minimum-weight gap; toggle all five horizontal strings."
+    },
+    "expected": {
+      "logical": 0,
+      "errorWeight": 26,
+      "defects": 11,
+      "correctionWeight": 6,
+      "rounds": 2,
+      "reactivations": 1,
+      "gap": 1,
+      "peelingExcess": 0,
+      "growthPenalty": 0,
+      "correctClassInGrowth": true,
+      "forestSensitive": false,
+      "residualWitness": {
+        "logical": 0,
+        "stabilizers": [
+          0,
+          3,
+          4,
+          6,
+          7,
+          9,
+          10,
+          15,
+          17,
+          19
+        ]
+      },
+      "forests": [
+        {
+          "strategy": "bfs",
+          "logical": 0,
+          "weight": 6
+        },
+        {
+          "strategy": "reverse-bfs",
+          "logical": 0,
+          "weight": 6
+        },
+        {
+          "strategy": "dfs",
+          "logical": 0,
+          "weight": 6
+        }
+      ]
+    },
+    "pair": {
+      "relation": "logical",
+      "base": "topology-99",
+      "transformed": "topology-100",
+      "support": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15,
+        16,
+        17,
+        18,
+        19,
+        20,
+        21,
+        22,
+        23,
+        24
+      ],
+      "stabilizers": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        15,
+        16,
+        17,
+        18,
+        19
+      ],
+      "logical": 1,
+      "syndromeUnchanged": true
+    }
+  }
+]

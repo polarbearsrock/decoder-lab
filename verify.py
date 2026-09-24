@@ -24,6 +24,7 @@ TESTS = (
     'surface-reference.test.js',
     'surface-confidence.test.js',
     'surface-edge.test.js',
+    'surface-catalog.test.js',
 )
 # Keep this list aligned with the source files consumed by build_site.py.
 # app.js and index.html are deliberately absent: the build must create them.
@@ -31,8 +32,9 @@ BUILD_INPUTS = (
     'build_site.py', 'source.html', 'details.html', 'surface.html',
     'site.css', 'surface.css', 'theme.js', 'model.js', 'extras.js',
     'surface-model.js', 'surface-confidence.js', 'surface-app.js',
+    'surface-cases.json', 'surface-catalog.js', 'build_catalog.js',
 )
-GENERATED = ('app.js', 'index.html')
+GENERATED = ('app.js', 'index.html', 'catalog-reference.json')
 # The router exposes #walkthrough as an alias for this real DOM element.
 FRAGMENT_ALIASES = {'walkthrough': 'uf-decoder-lesson'}
 
@@ -131,7 +133,7 @@ def check_build() -> None:
                 'Generated files do not match their source inputs: ' + ', '.join(stale)
                 + '\nRun python3 build_site.py, review the generated changes, then rerun python3 verify.py.'
             )
-        print('PASS build reproducibility: app.js and index.html match byte for byte.')
+        print('PASS build reproducibility: app.js, index.html, and catalog-reference.json match byte for byte.')
         document = StaticReferences()
         document.feed(work.joinpath('index.html').read_text(encoding='utf-8'))
         document.close()

@@ -6,6 +6,7 @@ Open `index.html` in any modern browser. No installation or network access is re
 
 ## Explore
 
+- Light, dark, and system themes with a saved preference.
 - Six experiments, including custom syndromes and allowed boundaries.
 - Step, play, rewind, scrub, or jump between decoder phases.
 - Half-edge growth, simultaneous fusion queues, Find and Union operations.
@@ -14,6 +15,8 @@ Open `index.html` in any modern browser. No installation or network access is re
 - Breadth-first, reversed breadth-first, and depth-first forest comparisons.
 - Global and grown-region exact minimum corrections for at most 12 defects.
 - Pseudocode, node/edge inspection, and a detailed field guide.
+
+Use **Theme** in the header to choose Light, Dark, or System. System follows your device appearance; explicit choices are remembered in this browser. Printing always uses the light palette.
 
 With page focus outside a control, Left/Right changes steps and Space toggles playback.
 
@@ -29,7 +32,7 @@ Commit `index.html` in the root of the repository. In Settings → Pages, choose
 
 ## Source
 
-`model.js` contains the decoder and exact reference. `extras.js` contains the synchronized teaching views. `site.css` and `details.html` contain the standalone presentation. `source.html` is the original visualization source; `build_site.py` extracts and adapts its interface, writes `app.js`, and assembles the self-contained `index.html`. Rebuild with `python3 build_site.py`.
+`model.js` contains the decoder and exact reference. `extras.js` contains the synchronized teaching views. `theme.js` applies the saved appearance before first paint. `site.css` and `details.html` contain the standalone presentation. `source.html` is the original visualization source; `build_site.py` extracts and adapts its interface, writes `app.js`, and assembles the self-contained `index.html`. Rebuild with `python3 build_site.py`.
 
 ## Validation
 

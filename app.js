@@ -128,7 +128,7 @@ const {makeGraph,run,presets,minimumCorrection}=globalThis.__ufLessonModel;
       el('rect',{x:bp.x-8,y:top-22,width:16,height:2*dy+44,rx:4,fill:'var(--muted)',opacity:0.8});
       el('text',{x:bp.x-9,y:26,'text-anchor':'start'},drawing,'Boundary');
     }
-    for(const e of graph.edges) {const a=position(e.a),b=position(e.b);segment(a,b,{stroke:'var(--border)','stroke-width':1.3});}
+    for(const e of graph.edges) {const a=position(e.a),b=position(e.b);segment(a,b,{stroke:'var(--graph-grid)','stroke-width':1.3});}
     const animated=[];
     if(s.phase!=='done') {
       for(const e of graph.edges) {

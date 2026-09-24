@@ -6,6 +6,7 @@ style=markup[markup.index('<style>')+7:markup.index('</style>')]
 markup=markup[:markup.index('<style>')]+markup[markup.index('</style>')+8:]
 ui=source[source.index("  const root=document.getElementById('uf-decoder-lesson');"):source.rindex('</script>')]
 ui="(() => {\n'use strict';\nconst {makeGraph,run,presets,minimumCorrection}=globalThis.__ufLessonModel;\n"+ui
+ui=ui.replace("stroke:'var(--border)','stroke-width':1.3", "stroke:'var(--graph-grid)','stroke-width':1.3")
 ui=ui.replace("fullTrace=run(graph);", "fullTrace=run(graph,{forestStrategy:$('forest-mode').value});")
 ui=ui.replace("Build a breadth-first spanning forest of the full edges.","Build the selected spanning forest using only full edges.")
 ui=ui.replace("This breadth-first forest is separate from the Union-Find parent tree.","This graph forest is separate from the Union-Find parent tree.")
@@ -35,11 +36,12 @@ markup=markup.replace('<span class="uf-key" id="uf-cut-legend" hidden>', '<span 
 
 end=markup.rfind('</div>')
 markup=markup[:end]+ '</aside></div>\n' + p.joinpath('details.html').read_text() + '\n</div>'
-head='''<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="description" content="An interactive quantum error correction lab: step through Union-Find growth, parent pointers, spanning forests and peeling."><meta name="theme-color" content="#f7f9fc"><title>Union-Find Decoder Lab</title><link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%2324344c'/%3E%3Cpath d='M16 18L32 34L48 18M32 34V48' stroke='%23ffffff' stroke-width='5' fill='none'/%3E%3Ccircle cx='16' cy='18' r='6' fill='%23ffffff'/%3E%3Ccircle cx='48' cy='18' r='6' fill='%23ffffff'/%3E%3Ccircle cx='32' cy='48' r='6' fill='%23ffffff'/%3E%3C/svg%3E"><style>'''
-nav='''</style></head><body><a class="skip-link" href="#uf-decoder-lesson">Skip to decoder</a><header class="site-header"><a class="brand" href="#"><span class="brand-symbol">∪</span> Decoder lab</a><nav aria-label="Page"><a href="#structures">Structures</a><a href="#field-guide">Field guide</a><a href="#sources">Sources</a></nav></header><main>'''
+head='''<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="description" content="An interactive quantum error correction lab: step through Union-Find growth, parent pointers, spanning forests and peeling."><meta name="theme-color" content="#f6f8fa"><title>Union-Find Decoder Lab</title><link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%2324344c'/%3E%3Cpath d='M16 18L32 34L48 18M32 34V48' stroke='%23ffffff' stroke-width='5' fill='none'/%3E%3Ccircle cx='16' cy='18' r='6' fill='%23ffffff'/%3E%3Ccircle cx='48' cy='18' r='6' fill='%23ffffff'/%3E%3Ccircle cx='32' cy='48' r='6' fill='%23ffffff'/%3E%3C/svg%3E"><style>'''
+nav='''</style></head><body><a class="skip-link" href="#uf-decoder-lesson">Skip to decoder</a><header class="site-header"><a class="brand" href="#"><span class="brand-symbol">∪</span> Decoder lab</a><div class="header-actions"><nav aria-label="Page"><a href="#structures">Structures</a><a href="#field-guide">Field guide</a><a href="#sources">Sources</a></nav><div class="theme-control"><label for="theme-select">Theme</label><select id="theme-select"><option value="system">System</option><option value="light">Light</option><option value="dark">Dark</option></select></div></div></header><main>'''
 foot='''</main><footer class="site-footer"><span>Decoder lab / Union-Find</span><span>Deterministic educational model · not a decoder performance benchmark</span></footer>'''
 styles=style+'\n'+p.joinpath('site.css').read_text()
 # Self-contained index supports local download and GitHub Pages without a build step.
 scripts='\n'.join('<script>\n'+p.joinpath(f).read_text()+'\n</script>' for f in ['model.js','extras.js','app.js'])
-p.joinpath('index.html').write_text(head+styles+nav+markup+foot+scripts+'</body></html>')
+theme_script='<script>\n'+p.joinpath('theme.js').read_text()+'\n</script>'
+p.joinpath('index.html').write_text(head.replace('<style>',theme_script+'<style>')+styles+nav+markup+foot+scripts+'</body></html>')
 print('Built',p/'index.html')

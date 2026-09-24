@@ -216,6 +216,10 @@ body{-webkit-font-smoothing:antialiased}button,select{line-height:1.35}.site-hea
 }
 
 /* Printing always uses the light palette, regardless of the screen theme. */
+.no-script { max-width:1360px; margin:24px auto; padding:20px; background:var(--muted); border:1px solid var(--border); border-radius:8px; }
+main:focus { outline:none; }
+input[type="search"]::-webkit-search-cancel-button { cursor:pointer; }
+.form-check-input:disabled { cursor:default; opacity:.45; }
 @media print {
   :root,:root[data-theme="dark"] {
   color-scheme: light;
@@ -466,11 +470,38 @@ body{-webkit-font-smoothing:antialiased}button,select{line-height:1.35}.site-hea
 @media print { .sc-prior-controls,#sc-neighbors,.sc-companion { display:none!important; } .sc-confidence-layout { break-inside:avoid; } .sc-spectrum-scroll { max-height:none; overflow:visible; } }
 
 #sc-forest-note { margin-top:12px; font-size:13px; }
-</style></head><body><a class="skip-link" href="#main-content">Skip to decoder</a><header class="site-header"><a class="brand" href="#"><span class="brand-symbol">∪</span> Decoder lab</a><div class="header-actions"><nav aria-label="Page"><a href="#structures">Structures</a><a href="#field-guide">Field guide</a><a href="#sources">Sources</a></nav><div class="theme-control"><label for="theme-select">Theme</label><select id="theme-select"><option value="system">System</option><option value="light">Light</option><option value="dark">Dark</option></select></div></div></header><main id="main-content"><nav class="lab-switch" aria-label="Choose a lab"><a href="#logical-lab" data-lab-mode="logical" aria-current="page">Surface code · logical errors</a><a href="#walkthrough" data-lab-mode="walkthrough">UF mechanics</a></nav><section id="logical-lab" aria-label="Surface-code logical recovery">
+
+/* Navigation stays available while reading the research panels. */
+.sc-section-nav { position:sticky; top:0; z-index:4; background:var(--page); gap:6px 22px; padding:10px 0; margin-bottom:24px; }
+.sc-section-nav a { padding:7px 0; border-bottom:2px solid transparent; font-size:13px; white-space:nowrap; }
+.sc-section-nav a[aria-current="location"] { color:var(--foreground); border-color:var(--primary); font-weight:600; }
+.sc-research-section,.sc-witness,#sc-workspace-title,#sc-view-title { scroll-margin-top:70px; }
+.sc-section-nav a:hover { text-decoration:none; color:var(--foreground); }
+#sc-workspace-title:focus,#sc-view-title:focus { outline:none; }
+#sc-workspace-title:focus-visible,#sc-view-title:focus-visible { outline:2px solid var(--focus); outline-offset:6px; border-radius:2px; }
+.sc-table-scroll:focus-visible { outline:3px solid var(--focus); outline-offset:3px; }
+.sc-table-scroll { overscroll-behavior:contain; scrollbar-color:var(--border) var(--background); }
+.sc-table-scroll thead { position:sticky; top:0; z-index:1; }
+.sc-edge-hit:focus-visible { outline:none; stroke:var(--focus); stroke-width:2; fill:color-mix(in srgb,var(--focus) 10%,transparent); }
+#sc-qubit-state { display:block; padding-top:7px; font-size:13px; }
+.sc-catalog-filters { display:grid; grid-template-columns:minmax(200px,1fr) 220px auto; align-items:end; gap:18px; max-width:900px; margin-bottom:14px; }
+#sc-catalog-status { margin-bottom:14px; }
+.sc-prior-shortcuts .btn[aria-pressed="true"] { background:var(--accent); color:var(--accent-foreground); border-color:var(--accent-border); }
+.sc-forest-selected { background:var(--muted); }
+#sc-forest-rows .btn[aria-pressed="true"] { background:transparent; color:var(--foreground); border-color:var(--subtle-border); }
+.sc-case-navigation .btn { padding:9px 2px; }
+.sc-load-notice { margin:22px 0 0; padding:14px 18px; border:1px solid var(--accent-border); border-radius:7px; background:var(--accent); color:var(--accent-foreground); font-size:14px; }
+.sc-view-heading { min-height:28px; }
+@media(max-width:1100px) { .sc-section-nav { flex-wrap:nowrap; overflow-x:auto; gap:20px; scrollbar-width:thin; } }
+@media(max-width:650px) { .sc-catalog-filters { grid-template-columns:1fr 1fr; gap:14px; } .sc-catalog-filters>div:first-child { grid-column:1/-1; } .sc-catalog-filters .btn { justify-self:start; } .sc-section-nav { margin-bottom:18px; } .sc-research-section .section-heading { align-items:flex-start; } #logical-lab input.form-control,#logical-lab select.form-select { font-size:16px; } }
+@media print { .sc-table-scroll { overflow:visible; max-height:none; } .sc-table-scroll table { min-width:0!important; } .sc-catalog-filters { display:none; } }
+</style></head><body><a class="skip-link" href="#main-content">Skip to decoder</a><header class="site-header"><a class="brand" href="#"><span class="brand-symbol">∪</span> Decoder lab</a><div class="header-actions"><nav aria-label="Page"><a href="#structures">Structures</a><a href="#field-guide">Field guide</a><a href="#sources">Sources</a></nav><div class="theme-control"><label for="theme-select">Theme</label><select id="theme-select"><option value="system">System</option><option value="light">Light</option><option value="dark">Dark</option></select></div></div></header><noscript><div class="no-script" role="alert">This interactive decoder requires JavaScript. Enable it and reload the page. <a href="https://github.com/polarbearsrock/decoder-lab#readme">Read the model and source documentation</a>.</div></noscript><main id="main-content" tabindex="-1"><nav class="lab-switch" aria-label="Choose a lab"><a href="#logical-lab" data-lab-mode="logical" aria-current="page">Surface code · logical errors</a><a href="#walkthrough" data-lab-mode="walkthrough">UF mechanics</a></nav><section id="logical-lab" aria-label="Surface-code logical recovery">
+  <p id="sc-load-notice" class="sc-load-notice" role="alert" hidden></p>
   <div class="sc-heading">
-    <div><div class="eyebrow">SURFACE-CODE MEMORY</div><h1>Union-Find and logical errors</h1><p>Planar [[41, 1, 5]] code · Z errors · perfect syndrome measurements</p></div>
+    <div><div class="eyebrow">SURFACE-CODE MEMORY</div><h1 id="sc-workspace-title" tabindex="-1">Union-Find and logical errors</h1><p>Planar [[41, 1, 5]] code · Z errors · perfect syndrome measurements</p></div>
     <div class="sc-example"><label class="form-label" for="sc-example">Error configuration</label><select class="form-select" id="sc-example"></select><div class="sc-case-navigation"><button class="btn btn-ghost" id="sc-previous-example" aria-label="Previous example">← Previous</button><span id="sc-case-position"></span><button class="btn btn-ghost" id="sc-next-example" aria-label="Next example">Next →</button></div></div>
   </div>
+  <nav class="sc-section-nav" id="sc-section-nav" aria-label="Research tools"><a href="#logical-lab" aria-current="location">Simulator</a><a href="#sc-comparison">Logical classes</a><a href="#sc-confidence">Exact confidence</a><a href="#sc-growth">Growth versus peeling</a><a href="#sc-neighbors">One-qubit sensitivity</a><a href="#sc-catalog" id="sc-catalog-link">All examples</a><a href="#sc-sampling">Reproduce a case</a></nav>
   <div class="sc-layout">
     <section class="sc-board-panel" aria-label="Surface-code patch">
       <div class="surface-heading"><span>DISTANCE-5 PLANAR PATCH</span><span class="model-tag">41 data qubits · 1 logical qubit</span></div>
@@ -484,19 +515,19 @@ body{-webkit-font-smoothing:antialiased}button,select{line-height:1.35}.site-hea
         <button class="btn" data-sc-view="decomposition" aria-pressed="true">6. Logical × stabilizer</button>
         <button class="btn sc-overlay-button" data-sc-view="overlay" aria-pressed="false">Overlay E and C · see cancellations</button>
       </div>
-      <div class="sc-view-heading"><h2 id="sc-view-title">The remaining operator</h2><span id="sc-view-meta" class="text-muted"></span></div>
+      <div class="sc-view-heading"><h2 id="sc-view-title" tabindex="-1">The remaining operator</h2><span id="sc-view-meta" class="text-muted"></span></div>
       <figure class="sc-figure"><svg id="sc-graph" role="img" aria-labelledby="sc-graph-title sc-graph-desc"><title id="sc-graph-title">Surface-code patch</title><desc id="sc-graph-desc"></desc><g id="sc-drawing"></g></svg><figcaption id="sc-legend" class="sc-legend"></figcaption></figure>
       <p id="sc-view-note" class="sc-view-note"></p>
       <div id="sc-trace-controls" hidden>
-        <div class="sc-trace-caption"><strong id="sc-trace-title"></strong><span id="sc-trace-count"></span></div>
+        <div class="sc-trace-caption"><strong id="sc-trace-title" role="status" aria-atomic="true"></strong><span id="sc-trace-count"></span></div>
         <input type="range" id="sc-trace-scrub" class="form-range" min="0" max="1" value="0" aria-label="Surface-code UF step">
         <div class="sc-trace-buttons"><button class="btn" id="sc-trace-start">Start</button><button class="btn" id="sc-trace-back">Back</button><button class="btn" id="sc-trace-play" aria-pressed="false">Play</button><button class="btn btn-primary" id="sc-trace-next">Next</button><button class="btn btn-ghost" id="sc-trace-end">Final correction</button></div>
         <div class="sc-trace-jumps"><span>Jump to</span><button class="btn btn-ghost" id="sc-jump-merge">First merge</button><button class="btn btn-ghost" id="sc-jump-reactivate">Next reactivation</button><button class="btn btn-ghost" id="sc-jump-forest">Forest</button></div>
         <div class="sc-trace-metrics" id="sc-trace-metrics"></div>
-        <details class="sc-clusters"><summary>Live clusters and their stopping conditions</summary><div class="sc-table-scroll"><table><thead><tr><th scope="col">Cluster</th><th scope="col">Defects</th><th scope="col">Vertices</th><th scope="col">Growth</th></tr></thead><tbody id="sc-cluster-rows"></tbody></table></div><p class="sc-secondary">Counts refer to original defects in each cluster. Peeling updates the separate residual syndrome. Boundary contact permits a cluster to stop even with odd parity.</p></details>
+        <details class="sc-clusters"><summary>Live clusters and their stopping conditions</summary><div class="sc-table-scroll" tabindex="0" role="region" aria-label="Live clusters"><table><thead><tr><th scope="col">Cluster</th><th scope="col">Defects</th><th scope="col">Vertices</th><th scope="col">Growth</th></tr></thead><tbody id="sc-cluster-rows"></tbody></table></div><p class="sc-secondary">Counts refer to original defects in each cluster. Peeling updates the separate residual syndrome. Boundary contact permits a cluster to stop even with odd parity.</p></details>
       </div>
       <div class="sc-display-options"><label class="form-check"><input type="checkbox" class="form-check-input" id="sc-cut" checked> Show X̄ reference</label><label class="form-check"><input type="checkbox" class="form-check-input" id="sc-ids"> Qubit IDs</label><button class="btn btn-ghost" id="sc-edit" aria-pressed="false">Edit error E</button></div>
-      <div id="sc-editor" class="sc-editor" hidden><p>Click a data-qubit edge to toggle a Z error, or use the selector. The correction is recomputed from the syndrome.</p><div class="sc-editor-row"><div><label class="form-label" for="sc-qubit">Data qubit</label><select class="form-select" id="sc-qubit"></select></div><button class="btn" id="sc-toggle-qubit">Toggle Z</button><button class="btn" id="sc-clear">Clear E</button></div></div>
+      <div id="sc-editor" class="sc-editor" hidden><p>Click an edge or use the selector to toggle a Z error. On the focused lattice, arrow keys move between qubits; Enter or Space toggles the selected qubit.</p><div class="sc-editor-row"><div><label class="form-label" for="sc-qubit">Data qubit</label><select class="form-select" id="sc-qubit" aria-describedby="sc-qubit-state"></select><span id="sc-qubit-state" class="sc-secondary" role="status"></span></div><button class="btn" id="sc-toggle-qubit">Toggle Z</button><button class="btn" id="sc-clear">Clear E</button></div></div>
     </section>
     <aside class="sc-outcome" aria-label="Completed recovery outcome">
       <div class="surface-heading"><span>COMPLETED RECOVERY</span><span id="sc-result-badge" class="sc-badge"></span></div>
@@ -510,9 +541,9 @@ body{-webkit-font-smoothing:antialiased}button,select{line-height:1.35}.site-hea
     </aside>
   </div>
 
-  <div class="sc-example-story"><span class="eyebrow">WORKED EXPLANATION · DEFAULT BFS</span><h2 id="sc-example-title"></h2><p id="sc-example-note"></p><p class="sc-secondary" id="sc-forest-note" hidden>The explanation above uses default BFS. The diagrams and computed results use the selected forest.</p><div class="sc-companion" id="sc-companion" hidden><p id="sc-companion-note"></p><button class="btn" id="sc-open-companion">Open paired case</button></div></div>
+  <div class="sc-example-story"><span class="eyebrow" id="sc-story-kind">WORKED EXPLANATION · DEFAULT BFS</span><h2 id="sc-example-title"></h2><p id="sc-example-note"></p><p class="sc-secondary" id="sc-forest-note" hidden>The explanation above uses default BFS. The diagrams and computed results use the selected forest.</p><div class="sc-companion" id="sc-companion" hidden><p id="sc-companion-note"></p><button class="btn" id="sc-open-companion">Open paired case</button></div></div>
 
-  <nav class="sc-section-nav" aria-label="Research tools"><a href="#sc-comparison">Logical classes</a><a href="#sc-confidence">Exact confidence</a><a href="#sc-growth">Growth versus peeling</a><a href="#sc-neighbors">One-qubit sensitivity</a><a href="#sc-catalog" id="sc-catalog-link">All examples</a><a href="#sc-sampling">Reproduce a case</a></nav>
+
 
   <section class="sc-research-section" id="sc-comparison" aria-label="Exact logical-class comparison">
     <div class="section-heading"><div><div class="eyebrow">EXACT UNIT-WEIGHT REFERENCE</div><h2>Compare the two logical classes</h2></div><div class="sc-reference-toggle" role="group" aria-label="Reference diagram"><button class="btn" data-sc-reference="correction" aria-pressed="true">Corrections C₀, C₁</button><button class="btn" data-sc-reference="residual" aria-pressed="false">Residuals CᵢE</button></div></div>
@@ -531,20 +562,20 @@ body{-webkit-font-smoothing:antialiased}button,select{line-height:1.35}.site-hea
     <div class="sc-prior-controls"><div><label class="form-label" for="sc-confidence-p">Assumed per-qubit Z error probability p (%)</label><div class="sc-prior-input"><input class="form-range" id="sc-confidence-p" type="range" min="0" max="50" step="0.1" value="10"><input class="form-control" id="sc-confidence-number" type="number" min="0" max="50" step="any" value="10" aria-label="Assumed Z error probability in percent"></div></div><div class="sc-prior-shortcuts" role="group" aria-label="Noise-rate examples"><button class="btn" data-sc-prior="0.01">1%</button><button class="btn" data-sc-prior="0.10">10%</button><button class="btn" data-sc-prior="0.15">15%</button><button class="btn" data-sc-prior="0.50">50%</button></div></div>
     <div class="sc-confidence-layout"><div class="sc-confidence-readout"><div class="sc-probability-row"><span><i class="sc-class-zero"></i>C₀ · UF’s class</span><strong id="sc-confidence-zero"></strong></div><div class="sc-probability-row"><span><i class="sc-class-one"></i>C₁ · opposite class</span><strong id="sc-confidence-one"></strong></div><div class="sc-probability-bar" aria-hidden="true"><span id="sc-confidence-bar-zero"></span><span id="sc-confidence-bar-one"></span></div><p class="sc-confidence-formula">P(UF failure | s, p) = P(C₁ | s, p)</p><p id="sc-confidence-decision" role="status"></p><p class="sc-secondary" id="sc-confidence-truth"></p><p class="sc-secondary" id="sc-confidence-llr"></p></div><figure class="sc-confidence-figure"><svg id="sc-confidence-curve" role="img" aria-labelledby="sc-confidence-curve-title sc-confidence-curve-desc"><title id="sc-confidence-curve-title">Conditional UF failure probability versus assumed noise rate</title><desc id="sc-confidence-curve-desc"></desc><g id="sc-confidence-curve-drawing"></g></svg><figcaption>This is a probability conditioned on one fixed syndrome, not a logical-error-rate curve over sampled shots. At p = 50%, the two classes are equally likely.</figcaption></figure></div>
     <p class="sc-confidence-status" id="sc-confidence-status"></p>
-    <details class="sc-method"><summary>Exact weight spectrum and probability calculation</summary><div><p>For class b, A<sub>b,k</sub> is the number of syndrome-compatible errors of weight k. The class mass is M<sub>b</sub>(p) = Σ<sub>k</sub> A<sub>b,k</sub> p<sup>k</sup>(1 − p)<sup>41−k</sup>, and P(b | s, p) = M<sub>b</sub> / (M₀ + M₁). Each class contains exactly 2²⁰ = 1,048,576 distinct errors. A row-frontier calculation counts every weight; it does not truncate to the minima.</p><p>These posteriors are exact for the assumed independent-Z, perfect-syndrome model. They are not calibrated confidence for circuit noise, correlated faults, or a fixed-weight sampler. A probability describes uncertainty before E is revealed; the displayed shot’s success or failure is a separate, definite fact.</p><div class="sc-table-scroll sc-spectrum-scroll"><table><caption>All weights in the current syndrome’s two classes</caption><thead><tr><th scope="col">Weight k</th><th scope="col">Count A₀,k</th><th scope="col">Count A₁,k</th><th scope="col">P(C₀, k | s)</th><th scope="col">P(C₁, k | s)</th></tr></thead><tbody id="sc-spectrum-rows"></tbody></table></div></div></details>
+    <details class="sc-method"><summary>Exact weight spectrum and probability calculation</summary><div><p>For class b, A<sub>b,k</sub> is the number of syndrome-compatible errors of weight k. The class mass is M<sub>b</sub>(p) = Σ<sub>k</sub> A<sub>b,k</sub> p<sup>k</sup>(1 − p)<sup>41−k</sup>, and P(b | s, p) = M<sub>b</sub> / (M₀ + M₁). Each class contains exactly 2²⁰ = 1,048,576 distinct errors. A row-frontier calculation counts every weight; it does not truncate to the minima.</p><p>These posteriors are exact for the assumed independent-Z, perfect-syndrome model. They are not calibrated confidence for circuit noise, correlated faults, or a fixed-weight sampler. A probability describes uncertainty before E is revealed; the displayed shot’s success or failure is a separate, definite fact.</p><div class="sc-table-scroll sc-spectrum-scroll" tabindex="0" role="region" aria-label="All-weight probability spectrum"><table><caption>All weights in the current syndrome’s two classes</caption><thead><tr><th scope="col">Weight k</th><th scope="col">Count A₀,k</th><th scope="col">Count A₁,k</th><th scope="col">P(C₀, k | s)</th><th scope="col">P(C₁, k | s)</th></tr></thead><tbody id="sc-spectrum-rows"></tbody></table></div></div></details>
   </section>
 
   <section class="sc-research-section" id="sc-growth" aria-label="Growth and peeling comparison">
     <div class="section-heading"><div><div class="eyebrow">LOCATE THE DECISION</div><h2>Growth versus peeling</h2></div><button class="btn" id="sc-inspect-growth">Inspect the final grown region</button></div>
     <div class="sc-diagnosis"><h3 id="sc-growth-title"></h3><p id="sc-growth-note"></p></div>
-    <div class="sc-growth-layout"><div><div class="sc-table-scroll"><table><caption>Allowed support and correction weight</caption><thead><tr><th scope="col">Logical class</th><th scope="col">Full patch</th><th scope="col">Grown edges only</th></tr></thead><tbody id="sc-growth-rows"></tbody></table></div><p class="sc-secondary">“Impossible” is an exact feasibility result: no syndrome-consistent correction in that class fits within the fully grown edges. Half-grown edges are excluded.</p><div class="sc-cost-note" id="sc-cost-note"></div></div><div><div class="sc-table-scroll"><table><caption>Same growth, different peeling forests</caption><thead><tr><th scope="col">Forest</th><th scope="col">|C|</th><th scope="col">Recovery for E</th><th scope="col">Select</th></tr></thead><tbody id="sc-forest-rows"></tbody></table></div><p class="sc-secondary">Changing this selection updates the entire lab. Each forest uses the same fully grown support. A longer correction can still be in the successful logical class.</p><p class="sc-secondary" id="sc-run-metrics"></p></div></div>
+    <div class="sc-growth-layout"><div><div class="sc-table-scroll" tabindex="0" role="region" aria-label="Correction weights"><table><caption>Allowed support and correction weight</caption><thead><tr><th scope="col">Logical class</th><th scope="col">Full patch</th><th scope="col">Grown edges only</th></tr></thead><tbody id="sc-growth-rows"></tbody></table></div><p class="sc-secondary">“Impossible” is an exact feasibility result: no syndrome-consistent correction in that class fits within the fully grown edges. Half-grown edges are excluded.</p><div class="sc-cost-note" id="sc-cost-note"></div></div><div><div class="sc-table-scroll" tabindex="0" role="region" aria-label="Peeling forest results"><table><caption>Same growth, different peeling forests</caption><thead><tr><th scope="col">Forest</th><th scope="col">|C|</th><th scope="col">Recovery for E</th><th scope="col">Select</th></tr></thead><tbody id="sc-forest-rows"></tbody></table></div><p class="sc-secondary">Changing this selection updates the entire lab. Each forest uses the same fully grown support. A longer correction can still be in the successful logical class.</p><p class="sc-secondary" id="sc-run-metrics"></p></div></div>
   </section>
 
   <section class="sc-research-section" id="sc-neighbors" aria-label="One-qubit sensitivity analysis">
     <div class="section-heading"><div><div class="eyebrow">CONTROLLED PERTURBATIONS</div><h2>What can one qubit change?</h2></div><button class="btn" id="sc-scan-neighbors">Scan all 41 one-qubit toggles</button></div>
     <p class="sc-section-intro">Toggle each physical Z error once, then decode the new syndrome from scratch. Compare logical outcomes and count how many correction edges change. A local syndrome change can produce a nonlocal decoding decision.</p>
     <p id="sc-neighbor-status" class="sc-secondary" role="status">The scan exhausts the 41 neighbors of the current E. These are controlled cases, not probability-weighted samples.</p>
-    <div id="sc-neighbor-results" hidden><div class="sc-neighbor-toolbar"><p id="sc-neighbor-summary"></p><div><label class="form-label" for="sc-neighbor-filter">Show neighbors</label><select id="sc-neighbor-filter" class="form-select"><option value="flips">Logical outcome changes</option><option value="all">All 41 toggles</option></select></div></div><div class="sc-table-scroll sc-neighbor-scroll"><table><thead><tr><th scope="col">Toggle</th><th scope="col">New |E|</th><th scope="col">New |C|</th><th scope="col">Changed C edges</th><th scope="col">New outcome</th><th scope="col">Explore</th></tr></thead><tbody id="sc-neighbor-rows"></tbody></table></div><p class="sc-secondary">Changed correction edges means |C ⊕ C′|. The closed residual change is q ⊕ C ⊕ C′; its logical parity says whether the outcome flips. This diagnostic uses simulated E.</p></div>
+    <div id="sc-neighbor-results" hidden><div class="sc-neighbor-toolbar"><p id="sc-neighbor-summary"></p><div><label class="form-label" for="sc-neighbor-filter">Show neighbors</label><select id="sc-neighbor-filter" class="form-select"><option value="flips">Logical outcome changes</option><option value="all">All 41 toggles</option></select></div></div><div class="sc-table-scroll sc-neighbor-scroll" tabindex="0" role="region" aria-label="One-qubit scan results"><table><thead><tr><th scope="col">Toggle</th><th scope="col">New |E|</th><th scope="col">New |C|</th><th scope="col">Changed C edges</th><th scope="col">New outcome</th><th scope="col">Explore</th></tr></thead><tbody id="sc-neighbor-rows"></tbody></table></div><p class="sc-secondary">Changed correction edges means |C ⊕ C′|. The closed residual change is q ⊕ C ⊕ C′; its logical parity says whether the outcome flips. This diagnostic uses simulated E.</p></div>
     <button class="btn" id="sc-restore-neighbor" hidden>Restore scan’s original error</button>
   </section>
 
@@ -564,18 +595,18 @@ body{-webkit-font-smoothing:antialiased}button,select{line-height:1.35}.site-hea
   </section>
 
   <section class="sc-research-section" id="sc-catalog" aria-label="Worked example catalog">
-    <div class="section-heading"><div><div class="eyebrow" id="sc-catalog-count">WORKED CASES</div><h2>Explore a specific failure mechanism</h2></div><div><label class="form-label" for="sc-category">Filter examples</label><select id="sc-category" class="form-select"><option value="all">All concepts</option></select></div></div>
-    <p class="sc-section-intro">Weights and outcomes in this catalog use the default BFS forest. Open a case to compare alternative forests and exact logical classes.</p><div class="sc-table-scroll"><table class="sc-catalog-table"><thead><tr><th scope="col">Example</th><th scope="col">Concept</th><th scope="col">|E|</th><th scope="col">Defects</th><th scope="col">BFS outcome</th><th scope="col">Explore</th></tr></thead><tbody id="sc-catalog-rows"></tbody></table></div>
+    <div class="section-heading"><div><div class="eyebrow" id="sc-catalog-count">WORKED CASES</div><h2>Explore a specific failure mechanism</h2></div><div><label class="form-label" for="sc-category">Concept</label><select id="sc-category" class="form-select"><option value="all">All concepts</option></select></div></div>
+    <p class="sc-section-intro">Weights and outcomes use default BFS. Open a case to compare forests and exact logical classes.</p><div class="sc-catalog-filters"><div><label class="form-label" for="sc-search">Search examples</label><input id="sc-search" type="search" class="form-control" placeholder="Try boundary, reactivation, or 16" maxlength="120"></div><div><label class="form-label" for="sc-outcome-filter">BFS recovery</label><select class="form-select" id="sc-outcome-filter"><option value="all">All outcomes</option><option value="success">Logical success</option><option value="failure">Logical failure</option></select></div><button type="button" class="btn btn-ghost" id="sc-clear-filters">Clear filters</button></div><p id="sc-catalog-status" class="sc-secondary" role="status"></p><div class="sc-table-scroll" tabindex="0" role="region" aria-label="Worked examples"><table class="sc-catalog-table"><thead><tr><th scope="col">Example</th><th scope="col">Concept</th><th scope="col">|E|</th><th scope="col">Defects</th><th scope="col">BFS outcome</th><th scope="col">Explore</th></tr></thead><tbody id="sc-catalog-rows"></tbody></table></div>
   </section>
 
   <section class="sc-research-section" id="sc-sampling" aria-label="Reproducible error experiments">
     <div class="section-heading"><div><div class="eyebrow">REPRODUCIBLE EXPERIMENTS</div><h2>Generate and preserve an error pattern</h2></div></div>
-    <div class="sc-sampling-grid"><form id="sc-sample-form" class="sc-sample-form"><div><label class="form-label" for="sc-sample-mode">Sampling model</label><select class="form-select" id="sc-sample-mode"><option value="iid">Independent Z errors</option><option value="fixed">Fixed-weight Z errors</option></select></div><div><label class="form-label" for="sc-seed">Random seed</label><input class="form-control" id="sc-seed" type="number" min="0" max="4294967295" step="1" value="89" required></div><div id="sc-probability-field"><label class="form-label" for="sc-probability">Per-qubit probability p</label><input class="form-control" id="sc-probability" type="number" min="0" max="1" step="any" value="0.1" required></div><div id="sc-weight-field" hidden><label class="form-label" for="sc-sample-weight">Number of errors</label><input class="form-control" id="sc-sample-weight" type="number" min="0" max="41" step="1" value="7" required disabled></div><div class="sc-sample-actions"><button class="btn btn-primary" type="submit">Generate error</button><button class="btn" type="button" id="sc-next-seed">Next seed</button></div></form><div class="sc-preserve"><h3>Keep the exact experiment</h3><p>Export E, syndrome, UF correction, CE = LS, exact references, full weight spectra, posterior probabilities, and any sensitivity scan. A case link preserves the error, forest, diagram view, and confidence prior.</p><div><button class="btn" id="sc-export">Export JSON</button><button class="btn" id="sc-share">Create case link</button></div><label class="form-label" for="sc-share-url" id="sc-share-label" hidden>Case link · select and copy</label><input class="form-control" id="sc-share-url" type="text" readonly hidden></div></div>
+    <div class="sc-sampling-grid"><form id="sc-sample-form" class="sc-sample-form"><div><label class="form-label" for="sc-sample-mode">Sampling model</label><select class="form-select" id="sc-sample-mode"><option value="iid">Independent Z errors</option><option value="fixed">Fixed-weight Z errors</option></select></div><div><label class="form-label" for="sc-seed">Random seed</label><input class="form-control" id="sc-seed" type="number" min="0" max="4294967295" step="1" value="89" required></div><div id="sc-probability-field"><label class="form-label" for="sc-probability">Per-qubit probability p</label><input class="form-control" id="sc-probability" type="number" min="0" max="1" step="any" value="0.1" required></div><div id="sc-weight-field" hidden><label class="form-label" for="sc-sample-weight">Number of errors</label><input class="form-control" id="sc-sample-weight" type="number" min="0" max="41" step="1" value="7" required disabled></div><div class="sc-sample-actions"><button class="btn btn-primary" type="submit">Generate error</button><button class="btn" type="button" id="sc-next-seed">Next seed</button></div></form><div class="sc-preserve"><h3>Keep the exact experiment</h3><p>Export E, syndrome, UF correction, CE = LS, exact references, full weight spectra, posterior probabilities, and any sensitivity scan. A case link preserves the error, forest, diagram view, and confidence prior.</p><div><button class="btn" id="sc-export">Export JSON</button><button class="btn" id="sc-share">Create case link</button><button class="btn" id="sc-copy-link" hidden>Copy link</button></div><label class="form-label" for="sc-share-url" id="sc-share-label" hidden>Case link · select and copy</label><input class="form-control" id="sc-share-url" type="text" readonly hidden></div></div>
     <p id="sc-sample-status" class="sc-equivalence-status" role="status">Seeds produce the same error pattern on every device. Each generation is one shot; this is not a logical-error-rate estimate.</p>
     <details class="sc-method"><summary>Sampling and reproducibility details</summary><div><p>Independent sampling draws one Bernoulli(p) Z error per data qubit. Fixed-weight sampling selects a subset without replacement; it conditions the weight and is not an independent noise model. The deterministic 32-bit generator uses state ← (1664525 · state + 1013904223) mod 2³². Fixed-weight samples use a Fisher–Yates shuffle in descending qubit order.</p><p>These experiments model a single perfect-syndrome round. They contain no measurement faults, circuit propagation, temporal correlations, or X/Y errors. Curated examples are selected to illustrate mechanisms and cannot establish comparative decoder error rates.</p></div></details>
   </section>
 
-  <section class="sc-notes" aria-label="Surface-code assumptions">
+  <section id="sc-assumptions" class="sc-notes" aria-label="Surface-code assumptions">
     <details open><summary>Why a cleared syndrome is not enough</summary><div><p>Once H<sub>X</sub>(e ⊕ c) = 0, the remaining Z operator is either a stabilizer or a logical Z times a stabilizer. The syndrome cannot distinguish those two classes. Successful recovery requires CE ∈ 𝒮, where 𝒮 is the stabilizer group.</p><p>A nontrivial Z̄ changes the relative phase of an arbitrary encoded state: α|0<sub>L</sub>⟩ + β|1<sub>L</sub>⟩ → α|0<sub>L</sub>⟩ − β|1<sub>L</sub>⟩. It does not flip the logical computational-basis bit.</p></div></details>
     <details><summary>Geometry, boundaries, and model limits</summary><div><p>This is an unrotated distance-5 planar CSS code. Its 41 data qubits lie on edges. The 20 measured X checks sit at non-boundary vertices; the 20 Z stabilizers surround faces. Boundary faces have weight 3. The left and right boundaries are rough, allowing Z chains to terminate without a measured endpoint.</p><p>The example uses only Pauli Z errors, perfect syndrome extraction, uniform unit-cost UF growth, and deterministic BFS, reverse-BFS, or DFS peeling forests. It models one recovery round, without measurement errors, circuit faults, correlations, or time. Outcomes here are exact for the displayed error pattern, not a measured logical error rate.</p><p>Both check matrices have rank 20 and H<sub>X</sub>H<sub>Z</sub><sup>T</sup> = 0, leaving 41 − 20 − 20 = 1 logical qubit. The displayed Z̄ and X̄ overlap on one data qubit and anticommute.</p></div></details>
     <details><summary>Is the physical correction actually applied?</summary><div><p>The display treats C as a Pauli operator for bookkeeping. A controller can instead track C in a Pauli frame and interpret later operations or measurements accordingly. The logical success criterion is still whether the tracked correction and actual error differ by a stabilizer.</p><p>In a real run, the decoder does not know E and cannot use this simulation’s logical verdict. Memory experiments use suitable logical preparation and final readout to assess outcomes; syndrome checks alone do not reveal an arbitrary encoded state.</p></div></details>
@@ -701,7 +732,7 @@ body{-webkit-font-smoothing:antialiased}button,select{line-height:1.35}.site-hea
 </section>
 <section id="sources" class="sources"><div><div class="eyebrow">READ FURTHER</div><h2>References</h2></div><div><a href="https://arxiv.org/abs/1709.06218" target="_blank" rel="noopener">Delfosse &amp; Nickerson · Almost-linear time decoding algorithm for topological codes <span>↗</span></a><p>Algorithm 1 and §§4–6: growth, Union-Find, efficient implementation, and boundaries.</p><a href="https://algorithms.discrete.ma.tum.de/graph-algorithms/matchings-blossom-algorithm/index_en.html" target="_blank" rel="noopener">TUM · Edmonds’s Blossom Algorithm <span>↗</span></a><p>The step-by-step interaction that inspired this notebook.</p></div></section>
 
-</div></main><footer class="site-footer"><span>Decoder lab / Union-Find</span><span>Deterministic educational model · not a decoder performance benchmark</span></footer><script>
+</div></main><footer class="site-footer"><span>Decoder lab / Union-Find · <a href="https://github.com/polarbearsrock/decoder-lab">Source &amp; documentation</a></span><span>Deterministic educational model · not a decoder performance benchmark</span></footer><script>
 /* Pedagogical uniform-growth Union-Find model; unit edge costs, one error type.
  * Snapshots favor inspection over optimized decoder runtime.
  * Based on the two-stage construction of Delfosse & Nickerson (2021).
@@ -971,7 +1002,7 @@ function queue(){let target=$('fusion-queue');if(!target){target=document.create
 document.addEventListener('uf-state',e=>{latest=e.detail;const {s,graph,editing}=latest;const content=labels[graph.key]||labels.custom;$('graph-size').textContent=`${graph.nodes.length} vertices · ${graph.edges.length} edges`;$('lesson-title').textContent=content[0];$('lesson-goal').textContent=content[1];$('phase-name').textContent=editing?'EDIT SYNDROME':s.phase.toUpperCase();$('step-title').textContent=editing?'Set the input syndrome':s.title;$('step-intro').textContent=editing?'Select vertices on the graph, then choose Run decoder.':s.note;$('current-round').textContent=`ROUND ${s.tick}`;$('metric-active').textContent=s.groups.filter(g=>g.active).length;$('metric-residual').textContent=s.bits.reduce((a,b)=>a+b,0);$('metric-cost').textContent=s.correction.length;forestComparison();drawPath();residuals();queue();});
 $('dsu-node').addEventListener('change',drawPath);
 new ResizeObserver(()=>drawPath()).observe($('dsu-path'));
-const tabs=[...document.querySelectorAll('[role=tab]')];function activate(tab){tabs.forEach(t=>{const selected=t===tab;t.classList.toggle('active',selected);t.setAttribute('aria-selected',String(selected));$(t.getAttribute('aria-controls')).hidden=!selected;});}tabs.forEach((tab,i)=>{tab.addEventListener('click',()=>activate(tab));tab.addEventListener('keydown',e=>{let j=i;if(e.key==='ArrowRight')j=(i+1)%tabs.length;else if(e.key==='ArrowLeft')j=(i+tabs.length-1)%tabs.length;else if(e.key==='Home')j=0;else if(e.key==='End')j=tabs.length-1;else return;e.preventDefault();tabs[j].focus();tabs[j].click();});});
+const tabs=[...document.querySelectorAll('[role=tab]')];function activate(tab){tabs.forEach(t=>{const selected=t===tab;t.classList.toggle('active',selected);t.setAttribute('aria-selected',String(selected));t.tabIndex=selected?0:-1;$(t.getAttribute('aria-controls')).hidden=!selected;});}tabs.forEach((tab,i)=>{tab.tabIndex=tab.getAttribute('aria-selected')==='true'?0:-1;tab.addEventListener('click',()=>activate(tab));tab.addEventListener('keydown',e=>{let j=i;if(e.key==='ArrowRight')j=(i+1)%tabs.length;else if(e.key==='ArrowLeft')j=(i+tabs.length-1)%tabs.length;else if(e.key==='Home')j=0;else if(e.key==='End')j=tabs.length-1;else return;e.preventDefault();tabs[j].focus();tabs[j].click();});});
 })();
 
 </script>
@@ -1249,7 +1280,7 @@ const {makeGraph,run,presets,minimumCorrection}=globalThis.__ufLessonModel;
   if(typeof ResizeObserver!=='undefined')new ResizeObserver(()=>{lastCoordinates=null;draw();}).observe(svg);
   root.ufInspect=()=>({key:select.value,index,total:trace.frames.length,state:trace.frames[index],valid:trace.valid,graph,trace,fullTrace,reference,grownReference,editing});
   $('forest-mode').addEventListener('change',()=>{pause();const phase=trace.frames[index].phase;compile(graph.key,graph.nodes.filter(v=>v.syndrome).map(v=>[v.col,v.row]),graph.preset.boundary);const i=trace.frames.findIndex(f=>f.phase===phase);index=Math.max(0,i);draw();});
-  document.addEventListener('keydown',e=>{if(root.hidden)return;if(/INPUT|SELECT|TEXTAREA|BUTTON/.test(e.target.tagName)||e.altKey||e.ctrlKey||e.metaKey)return;if(e.key==='ArrowRight'){e.preventDefault();next.click();}if(e.key==='ArrowLeft'){e.preventDefault();back.click();}if(e.code==='Space'){e.preventDefault();play.click();}});
+  document.addEventListener('keydown',e=>{if(root.hidden)return;if(e.target.closest('a,button,input,select,textarea,summary,[role="button"],[role="tab"],[contenteditable=""],[contenteditable="true"]')||e.altKey||e.ctrlKey||e.metaKey)return;if(e.key==='ArrowRight'){e.preventDefault();next.click();}if(e.key==='ArrowLeft'){e.preventDefault();back.click();}if(e.code==='Space'){e.preventDefault();play.click();}});
   load('pair');
 })();
 
@@ -1647,8 +1678,11 @@ const {makeGraph,run,presets,minimumCorrection}=globalThis.__ufLessonModel;
   const NS='http://www.w3.org/2000/svg';
   let selected='likelihood-crossover',error=presets.find(p=>p.id===selected).error.slice(),data,analysis;
   let confidenceP=.1,spectrum=null,spectrumKey='',posterior=null,neighborRows=null,neighborOrigin=null;
+  let posteriorSpectrum=null,confidencePlot=null,confidenceTable=null;
+  const confidenceCurveSamples=new WeakMap();
   let forestStrategy='bfs',referenceView='correction',sampleOrigin=null;
   let view='decomposition',editing=false,traceIndex=0,timer=null,frames=[];
+  let focusedQubit=0;
   const viewButtons=[...root.querySelectorAll('[data-sc-view]')];
   const colors={error:'var(--sc-error)',correction:'var(--viz-series-3)',residual:'var(--viz-series-5)',logical:'var(--muted-foreground)',stabilizer:'var(--viz-series-1)',cut:'var(--viz-series-2)'};
   const views={
@@ -1669,6 +1703,13 @@ const {makeGraph,run,presets,minimumCorrection}=globalThis.__ufLessonModel;
   const supportText=ids=>ids.length?ids.map(id=>'q'+id).join(', '):'∅';
   const stabilizerHTML=ids=>ids.length>5?'∏<sub>i∈A</sub> S<sub>i</sub>':ids.length?ids.map(id=>`S<sub>${id+1}</sub>`).join(' '):'I';
   function stop(){if(timer!==null)clearInterval(timer);timer=null;$('trace-play').textContent='Play';$('trace-play').setAttribute('aria-pressed','false');}
+  function invalidateShare(){for(const id of ['share-url','share-label','copy-link'])$(id).hidden=true;}
+  function focusWorkspace(){ $('workspace-title').focus({preventScroll:true});root.scrollIntoView({block:'start'}); }
+  function updateQubitState(){
+    const id=Number($('qubit').value),present=data.error.includes(id);
+    $('qubit-state').textContent=`q${id}: ${present?'Z error present':'no Z error'}.`;
+    $('toggle-qubit').textContent=present?'Remove Z':'Add Z';
+  }
 
   function geometry(svg,mini=false) {
     const width=Math.max(mini?240:260,svg.getBoundingClientRect().width||600),narrow=width<420;
@@ -1742,9 +1783,20 @@ const {makeGraph,run,presets,minimumCorrection}=globalThis.__ufLessonModel;
     }
     if(!mini) for(const e of patch.edges) {
       const a=nodePos(e.a),b=nodePos(e.b),horizontal=e.kind==='h';
-      const hit=svgEl(drawing,'rect',{x:horizontal?a.x+7:a.x-9,y:horizontal?a.y-9:a.y+7,width:horizontal?b.x-a.x-14:18,height:horizontal?18:b.y-a.y-14,rx:3,fill:'transparent',...(edit?{class:'sc-edge-hit',role:'button',tabindex:0,'aria-label':`Toggle Z error on q${e.id}`,'aria-pressed':String(data.error.includes(e.id))}:{})});
+      const hit=svgEl(drawing,'rect',{x:horizontal?a.x+7:a.x-9,y:horizontal?a.y-9:a.y+7,width:horizontal?b.x-a.x-14:18,height:horizontal?18:b.y-a.y-14,rx:3,fill:'transparent',...(edit?{class:'sc-edge-hit',role:'button',tabindex:e.id===focusedQubit?0:-1,'data-qubit':e.id,'aria-label':`Toggle Z error on q${e.id}`,'aria-pressed':String(data.error.includes(e.id))}:{})});
       svgEl(hit,'title',{},`q${e.id}${edit?': click to toggle a Z error':cancelled.includes(e.id)?': E and C both act; the two Z operators cancel':chain.includes(e.id)?': selected operator acts here':''}`);
-      if(edit){hit.addEventListener('click',()=>toggleQubit(e.id));hit.addEventListener('keydown',event=>{if(event.key==='Enter'||event.key===' '){event.preventDefault();toggleQubit(e.id);const replacement=$('drawing').querySelector(`[aria-label="Toggle Z error on q${e.id}"]`);replacement?.focus();}});}
+      if(edit){
+        hit.addEventListener('focus',()=>{focusedQubit=e.id;$('qubit').value=String(e.id);updateQubitState();$('drawing').querySelectorAll('.sc-edge-hit').forEach(q=>q.setAttribute('tabindex',q===hit?'0':'-1'));});
+        hit.addEventListener('click',()=>{focusedQubit=e.id;toggleQubit(e.id);});
+        hit.addEventListener('keydown',event=>{
+          if(event.key==='Enter'||event.key===' '){event.preventDefault();event.stopPropagation();toggleQubit(e.id);}
+          else if(['ArrowRight','ArrowDown','ArrowLeft','ArrowUp','Home','End'].includes(event.key)){
+            event.preventDefault();event.stopPropagation();
+            const next=event.key==='Home'?0:event.key==='End'?patch.n-1:(e.id+(['ArrowRight','ArrowDown'].includes(event.key)?1:patch.n-1))%patch.n;
+            $('drawing').querySelector(`[data-qubit="${next}"]`)?.focus();
+          }
+        });
+      }
     }
   }
 
@@ -1758,6 +1810,7 @@ const {makeGraph,run,presets,minimumCorrection}=globalThis.__ufLessonModel;
   }
   function drawMain(){
     if(root.hidden)return;
+    const activeQubit=document.activeElement?.getAttribute('data-qubit');
     const frame=frames[traceIndex],params={cut:$('cut').checked&&view!=='syndrome',ids:$('ids').checked};
     let items=[];
     if(view==='error'){Object.assign(params,{chain:data.error,color:colors.error,bits:data.observed,edit:editing});items=[['Z error E',colors.error],['Violated X check',null,'dot']];}
@@ -1773,6 +1826,8 @@ const {makeGraph,run,presets,minimumCorrection}=globalThis.__ufLessonModel;
     if(view==='trace'){Object.assign(params,{chain:frame.correction,color:colors.correction,bits:frame.bits,trace:frame,cut:false});items=[['Grown region','var(--viz-series-1)'],['Remaining forest','var(--foreground)','dashed'],['Correction C',colors.correction]];}
     if(params.cut)items.push(['X̄ reference',colors.cut,'dashed']);
     drawPatch($('graph'),params);legend(items);
+    $('graph').setAttribute('role',editing?'group':'img');
+    if(editing&&activeQubit!==null)$('drawing').querySelector(`[data-qubit="${activeQubit}"]`)?.focus({preventScroll:true});
     $('view-title').textContent=views[view][0];
     $('view-meta').textContent=view==='trace'?`${frame.phase.toUpperCase()} · round ${frame.tick}`:view==='syndrome'?`${data.observed.reduce((a,b)=>a+b,0)} defects`:view==='decomposition'?`ℓ = ${data.result.logical}`:`${params.chain?.length||0} qubits`;
     $('view-note').textContent=view==='trace'?frame.note:views[view][1];
@@ -1780,10 +1835,14 @@ const {makeGraph,run,presets,minimumCorrection}=globalThis.__ufLessonModel;
     $('trace-controls').hidden=view!=='trace';
     $('trace-title').textContent=frame.title;$('trace-count').textContent=`${traceIndex+1} / ${frames.length}`;
     $('trace-scrub').max=frames.length-1;$('trace-scrub').value=traceIndex;
+    $('trace-scrub').setAttribute('aria-valuetext',`Step ${traceIndex+1} of ${frames.length}: ${frame.title}`);
     $('trace-back').disabled=$('trace-start').disabled=traceIndex===0;
     $('trace-next').disabled=$('trace-end').disabled=traceIndex===frames.length-1;
     $('trace-play').disabled=traceIndex===frames.length-1;
     $('editor').hidden=!editing;$('edit').setAttribute('aria-pressed',String(editing));$('edit').textContent=editing?'Done editing':'Edit error E';
+    const cutHidden=view==='syndrome'||view==='trace';$('cut').disabled=cutHidden;
+    $('cut').parentElement.title=cutHidden?'The logical reference is hidden while showing the decoder’s syndrome information.':'';
+    if(editing)updateQubitState();
     viewButtons.forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.scView===view)));
     if(view==='trace')renderClusters(frame);
   }
@@ -1839,6 +1898,7 @@ const {makeGraph,run,presets,minimumCorrection}=globalThis.__ufLessonModel;
     root.querySelectorAll('[data-sc-reference]').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.scReference===referenceView)));
   }
   function renderResearch(){
+    const focusedForest=$('forest-rows').contains(document.activeElement)?document.activeElement.getAttribute('aria-label'):null;
     for(const i of [0,1]){
       const ref=analysis.exact.sectors[analysis.parity^i],logical=ref.parity^analysis.truth;
       $(`ref-${i}-weight`).textContent=ref.weight;$(`ref-${i}-count`).textContent=ref.count;
@@ -1856,39 +1916,63 @@ const {makeGraph,run,presets,minimumCorrection}=globalThis.__ufLessonModel;
     $('cost-note').textContent=`Within UF’s class: |C| = ${data.correction.length}; minimum on grown edges = ${grownWeight}; full-patch minimum = ${w0}. Peeling adds ${analysis.peelingExcess} edge${analysis.peelingExcess===1?'':'s'} above the grown-region minimum; restricting growth adds ${analysis.growthPenalty} above the full-patch minimum.`;
     $('forest-rows').replaceChildren();
     for(const variant of analysis.variants){
-      const button=document.createElement('button');button.className='btn btn-ghost';button.textContent=variant.strategy===forestStrategy?'Selected':'Use '+forestNames[variant.strategy];button.disabled=variant.strategy===forestStrategy;button.setAttribute('aria-label','Use '+forestNames[variant.strategy]+' forest');button.addEventListener('click',()=>changeForest(variant.strategy));
-      tableRow($('forest-rows'),[forestNames[variant.strategy],variant.correction.length,badge(variant.logical),button]);
+      const chosen=variant.strategy===forestStrategy,button=document.createElement('button');button.className='btn btn-ghost';button.textContent=chosen?'Selected':'Use '+forestNames[variant.strategy];button.setAttribute('aria-pressed',String(chosen));button.setAttribute('aria-label','Use '+forestNames[variant.strategy]+' forest');button.addEventListener('click',()=>{if(variant.strategy!==forestStrategy)changeForest(variant.strategy);});
+      tableRow($('forest-rows'),[forestNames[variant.strategy],variant.correction.length,badge(variant.logical),button]).classList.toggle('sc-forest-selected',chosen);
+      if(focusedForest===button.getAttribute('aria-label'))button.focus({preventScroll:true});
     }
     $('run-metrics').textContent=`${analysis.rounds} half-edge growth rounds · ${analysis.unions} unions · ${analysis.reactivations} round${analysis.reactivations===1?'':'s'} with reactivation · ${data.trace.fullEdges.length} fully grown edges.`;
   }
   const percent=value=>value===null?'—':value>0&&value<.000001?(value*100).toExponential(2)+'%':(value*100).toFixed(2)+'%';
   function drawConfidenceCurve(){
     if(!spectrum||root.hidden)return;
-    const svg=$('confidence-curve'),g=$('confidence-curve-drawing');g.replaceChildren();
+    const svg=$('confidence-curve'),g=$('confidence-curve-drawing');
     const width=Math.max(250,svg.getBoundingClientRect().width||520),height=260,left=44,right=16,top=29,bottom=42;
-    svg.setAttribute('viewBox',`0 0 ${width} ${height}`);svg.setAttribute('height',height);
-    const x=p=>left+p/.5*(width-left-right),y=p=>height-bottom-p*(height-top-bottom);
-    const label=(px,py,value,anchor='middle')=>svgEl(g,'text',{x:px,y:py,'text-anchor':anchor,fill:'var(--muted-foreground)','font-size':12},value);
-    for(const value of [0,.5,1]){svgEl(g,'line',{x1:left,y1:y(value),x2:width-right,y2:y(value),stroke:'var(--border)','stroke-dasharray':value===.5?'4 4':''});label(left-8,y(value)+4,Math.round(value*100)+'%','end');}
-    for(const p of [0,.1,.2,.3,.4,.5])label(x(p),height-bottom+20,Math.round(p*100)+'%');
-    label(left,15,'P(UF failure | s, p)','start');label((left+width-right)/2,height-3,'Assumed per-qubit Z error probability');
-    let path='',started=false;
-    for(let i=0;i<=100;i++){
-      const p=i/200,result=F.posterior(spectrum,p,analysis.parity);
-      if(!result.available){started=false;continue;}
-      path+=(started?' L ':'M ')+x(p).toFixed(2)+' '+y(result.ufFailureProbability).toFixed(2);started=true;
+    if(!confidencePlot||confidencePlot.spectrum!==spectrum||confidencePlot.parity!==analysis.parity||confidencePlot.width!==width){
+      // A prior changes the marker, not the fixed-syndrome curve. Keep both
+      // parity curves so switching forests back does not repeat their solves.
+      let cached=confidenceCurveSamples.get(spectrum);
+      if(!cached){cached=[null,null];confidenceCurveSamples.set(spectrum,cached);}
+      if(!cached[analysis.parity])cached[analysis.parity]=Array.from({length:101},(_,i)=>{
+        const result=F.posterior(spectrum,i/200,analysis.parity);
+        return result.available?result.ufFailureProbability:null;
+      });
+      g.replaceChildren();svg.setAttribute('viewBox',`0 0 ${width} ${height}`);svg.setAttribute('height',height);
+      const x=p=>left+p/.5*(width-left-right),y=p=>height-bottom-p*(height-top-bottom);
+      const label=(px,py,value,anchor='middle')=>svgEl(g,'text',{x:px,y:py,'text-anchor':anchor,fill:'var(--muted-foreground)','font-size':12},value);
+      for(const value of [0,.5,1]){svgEl(g,'line',{x1:left,y1:y(value),x2:width-right,y2:y(value),stroke:'var(--border)','stroke-dasharray':value===.5?'4 4':''});label(left-8,y(value)+4,Math.round(value*100)+'%','end');}
+      for(const p of [0,.1,.2,.3,.4,.5])label(x(p),height-bottom+20,Math.round(p*100)+'%');
+      label(left,15,'P(UF failure | s, p)','start');label((left+width-right)/2,height-3,'Assumed per-qubit Z error probability');
+      let path='',started=false;
+      cached[analysis.parity].forEach((probability,i)=>{
+        if(probability===null){started=false;return;}
+        path+=(started?' L ':'M ')+x(i/200).toFixed(2)+' '+y(probability).toFixed(2);started=true;
+      });
+      svgEl(g,'path',{d:path,fill:'none',stroke:'var(--viz-series-5)','stroke-width':2.5,'stroke-linejoin':'round'});
+      const marker=svgEl(g,'g',{'data-confidence-marker':''});
+      const guide=svgEl(marker,'line',{y1:top,y2:height-bottom,stroke:'var(--muted-foreground)','stroke-dasharray':'3 5',opacity:.7});
+      const point=svgEl(marker,'circle',{r:5,fill:'var(--viz-series-5)',stroke:'var(--background)','stroke-width':2});
+      const title=svgEl(point,'title');
+      confidencePlot={spectrum,parity:analysis.parity,width,marker,guide,point,title,x,y};
     }
-    svgEl(g,'path',{d:path,fill:'none',stroke:'var(--viz-series-5)','stroke-width':2.5,'stroke-linejoin':'round'});
-    if(posterior?.available){
-      svgEl(g,'line',{x1:x(confidenceP),y1:top,x2:x(confidenceP),y2:height-bottom,stroke:'var(--muted-foreground)','stroke-dasharray':'3 5',opacity:.7});
-      const point=svgEl(g,'circle',{cx:x(confidenceP),cy:y(posterior.ufFailureProbability),r:5,fill:'var(--viz-series-5)',stroke:'var(--background)','stroke-width':2});
-      svgEl(point,'title',{},`p = ${percent(confidenceP)}: conditional failure probability ${percent(posterior.ufFailureProbability)}`);
+    // renderResult can request a resize before renderConfidence has updated the
+    // readout. Never draw the previous syndrome's marker on this new curve.
+    const current=posteriorSpectrum===spectrum&&posterior?.referenceParity===analysis.parity&&posterior.p===confidenceP;
+    const plot=confidencePlot;
+    plot.marker.setAttribute('display',current&&posterior.available?'inline':'none');
+    if(current&&posterior.available){
+      const px=plot.x(confidenceP);plot.guide.setAttribute('x1',px);plot.guide.setAttribute('x2',px);
+      plot.point.setAttribute('cx',px);plot.point.setAttribute('cy',plot.y(posterior.ufFailureProbability));
+      plot.title.textContent=`p = ${percent(confidenceP)}: conditional failure probability ${percent(posterior.ufFailureProbability)}`;
     }
-    $('confidence-curve-desc').textContent=`The input syndrome and UF correction are fixed. At assumed p = ${percent(confidenceP)}, conditional UF failure is ${posterior?.available?percent(posterior.ufFailureProbability):'undefined because the syndrome has zero probability'}. The horizontal dashed line marks 50%.`;
+    if(current)$('confidence-curve-desc').textContent=`The input syndrome and UF correction are fixed. At assumed p = ${percent(confidenceP)}, conditional UF failure is ${posterior.available?percent(posterior.ufFailureProbability):'undefined because the syndrome has zero probability'}. The horizontal dashed line marks 50%.`;
   }
   function renderConfidence(){
-    posterior=F.posterior(spectrum,confidenceP,analysis.parity);
+    if(posteriorSpectrum!==spectrum||!posterior||posterior.p!==confidenceP||posterior.referenceParity!==analysis.parity){
+      posterior=F.posterior(spectrum,confidenceP,analysis.parity);posteriorSpectrum=spectrum;
+    }
     $('confidence-p').value=confidenceP*100;$('confidence-number').value=Number((confidenceP*100).toPrecision(12));
+    $('confidence-p').setAttribute('aria-valuetext',`${Number((confidenceP*100).toPrecision(12))}% assumed per-qubit Z error probability (p = ${confidenceP})`);
+    root.querySelectorAll('[data-sc-prior]').forEach(button=>button.setAttribute('aria-pressed',String(Number(button.dataset.scPrior)===confidenceP)));
     $('confidence-zero').textContent=percent(posterior.ufSuccessProbability);$('confidence-one').textContent=percent(posterior.ufFailureProbability);
     $('confidence-bar-zero').style.width=(posterior.available?posterior.ufSuccessProbability*100:50)+'%';
     $('confidence-bar-one').style.width=(posterior.available?posterior.ufFailureProbability*100:50)+'%';
@@ -1898,17 +1982,25 @@ const {makeGraph,run,presets,minimumCorrection}=globalThis.__ufLessonModel;
     $('confidence-truth').textContent=`For the displayed E, UF ${data.result.logical?'has a logical failure':'recovers successfully'}. This definite outcome does not change when the assumed p changes.`;
     $('confidence-llr').textContent=!posterior.available?'Conditional log-likelihood ratio: undefined.':`ln[P(C₀ | s) / P(C₁ | s)] = ${posterior.logLikelihoodRatio===null?(posterior.ufSuccessProbability===1?'+∞':'−∞'):posterior.logLikelihoodRatio.toFixed(5)}. Positive values favor UF’s class.`;
     $('confidence-status').textContent=!posterior.available?'Select p > 0 to condition on this syndrome.':analysis.gap>0&&failure>.5?'Minimum weight favors C₀, but the full probability sum favors C₁. The combined probability of higher-weight errors reverses the preference.':analysis.gap<0&&failure<.5?'Minimum weight favors C₁, but the full probability sum favors C₀. The most likely class need not contain the lightest individual error.':analysis.gap===0&&Math.abs(failure-.5)>1e-12?'The minimum weights tie, but the full class probabilities differ. Degeneracy at all weights resolves this likelihood comparison.':'All 2,097,152 syndrome-compatible error patterns are included. Higher p values illustrate the limits of inferring the logical class from this syndrome.';
-    $('spectrum-rows').replaceChildren();
-    for(let k=0;k<=patch.n;k++){
-      const counts=[0,1].map(i=>spectrum.sectors[analysis.parity^i].counts[k]);if(!counts[0]&&!counts[1])continue;
-      const masses=counts.map((count,i)=>!posterior.available?null:confidenceP===0?(k===0&&(analysis.parity^i)===0?1:0):count?Math.exp(Math.log(count)+k*Math.log(confidenceP)+(patch.n-k)*Math.log1p(-confidenceP)-posterior.logSyndromeProbability):0);
-      tableRow($('spectrum-rows'),[k,counts[0].toLocaleString('en-US'),counts[1].toLocaleString('en-US'),percent(masses[0]),percent(masses[1])]);
+    if(!confidenceTable||confidenceTable.spectrum!==spectrum||confidenceTable.parity!==analysis.parity){
+      const tbody=$('spectrum-rows'),rows=[];tbody.replaceChildren();
+      for(let k=0;k<=patch.n;k++){
+        const counts=[0,1].map(i=>spectrum.sectors[analysis.parity^i].counts[k]);if(!counts[0]&&!counts[1])continue;
+        tableRow(tbody,[k,counts[0].toLocaleString('en-US'),counts[1].toLocaleString('en-US'),'','']);
+        rows.push({weight:k,counts,cells:[tbody.lastElementChild.children[3],tbody.lastElementChild.children[4]]});
+      }
+      confidenceTable={spectrum,parity:analysis.parity,rows};
+    }
+    for(const row of confidenceTable.rows){
+      const k=row.weight;
+      const masses=row.counts.map((count,i)=>!posterior.available?null:confidenceP===0?(k===0&&(analysis.parity^i)===0?1:0):count?Math.exp(Math.log(count)+k*Math.log(confidenceP)+(patch.n-k)*Math.log1p(-confidenceP)-posterior.logSyndromeProbability):0);
+      row.cells.forEach((cell,i)=>{cell.textContent=percent(masses[i]);});
     }
     drawConfidenceCurve();
   }
   function setPrior(p){
     if(!Number.isFinite(p)||p<0||p>.5)return;
-    confidenceP=p;$('share-url').hidden=$('share-label').hidden=true;renderConfidence();
+    confidenceP=p;invalidateShare();renderConfidence();
   }
   function renderNeighbors(){
     $('neighbor-results').hidden=!neighborRows;if(!neighborRows)return;
@@ -1922,7 +2014,7 @@ const {makeGraph,run,presets,minimumCorrection}=globalThis.__ufLessonModel;
         neighborOrigin={error:data.error.slice(),selected,forestStrategy,view,custom:$('example').value==='custom',sampleOrigin};
         error=row.error.slice();sampleOrigin=null;view='overlay';editing=false;recompute({changed:true});
         $('neighbor-status').textContent=`Opened ${row.operation} Z on q${row.qubit}. ${row.changedCorrection.length} correction edges changed; the logical outcome ${row.outcomeChanged?'flipped':'stayed the same'}.`;
-        $('restore-neighbor').hidden=false;root.scrollIntoView({block:'start'});
+        $('restore-neighbor').hidden=false;focusWorkspace();
       });
       tableRow($('neighbor-rows'),[`${row.operation==='add'?'Add':'Remove'} q${row.qubit}`,row.error.length,row.correction.length,row.changedCorrection.length,badge(row.logical),button]);
     }
@@ -1932,11 +2024,16 @@ const {makeGraph,run,presets,minimumCorrection}=globalThis.__ufLessonModel;
   const catalog=presets.map(p=>{const d=M.decode(patch,p.error);return {preset:p,weight:d.error.length,defects:d.observed.reduce((a,b)=>a+b,0),logical:d.result.logical};});
   function renderCatalog(){
     $('catalog-rows').replaceChildren();
-    for(const c of catalog.filter(c=>$('category').value==='all'||c.preset.group===$('category').value)){
+    const query=$('search').value.trim().toLowerCase(),outcome=$('outcome-filter').value;
+    const matches=catalog.filter(c=>($('category').value==='all'||c.preset.group===$('category').value)&&(outcome==='all'||!!c.logical===(outcome==='failure'))&&(!query||[c.preset.name,c.preset.group,c.preset.title,c.preset.note].join(' ').toLowerCase().includes(query)));
+    for(const c of matches){
       const button=document.createElement('button');button.className='btn btn-ghost';button.textContent='Open';button.setAttribute('aria-label','Open example '+(presets.indexOf(c.preset)+1));
-      button.addEventListener('click',()=>{forestStrategy='bfs';$('forest').value=forestStrategy;chooseExample(c.preset.id);root.scrollIntoView({block:'start'});});
+      button.addEventListener('click',()=>{forestStrategy='bfs';$('forest').value=forestStrategy;chooseExample(c.preset.id);focusWorkspace();});
       tableRow($('catalog-rows'),[c.preset.name,c.preset.group,c.weight,c.defects,badge(c.logical),button]);
     }
+    if(!matches.length){const row=document.createElement('tr'),cell=document.createElement('td');cell.colSpan=6;cell.textContent='No matching examples. Try a broader search or clear the filters.';row.append(cell);$('catalog-rows').append(row);}
+    $('catalog-status').textContent=`${matches.length} of ${presets.length} examples${query?' match your search':''}.`;
+    $('clear-filters').disabled=!query&&outcome==='all'&&$('category').value==='all';
   }
   function experimentRecord(){return {
     format:'decoder-lab.surface-code.v3',model:{distance:5,dataQubits:41,logicalQubits:1,noise:'Z only; perfect syndrome; one round',edgeWeights:'uniform unit weights'},
@@ -1960,16 +2057,16 @@ const {makeGraph,run,presets,minimumCorrection}=globalThis.__ufLessonModel;
   function recompute({changed=false,message=''}={}) {
     stop();data=M.decode(patch,error,forestStrategy);analysis=M.analyze(patch,data,forestStrategy);error=data.error;frames=data.trace.frames.filter(f=>!f.micro);traceIndex=0;
     const key=data.observed.join('');if(key!==spectrumKey||!spectrum){spectrum=F.spectrum(patch,data.observed);spectrumKey=key;}
-    posterior=F.posterior(spectrum,confidenceP,analysis.parity);
     neighborRows=null;$('neighbor-results').hidden=true;$('restore-neighbor').hidden=!neighborOrigin;
     $('neighbor-status').textContent='The scan exhausts the 41 neighbors of the current E. These are controlled cases, not probability-weighted samples.';
     if(changed){$('example').value='custom';$('example-title').textContent='Explore your own error pattern.';$('example-note').textContent='The syndrome, UF correction, and exact logical/stabilizer decomposition update together.';}
     if(changed&&!sampleOrigin)$('sample-status').textContent='Custom error pattern. Export or create a case link to preserve it exactly.';
     $('equivalence-status').textContent=message||'Try either transformation. Both preserve the syndrome and deterministic correction.';
-    $('share-url').hidden=$('share-label').hidden=true;
+    invalidateShare();
     $('case-position').textContent=changed?'Custom pattern':`${presets.findIndex(p=>p.id===selected)+1} / ${presets.length}`;
-    $('previous-example').disabled=presets.findIndex(p=>p.id===selected)===0;
-    $('next-example').disabled=presets.findIndex(p=>p.id===selected)===presets.length-1;
+    $('previous-example').disabled=changed||presets.findIndex(p=>p.id===selected)===0;
+    $('next-example').disabled=changed||presets.findIndex(p=>p.id===selected)===presets.length-1;
+    $('story-kind').textContent=changed?(sampleOrigin?'GENERATED EXPERIMENT':'CUSTOM ERROR PATTERN'):'WORKED EXPLANATION · DEFAULT BFS';
     $('forest-note').hidden=changed||forestStrategy==='bfs';
     const preset=presets.find(p=>p.id===selected);$('companion').hidden=changed||!preset?.partner;
     if(!changed&&preset?.partner){$('companion-note').textContent=preset.partnerNote;$('open-companion').textContent='Open paired example '+(presets.findIndex(p=>p.id===preset.partner)+1);}
@@ -1992,7 +2089,7 @@ const {makeGraph,run,presets,minimumCorrection}=globalThis.__ufLessonModel;
     $('equivalence-status').textContent=`✓ Same syndrome · same correction C · logical class ${isLogical?'flipped':'unchanged'}.`;
     view='decomposition';editing=false;drawMain();
   }
-  function setView(next){stop();$('share-url').hidden=$('share-label').hidden=true;view=next;if(next!=='error')editing=false;drawMain();}
+  function setView(next){stop();invalidateShare();view=next;if(next!=='error')editing=false;drawMain();}
   function goTrace(i){stop();traceIndex=Math.max(0,Math.min(frames.length-1,i));drawMain();}
   for(const group of [...new Set(presets.map(p=>p.group))]){
     const optgroup=document.createElement('optgroup');optgroup.label=group;
@@ -2005,7 +2102,7 @@ const {makeGraph,run,presets,minimumCorrection}=globalThis.__ufLessonModel;
   for(const f of patch.faces)$('face').append(new Option(`S${f.id+1} · ${f.edges.length}-qubit ${f.edges.length===3?'boundary':'plaquette'} stabilizer`,String(f.id)));
   $('face').value='8';
   $('example').addEventListener('change',()=>chooseExample($('example').value));
-  $('open-companion').addEventListener('click',()=>chooseExample(presets.find(p=>p.id===selected)?.partner));
+  $('open-companion').addEventListener('click',()=>{chooseExample(presets.find(p=>p.id===selected)?.partner);focusWorkspace();});
   $('confidence-p').addEventListener('input',()=>setPrior(Number($('confidence-p').value)/100));
   $('confidence-number').addEventListener('change',()=>{if($('confidence-number').value!==''&&$('confidence-number').reportValidity())setPrior(Number($('confidence-number').value)/100);else $('confidence-number').value=Number((confidenceP*100).toPrecision(12));});
   root.querySelectorAll('[data-sc-prior]').forEach(b=>b.addEventListener('click',()=>setPrior(Number(b.dataset.scPrior))));
@@ -2014,16 +2111,18 @@ const {makeGraph,run,presets,minimumCorrection}=globalThis.__ufLessonModel;
   $('restore-neighbor').addEventListener('click',()=>{
     if(!neighborOrigin)return;const old=neighborOrigin;neighborOrigin=null;forestStrategy=old.forestStrategy;$('forest').value=forestStrategy;view=old.view;
     if(!old.custom)chooseExample(old.selected);else{selected=old.selected;error=old.error.slice();sampleOrigin=old.sampleOrigin;recompute({changed:true});}
-    $('neighbor-status').textContent='Restored the scan’s original error and forest.';root.scrollIntoView({block:'start'});
+    $('neighbor-status').textContent='Restored the scan’s original error and forest.';focusWorkspace();
   });
   $('forest').addEventListener('change',()=>changeForest($('forest').value));
   $('previous-example').addEventListener('click',()=>chooseExample(presets[presets.findIndex(p=>p.id===selected)-1]?.id));
   $('next-example').addEventListener('click',()=>chooseExample(presets[presets.findIndex(p=>p.id===selected)+1]?.id));
   $('category').addEventListener('change',renderCatalog);
+  $('search').addEventListener('input',renderCatalog);$('outcome-filter').addEventListener('change',renderCatalog);
+  $('clear-filters').addEventListener('click',()=>{$('search').value='';$('outcome-filter').value='all';$('category').value='all';renderCatalog();$('search').focus();});
   root.querySelectorAll('[data-sc-reference]').forEach(b=>b.addEventListener('click',()=>{referenceView=b.dataset.scReference;drawReferences();}));
   for(const [id,predicate] of [['jump-merge',f=>f.action==='merge'],['jump-forest',f=>f.phase==='forest']])$(id).addEventListener('click',()=>goTrace(frames.findIndex(predicate)));
   $('jump-reactivate').addEventListener('click',()=>{const next=frames.findIndex((f,i)=>i>traceIndex&&f.reactivated);goTrace(next<0?frames.findIndex(f=>f.reactivated):next);});
-  $('inspect-growth').addEventListener('click',()=>{setView('trace');goTrace(frames.findIndex(f=>f.phase==='forest'));$('graph').scrollIntoView({block:'center'});});
+  $('inspect-growth').addEventListener('click',()=>{setView('trace');goTrace(frames.findIndex(f=>f.phase==='forest'));$('view-title').focus({preventScroll:true});$('view-title').scrollIntoView({block:'start'});});
   $('sample-mode').addEventListener('change',()=>{const fixed=$('sample-mode').value==='fixed';$('probability-field').hidden=fixed;$('probability').disabled=fixed;$('weight-field').hidden=!fixed;$('sample-weight').disabled=!fixed;});
   $('sample-form').addEventListener('submit',event=>{event.preventDefault();generateSample();});
   $('next-seed').addEventListener('click',()=>{if(!$('sample-form').reportValidity())return;$('seed').value=(Number($('seed').value)+1)>>>0;generateSample();});
@@ -2036,11 +2135,17 @@ const {makeGraph,run,presets,minimumCorrection}=globalThis.__ufLessonModel;
     const url=new URL(location.href);url.search='';url.hash='';url.searchParams.set('sc','2');url.searchParams.set('e',data.error.join(','));url.searchParams.set('forest',forestStrategy);url.searchParams.set('view',view);
     url.searchParams.set('prior',String(confidenceP));
     if($('example').value!=='custom')url.searchParams.set('example',selected);
-    $('share-url').value=url.href;$('share-url').hidden=$('share-label').hidden=false;$('share-url').focus();$('share-url').select();
+    $('share-url').value=url.href;$('share-url').hidden=$('share-label').hidden=$('copy-link').hidden=false;$('share-url').focus();$('share-url').select();
     $('sample-status').textContent='Case link ready. It preserves the exact error, forest, diagram view, and assumed confidence prior; select and copy it.';
   });
+  $('copy-link').addEventListener('click',async()=>{
+    const text=$('share-url').value;
+    try{await navigator.clipboard.writeText(text);if(!$('share-url').hidden&&$('share-url').value===text)$('sample-status').textContent='Case link copied. It restores the exact error, forest, view, and confidence prior.';}
+    catch{if(!$('share-url').hidden){$('share-url').focus();$('share-url').select();$('sample-status').textContent='Automatic copying is unavailable. The case link is selected; copy it with your keyboard or device menu.';}}
+  });
   viewButtons.forEach(b=>b.addEventListener('click',()=>setView(b.dataset.scView)));
-  $('edit').addEventListener('click',()=>{stop();editing=!editing;view='error';drawMain();});
+  $('edit').addEventListener('click',()=>{editing=!editing;setView('error');});
+  $('qubit').addEventListener('change',()=>{focusedQubit=Number($('qubit').value);updateQubitState();drawMain();});
   $('toggle-qubit').addEventListener('click',()=>toggleQubit(Number($('qubit').value)));
   $('clear').addEventListener('click',()=>{sampleOrigin=null;neighborOrigin=null;error=[];recompute({changed:true});});
   $('cut').addEventListener('change',drawMain);$('ids').addEventListener('change',drawMain);
@@ -2057,27 +2162,47 @@ const {makeGraph,run,presets,minimumCorrection}=globalThis.__ufLessonModel;
   });
   document.addEventListener('visibilitychange',()=>{if(document.hidden)stop();});
   document.addEventListener('keydown',event=>{
-    if(root.hidden||/INPUT|SELECT|TEXTAREA|BUTTON|A/.test(event.target.tagName)||event.altKey||event.ctrlKey||event.metaKey)return;
+    if(root.hidden||event.target.closest('a,button,input,select,textarea,summary,[role="button"],[role="tab"],[contenteditable=""],[contenteditable="true"]')||event.altKey||event.ctrlKey||event.metaKey)return;
     if(view==='trace'&&['ArrowLeft','ArrowRight',' '].includes(event.key)){
       event.preventDefault();if(event.key===' ')$('trace-play').click();else goTrace(traceIndex+(event.key==='ArrowRight'?1:-1));
     }
   });
   const oldRoot=document.getElementById('uf-decoder-lesson');
+  const sectionLinks=[...$('section-nav').querySelectorAll('a')];
+  function markSection(){
+    if(root.hidden)return;
+    let active=sectionLinks[0];
+    for(const link of sectionLinks.slice(1)){
+      const target=document.getElementById(link.hash.slice(1));
+      if(target&&target.getBoundingClientRect().top<=150)active=link;
+    }
+    for(const link of sectionLinks){if(link===active)link.setAttribute('aria-current','location');else link.removeAttribute('aria-current');}
+  }
+  let scrollQueued=false;
+  window.addEventListener('scroll',()=>{if(scrollQueued)return;scrollQueued=true;requestAnimationFrame(()=>{scrollQueued=false;markSection();});},{passive:true});
   function route(){
     const walkthrough=['#walkthrough','#structures','#field-guide','#sources','#uf-decoder-lesson'].includes(location.hash);
+    const changed=root.hidden!==walkthrough;
     root.hidden=walkthrough;oldRoot.hidden=!walkthrough;
     document.querySelectorAll('[data-lab-mode]').forEach(a=>{if(a.dataset.labMode===(walkthrough?'walkthrough':'logical'))a.setAttribute('aria-current','page');else a.removeAttribute('aria-current');});
     if(walkthrough)stop();
-    else {const play=document.getElementById('uf-play');if(play.getAttribute('aria-pressed')==='true')play.click();drawMain();drawFactors();}
+    else if(changed){const play=document.getElementById('uf-play');if(play.getAttribute('aria-pressed')==='true')play.click();drawMain();drawFactors();}
     if(location.hash){const target=location.hash==='#walkthrough'?oldRoot:document.getElementById(location.hash.slice(1));if(target)requestAnimationFrame(()=>target.scrollIntoView({block:'start'}));}
   }
-  new ResizeObserver(()=>{drawMain();drawFactors();}).observe(root);
+  let previousWidth=-1,resizeFrame=null;
+  if(typeof ResizeObserver==='function')new ResizeObserver(entries=>{
+    const width=entries[0].contentRect.width;if(root.hidden||Math.abs(width-previousWidth)<.5)return;previousWidth=width;
+    if(resizeFrame!==null)cancelAnimationFrame(resizeFrame);
+    resizeFrame=requestAnimationFrame(()=>{resizeFrame=null;drawMain();drawFactors();});
+  }).observe(root);
+  else window.addEventListener('resize',()=>{drawMain();drawFactors();});
   window.addEventListener('hashchange',route);
   chooseExample(selected);
   const query=new URLSearchParams(location.search);
   if(query.has('sc')){
     try{
       const raw=query.get('e'),strategy=query.get('forest'),nextView=query.get('view');
+      if(['sc','e','forest','view','prior','example'].some(key=>query.getAll(key).length>1))throw new Error('Ambiguous shared case');
       if(query.get('sc')!=='2'||raw===null||raw.length>160||!/^(?:\d+(?:,\d+)*)?$/.test(raw)||!Object.hasOwn(forestNames,strategy)||!Object.hasOwn(views,nextView))throw new Error('Invalid shared case');
       const ids=raw===''?[]:raw.split(',').map(Number);
       if(ids.some(id=>!Number.isInteger(id)||id<0||id>=patch.n)||new Set(ids).size!==ids.length)throw new Error('Invalid qubit support');
@@ -2088,9 +2213,9 @@ const {makeGraph,run,presets,minimumCorrection}=globalThis.__ufLessonModel;
       const preset=presets.find(p=>p.id===query.get('example')&&p.error.slice().sort((a,b)=>a-b).join(',')===ids.slice().sort((a,b)=>a-b).join(','));
       if(preset)chooseExample(preset.id);else{error=ids;recompute({changed:true});$('example-title').textContent='Shared error pattern';}
       $('sample-status').textContent='Shared case restored: exact error, forest, diagram view, and confidence prior.';
-    }catch(e){$('sample-status').textContent='This case link is invalid or uses an unsupported version. The default example is shown.';}
+    }catch(e){$('sample-status').textContent='This case link is invalid or uses an unsupported version. The default example is shown.';$('load-notice').hidden=false;$('load-notice').textContent=$('sample-status').textContent;}
   }
-  renderCatalog();route();
+  renderCatalog();route();markSection();
   root.surfaceInspect=()=>({view,editing,selected,forestStrategy,referenceView,confidenceP,posterior,neighbors:neighborRows,error:data.error,correction:data.correction,residual:data.residual,syndrome:data.observed,result:data.result,analysis,frame:frames[traceIndex],traceIndex,frames:frames.length});
   root.surfaceExport=experimentRecord;
 })();

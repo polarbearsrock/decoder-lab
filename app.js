@@ -271,6 +271,6 @@ const {makeGraph,run,presets,minimumCorrection}=globalThis.__ufLessonModel;
   if(typeof ResizeObserver!=='undefined')new ResizeObserver(()=>{lastCoordinates=null;draw();}).observe(svg);
   root.ufInspect=()=>({key:select.value,index,total:trace.frames.length,state:trace.frames[index],valid:trace.valid,graph,trace,fullTrace,reference,grownReference,editing});
   $('forest-mode').addEventListener('change',()=>{pause();const phase=trace.frames[index].phase;compile(graph.key,graph.nodes.filter(v=>v.syndrome).map(v=>[v.col,v.row]),graph.preset.boundary);const i=trace.frames.findIndex(f=>f.phase===phase);index=Math.max(0,i);draw();});
-  document.addEventListener('keydown',e=>{if(root.hidden)return;if(/INPUT|SELECT|TEXTAREA|BUTTON/.test(e.target.tagName)||e.altKey||e.ctrlKey||e.metaKey)return;if(e.key==='ArrowRight'){e.preventDefault();next.click();}if(e.key==='ArrowLeft'){e.preventDefault();back.click();}if(e.code==='Space'){e.preventDefault();play.click();}});
+  document.addEventListener('keydown',e=>{if(root.hidden)return;if(e.target.closest('a,button,input,select,textarea,summary,[role="button"],[role="tab"],[contenteditable=""],[contenteditable="true"]')||e.altKey||e.ctrlKey||e.metaKey)return;if(e.key==='ArrowRight'){e.preventDefault();next.click();}if(e.key==='ArrowLeft'){e.preventDefault();back.click();}if(e.code==='Space'){e.preventDefault();play.click();}});
   load('pair');
 })();

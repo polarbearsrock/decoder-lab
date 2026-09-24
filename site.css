@@ -114,6 +114,10 @@ body{-webkit-font-smoothing:antialiased}button,select{line-height:1.35}.site-hea
 }
 
 /* Printing always uses the light palette, regardless of the screen theme. */
+.no-script { max-width:1360px; margin:24px auto; padding:20px; background:var(--muted); border:1px solid var(--border); border-radius:8px; }
+main:focus { outline:none; }
+input[type="search"]::-webkit-search-cancel-button { cursor:pointer; }
+.form-check-input:disabled { cursor:default; opacity:.45; }
 @media print {
   :root,:root[data-theme="dark"] {
   color-scheme: light;

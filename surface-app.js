@@ -5,8 +5,11 @@
   const NS='http://www.w3.org/2000/svg';
   let selected='likelihood-crossover',error=presets.find(p=>p.id===selected).error.slice(),data,analysis;
   let confidenceP=.1,spectrum=null,spectrumKey='',posterior=null,neighborRows=null,neighborOrigin=null;
+  let posteriorSpectrum=null,confidencePlot=null,confidenceTable=null;
+  const confidenceCurveSamples=new WeakMap();
   let forestStrategy='bfs',referenceView='correction',sampleOrigin=null;
   let view='decomposition',editing=false,traceIndex=0,timer=null,frames=[];
+  let focusedQubit=0;
   const viewButtons=[...root.querySelectorAll('[data-sc-view]')];
   const colors={error:'var(--sc-error)',correction:'var(--viz-series-3)',residual:'var(--viz-series-5)',logical:'var(--muted-foreground)',stabilizer:'var(--viz-series-1)',cut:'var(--viz-series-2)'};
   const views={
@@ -27,6 +30,13 @@
   const supportText=ids=>ids.length?ids.map(id=>'q'+id).join(', '):'∅';
   const stabilizerHTML=ids=>ids.length>5?'∏<sub>i∈A</sub> S<sub>i</sub>':ids.length?ids.map(id=>`S<sub>${id+1}</sub>`).join(' '):'I';
   function stop(){if(timer!==null)clearInterval(timer);timer=null;$('trace-play').textContent='Play';$('trace-play').setAttribute('aria-pressed','false');}
+  function invalidateShare(){for(const id of ['share-url','share-label','copy-link'])$(id).hidden=true;}
+  function focusWorkspace(){ $('workspace-title').focus({preventScroll:true});root.scrollIntoView({block:'start'}); }
+  function updateQubitState(){
+    const id=Number($('qubit').value),present=data.error.includes(id);
+    $('qubit-state').textContent=`q${id}: ${present?'Z error present':'no Z error'}.`;
+    $('toggle-qubit').textContent=present?'Remove Z':'Add Z';
+  }
 
   function geometry(svg,mini=false) {
     const width=Math.max(mini?240:260,svg.getBoundingClientRect().width||600),narrow=width<420;
@@ -100,9 +110,20 @@
     }
     if(!mini) for(const e of patch.edges) {
       const a=nodePos(e.a),b=nodePos(e.b),horizontal=e.kind==='h';
-      const hit=svgEl(drawing,'rect',{x:horizontal?a.x+7:a.x-9,y:horizontal?a.y-9:a.y+7,width:horizontal?b.x-a.x-14:18,height:horizontal?18:b.y-a.y-14,rx:3,fill:'transparent',...(edit?{class:'sc-edge-hit',role:'button',tabindex:0,'aria-label':`Toggle Z error on q${e.id}`,'aria-pressed':String(data.error.includes(e.id))}:{})});
+      const hit=svgEl(drawing,'rect',{x:horizontal?a.x+7:a.x-9,y:horizontal?a.y-9:a.y+7,width:horizontal?b.x-a.x-14:18,height:horizontal?18:b.y-a.y-14,rx:3,fill:'transparent',...(edit?{class:'sc-edge-hit',role:'button',tabindex:e.id===focusedQubit?0:-1,'data-qubit':e.id,'aria-label':`Toggle Z error on q${e.id}`,'aria-pressed':String(data.error.includes(e.id))}:{})});
       svgEl(hit,'title',{},`q${e.id}${edit?': click to toggle a Z error':cancelled.includes(e.id)?': E and C both act; the two Z operators cancel':chain.includes(e.id)?': selected operator acts here':''}`);
-      if(edit){hit.addEventListener('click',()=>toggleQubit(e.id));hit.addEventListener('keydown',event=>{if(event.key==='Enter'||event.key===' '){event.preventDefault();toggleQubit(e.id);const replacement=$('drawing').querySelector(`[aria-label="Toggle Z error on q${e.id}"]`);replacement?.focus();}});}
+      if(edit){
+        hit.addEventListener('focus',()=>{focusedQubit=e.id;$('qubit').value=String(e.id);updateQubitState();$('drawing').querySelectorAll('.sc-edge-hit').forEach(q=>q.setAttribute('tabindex',q===hit?'0':'-1'));});
+        hit.addEventListener('click',()=>{focusedQubit=e.id;toggleQubit(e.id);});
+        hit.addEventListener('keydown',event=>{
+          if(event.key==='Enter'||event.key===' '){event.preventDefault();event.stopPropagation();toggleQubit(e.id);}
+          else if(['ArrowRight','ArrowDown','ArrowLeft','ArrowUp','Home','End'].includes(event.key)){
+            event.preventDefault();event.stopPropagation();
+            const next=event.key==='Home'?0:event.key==='End'?patch.n-1:(e.id+(['ArrowRight','ArrowDown'].includes(event.key)?1:patch.n-1))%patch.n;
+            $('drawing').querySelector(`[data-qubit="${next}"]`)?.focus();
+          }
+        });
+      }
     }
   }
 
@@ -116,6 +137,7 @@
   }
   function drawMain(){
     if(root.hidden)return;
+    const activeQubit=document.activeElement?.getAttribute('data-qubit');
     const frame=frames[traceIndex],params={cut:$('cut').checked&&view!=='syndrome',ids:$('ids').checked};
     let items=[];
     if(view==='error'){Object.assign(params,{chain:data.error,color:colors.error,bits:data.observed,edit:editing});items=[['Z error E',colors.error],['Violated X check',null,'dot']];}
@@ -131,6 +153,8 @@
     if(view==='trace'){Object.assign(params,{chain:frame.correction,color:colors.correction,bits:frame.bits,trace:frame,cut:false});items=[['Grown region','var(--viz-series-1)'],['Remaining forest','var(--foreground)','dashed'],['Correction C',colors.correction]];}
     if(params.cut)items.push(['X̄ reference',colors.cut,'dashed']);
     drawPatch($('graph'),params);legend(items);
+    $('graph').setAttribute('role',editing?'group':'img');
+    if(editing&&activeQubit!==null)$('drawing').querySelector(`[data-qubit="${activeQubit}"]`)?.focus({preventScroll:true});
     $('view-title').textContent=views[view][0];
     $('view-meta').textContent=view==='trace'?`${frame.phase.toUpperCase()} · round ${frame.tick}`:view==='syndrome'?`${data.observed.reduce((a,b)=>a+b,0)} defects`:view==='decomposition'?`ℓ = ${data.result.logical}`:`${params.chain?.length||0} qubits`;
     $('view-note').textContent=view==='trace'?frame.note:views[view][1];
@@ -138,10 +162,14 @@
     $('trace-controls').hidden=view!=='trace';
     $('trace-title').textContent=frame.title;$('trace-count').textContent=`${traceIndex+1} / ${frames.length}`;
     $('trace-scrub').max=frames.length-1;$('trace-scrub').value=traceIndex;
+    $('trace-scrub').setAttribute('aria-valuetext',`Step ${traceIndex+1} of ${frames.length}: ${frame.title}`);
     $('trace-back').disabled=$('trace-start').disabled=traceIndex===0;
     $('trace-next').disabled=$('trace-end').disabled=traceIndex===frames.length-1;
     $('trace-play').disabled=traceIndex===frames.length-1;
     $('editor').hidden=!editing;$('edit').setAttribute('aria-pressed',String(editing));$('edit').textContent=editing?'Done editing':'Edit error E';
+    const cutHidden=view==='syndrome'||view==='trace';$('cut').disabled=cutHidden;
+    $('cut').parentElement.title=cutHidden?'The logical reference is hidden while showing the decoder’s syndrome information.':'';
+    if(editing)updateQubitState();
     viewButtons.forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.scView===view)));
     if(view==='trace')renderClusters(frame);
   }
@@ -197,6 +225,7 @@
     root.querySelectorAll('[data-sc-reference]').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.scReference===referenceView)));
   }
   function renderResearch(){
+    const focusedForest=$('forest-rows').contains(document.activeElement)?document.activeElement.getAttribute('aria-label'):null;
     for(const i of [0,1]){
       const ref=analysis.exact.sectors[analysis.parity^i],logical=ref.parity^analysis.truth;
       $(`ref-${i}-weight`).textContent=ref.weight;$(`ref-${i}-count`).textContent=ref.count;
@@ -214,39 +243,63 @@
     $('cost-note').textContent=`Within UF’s class: |C| = ${data.correction.length}; minimum on grown edges = ${grownWeight}; full-patch minimum = ${w0}. Peeling adds ${analysis.peelingExcess} edge${analysis.peelingExcess===1?'':'s'} above the grown-region minimum; restricting growth adds ${analysis.growthPenalty} above the full-patch minimum.`;
     $('forest-rows').replaceChildren();
     for(const variant of analysis.variants){
-      const button=document.createElement('button');button.className='btn btn-ghost';button.textContent=variant.strategy===forestStrategy?'Selected':'Use '+forestNames[variant.strategy];button.disabled=variant.strategy===forestStrategy;button.setAttribute('aria-label','Use '+forestNames[variant.strategy]+' forest');button.addEventListener('click',()=>changeForest(variant.strategy));
-      tableRow($('forest-rows'),[forestNames[variant.strategy],variant.correction.length,badge(variant.logical),button]);
+      const chosen=variant.strategy===forestStrategy,button=document.createElement('button');button.className='btn btn-ghost';button.textContent=chosen?'Selected':'Use '+forestNames[variant.strategy];button.setAttribute('aria-pressed',String(chosen));button.setAttribute('aria-label','Use '+forestNames[variant.strategy]+' forest');button.addEventListener('click',()=>{if(variant.strategy!==forestStrategy)changeForest(variant.strategy);});
+      tableRow($('forest-rows'),[forestNames[variant.strategy],variant.correction.length,badge(variant.logical),button]).classList.toggle('sc-forest-selected',chosen);
+      if(focusedForest===button.getAttribute('aria-label'))button.focus({preventScroll:true});
     }
     $('run-metrics').textContent=`${analysis.rounds} half-edge growth rounds · ${analysis.unions} unions · ${analysis.reactivations} round${analysis.reactivations===1?'':'s'} with reactivation · ${data.trace.fullEdges.length} fully grown edges.`;
   }
   const percent=value=>value===null?'—':value>0&&value<.000001?(value*100).toExponential(2)+'%':(value*100).toFixed(2)+'%';
   function drawConfidenceCurve(){
     if(!spectrum||root.hidden)return;
-    const svg=$('confidence-curve'),g=$('confidence-curve-drawing');g.replaceChildren();
+    const svg=$('confidence-curve'),g=$('confidence-curve-drawing');
     const width=Math.max(250,svg.getBoundingClientRect().width||520),height=260,left=44,right=16,top=29,bottom=42;
-    svg.setAttribute('viewBox',`0 0 ${width} ${height}`);svg.setAttribute('height',height);
-    const x=p=>left+p/.5*(width-left-right),y=p=>height-bottom-p*(height-top-bottom);
-    const label=(px,py,value,anchor='middle')=>svgEl(g,'text',{x:px,y:py,'text-anchor':anchor,fill:'var(--muted-foreground)','font-size':12},value);
-    for(const value of [0,.5,1]){svgEl(g,'line',{x1:left,y1:y(value),x2:width-right,y2:y(value),stroke:'var(--border)','stroke-dasharray':value===.5?'4 4':''});label(left-8,y(value)+4,Math.round(value*100)+'%','end');}
-    for(const p of [0,.1,.2,.3,.4,.5])label(x(p),height-bottom+20,Math.round(p*100)+'%');
-    label(left,15,'P(UF failure | s, p)','start');label((left+width-right)/2,height-3,'Assumed per-qubit Z error probability');
-    let path='',started=false;
-    for(let i=0;i<=100;i++){
-      const p=i/200,result=F.posterior(spectrum,p,analysis.parity);
-      if(!result.available){started=false;continue;}
-      path+=(started?' L ':'M ')+x(p).toFixed(2)+' '+y(result.ufFailureProbability).toFixed(2);started=true;
+    if(!confidencePlot||confidencePlot.spectrum!==spectrum||confidencePlot.parity!==analysis.parity||confidencePlot.width!==width){
+      // A prior changes the marker, not the fixed-syndrome curve. Keep both
+      // parity curves so switching forests back does not repeat their solves.
+      let cached=confidenceCurveSamples.get(spectrum);
+      if(!cached){cached=[null,null];confidenceCurveSamples.set(spectrum,cached);}
+      if(!cached[analysis.parity])cached[analysis.parity]=Array.from({length:101},(_,i)=>{
+        const result=F.posterior(spectrum,i/200,analysis.parity);
+        return result.available?result.ufFailureProbability:null;
+      });
+      g.replaceChildren();svg.setAttribute('viewBox',`0 0 ${width} ${height}`);svg.setAttribute('height',height);
+      const x=p=>left+p/.5*(width-left-right),y=p=>height-bottom-p*(height-top-bottom);
+      const label=(px,py,value,anchor='middle')=>svgEl(g,'text',{x:px,y:py,'text-anchor':anchor,fill:'var(--muted-foreground)','font-size':12},value);
+      for(const value of [0,.5,1]){svgEl(g,'line',{x1:left,y1:y(value),x2:width-right,y2:y(value),stroke:'var(--border)','stroke-dasharray':value===.5?'4 4':''});label(left-8,y(value)+4,Math.round(value*100)+'%','end');}
+      for(const p of [0,.1,.2,.3,.4,.5])label(x(p),height-bottom+20,Math.round(p*100)+'%');
+      label(left,15,'P(UF failure | s, p)','start');label((left+width-right)/2,height-3,'Assumed per-qubit Z error probability');
+      let path='',started=false;
+      cached[analysis.parity].forEach((probability,i)=>{
+        if(probability===null){started=false;return;}
+        path+=(started?' L ':'M ')+x(i/200).toFixed(2)+' '+y(probability).toFixed(2);started=true;
+      });
+      svgEl(g,'path',{d:path,fill:'none',stroke:'var(--viz-series-5)','stroke-width':2.5,'stroke-linejoin':'round'});
+      const marker=svgEl(g,'g',{'data-confidence-marker':''});
+      const guide=svgEl(marker,'line',{y1:top,y2:height-bottom,stroke:'var(--muted-foreground)','stroke-dasharray':'3 5',opacity:.7});
+      const point=svgEl(marker,'circle',{r:5,fill:'var(--viz-series-5)',stroke:'var(--background)','stroke-width':2});
+      const title=svgEl(point,'title');
+      confidencePlot={spectrum,parity:analysis.parity,width,marker,guide,point,title,x,y};
     }
-    svgEl(g,'path',{d:path,fill:'none',stroke:'var(--viz-series-5)','stroke-width':2.5,'stroke-linejoin':'round'});
-    if(posterior?.available){
-      svgEl(g,'line',{x1:x(confidenceP),y1:top,x2:x(confidenceP),y2:height-bottom,stroke:'var(--muted-foreground)','stroke-dasharray':'3 5',opacity:.7});
-      const point=svgEl(g,'circle',{cx:x(confidenceP),cy:y(posterior.ufFailureProbability),r:5,fill:'var(--viz-series-5)',stroke:'var(--background)','stroke-width':2});
-      svgEl(point,'title',{},`p = ${percent(confidenceP)}: conditional failure probability ${percent(posterior.ufFailureProbability)}`);
+    // renderResult can request a resize before renderConfidence has updated the
+    // readout. Never draw the previous syndrome's marker on this new curve.
+    const current=posteriorSpectrum===spectrum&&posterior?.referenceParity===analysis.parity&&posterior.p===confidenceP;
+    const plot=confidencePlot;
+    plot.marker.setAttribute('display',current&&posterior.available?'inline':'none');
+    if(current&&posterior.available){
+      const px=plot.x(confidenceP);plot.guide.setAttribute('x1',px);plot.guide.setAttribute('x2',px);
+      plot.point.setAttribute('cx',px);plot.point.setAttribute('cy',plot.y(posterior.ufFailureProbability));
+      plot.title.textContent=`p = ${percent(confidenceP)}: conditional failure probability ${percent(posterior.ufFailureProbability)}`;
     }
-    $('confidence-curve-desc').textContent=`The input syndrome and UF correction are fixed. At assumed p = ${percent(confidenceP)}, conditional UF failure is ${posterior?.available?percent(posterior.ufFailureProbability):'undefined because the syndrome has zero probability'}. The horizontal dashed line marks 50%.`;
+    if(current)$('confidence-curve-desc').textContent=`The input syndrome and UF correction are fixed. At assumed p = ${percent(confidenceP)}, conditional UF failure is ${posterior.available?percent(posterior.ufFailureProbability):'undefined because the syndrome has zero probability'}. The horizontal dashed line marks 50%.`;
   }
   function renderConfidence(){
-    posterior=F.posterior(spectrum,confidenceP,analysis.parity);
+    if(posteriorSpectrum!==spectrum||!posterior||posterior.p!==confidenceP||posterior.referenceParity!==analysis.parity){
+      posterior=F.posterior(spectrum,confidenceP,analysis.parity);posteriorSpectrum=spectrum;
+    }
     $('confidence-p').value=confidenceP*100;$('confidence-number').value=Number((confidenceP*100).toPrecision(12));
+    $('confidence-p').setAttribute('aria-valuetext',`${Number((confidenceP*100).toPrecision(12))}% assumed per-qubit Z error probability (p = ${confidenceP})`);
+    root.querySelectorAll('[data-sc-prior]').forEach(button=>button.setAttribute('aria-pressed',String(Number(button.dataset.scPrior)===confidenceP)));
     $('confidence-zero').textContent=percent(posterior.ufSuccessProbability);$('confidence-one').textContent=percent(posterior.ufFailureProbability);
     $('confidence-bar-zero').style.width=(posterior.available?posterior.ufSuccessProbability*100:50)+'%';
     $('confidence-bar-one').style.width=(posterior.available?posterior.ufFailureProbability*100:50)+'%';
@@ -256,17 +309,25 @@
     $('confidence-truth').textContent=`For the displayed E, UF ${data.result.logical?'has a logical failure':'recovers successfully'}. This definite outcome does not change when the assumed p changes.`;
     $('confidence-llr').textContent=!posterior.available?'Conditional log-likelihood ratio: undefined.':`ln[P(C₀ | s) / P(C₁ | s)] = ${posterior.logLikelihoodRatio===null?(posterior.ufSuccessProbability===1?'+∞':'−∞'):posterior.logLikelihoodRatio.toFixed(5)}. Positive values favor UF’s class.`;
     $('confidence-status').textContent=!posterior.available?'Select p > 0 to condition on this syndrome.':analysis.gap>0&&failure>.5?'Minimum weight favors C₀, but the full probability sum favors C₁. The combined probability of higher-weight errors reverses the preference.':analysis.gap<0&&failure<.5?'Minimum weight favors C₁, but the full probability sum favors C₀. The most likely class need not contain the lightest individual error.':analysis.gap===0&&Math.abs(failure-.5)>1e-12?'The minimum weights tie, but the full class probabilities differ. Degeneracy at all weights resolves this likelihood comparison.':'All 2,097,152 syndrome-compatible error patterns are included. Higher p values illustrate the limits of inferring the logical class from this syndrome.';
-    $('spectrum-rows').replaceChildren();
-    for(let k=0;k<=patch.n;k++){
-      const counts=[0,1].map(i=>spectrum.sectors[analysis.parity^i].counts[k]);if(!counts[0]&&!counts[1])continue;
-      const masses=counts.map((count,i)=>!posterior.available?null:confidenceP===0?(k===0&&(analysis.parity^i)===0?1:0):count?Math.exp(Math.log(count)+k*Math.log(confidenceP)+(patch.n-k)*Math.log1p(-confidenceP)-posterior.logSyndromeProbability):0);
-      tableRow($('spectrum-rows'),[k,counts[0].toLocaleString('en-US'),counts[1].toLocaleString('en-US'),percent(masses[0]),percent(masses[1])]);
+    if(!confidenceTable||confidenceTable.spectrum!==spectrum||confidenceTable.parity!==analysis.parity){
+      const tbody=$('spectrum-rows'),rows=[];tbody.replaceChildren();
+      for(let k=0;k<=patch.n;k++){
+        const counts=[0,1].map(i=>spectrum.sectors[analysis.parity^i].counts[k]);if(!counts[0]&&!counts[1])continue;
+        tableRow(tbody,[k,counts[0].toLocaleString('en-US'),counts[1].toLocaleString('en-US'),'','']);
+        rows.push({weight:k,counts,cells:[tbody.lastElementChild.children[3],tbody.lastElementChild.children[4]]});
+      }
+      confidenceTable={spectrum,parity:analysis.parity,rows};
+    }
+    for(const row of confidenceTable.rows){
+      const k=row.weight;
+      const masses=row.counts.map((count,i)=>!posterior.available?null:confidenceP===0?(k===0&&(analysis.parity^i)===0?1:0):count?Math.exp(Math.log(count)+k*Math.log(confidenceP)+(patch.n-k)*Math.log1p(-confidenceP)-posterior.logSyndromeProbability):0);
+      row.cells.forEach((cell,i)=>{cell.textContent=percent(masses[i]);});
     }
     drawConfidenceCurve();
   }
   function setPrior(p){
     if(!Number.isFinite(p)||p<0||p>.5)return;
-    confidenceP=p;$('share-url').hidden=$('share-label').hidden=true;renderConfidence();
+    confidenceP=p;invalidateShare();renderConfidence();
   }
   function renderNeighbors(){
     $('neighbor-results').hidden=!neighborRows;if(!neighborRows)return;
@@ -280,7 +341,7 @@
         neighborOrigin={error:data.error.slice(),selected,forestStrategy,view,custom:$('example').value==='custom',sampleOrigin};
         error=row.error.slice();sampleOrigin=null;view='overlay';editing=false;recompute({changed:true});
         $('neighbor-status').textContent=`Opened ${row.operation} Z on q${row.qubit}. ${row.changedCorrection.length} correction edges changed; the logical outcome ${row.outcomeChanged?'flipped':'stayed the same'}.`;
-        $('restore-neighbor').hidden=false;root.scrollIntoView({block:'start'});
+        $('restore-neighbor').hidden=false;focusWorkspace();
       });
       tableRow($('neighbor-rows'),[`${row.operation==='add'?'Add':'Remove'} q${row.qubit}`,row.error.length,row.correction.length,row.changedCorrection.length,badge(row.logical),button]);
     }
@@ -290,11 +351,16 @@
   const catalog=presets.map(p=>{const d=M.decode(patch,p.error);return {preset:p,weight:d.error.length,defects:d.observed.reduce((a,b)=>a+b,0),logical:d.result.logical};});
   function renderCatalog(){
     $('catalog-rows').replaceChildren();
-    for(const c of catalog.filter(c=>$('category').value==='all'||c.preset.group===$('category').value)){
+    const query=$('search').value.trim().toLowerCase(),outcome=$('outcome-filter').value;
+    const matches=catalog.filter(c=>($('category').value==='all'||c.preset.group===$('category').value)&&(outcome==='all'||!!c.logical===(outcome==='failure'))&&(!query||[c.preset.name,c.preset.group,c.preset.title,c.preset.note].join(' ').toLowerCase().includes(query)));
+    for(const c of matches){
       const button=document.createElement('button');button.className='btn btn-ghost';button.textContent='Open';button.setAttribute('aria-label','Open example '+(presets.indexOf(c.preset)+1));
-      button.addEventListener('click',()=>{forestStrategy='bfs';$('forest').value=forestStrategy;chooseExample(c.preset.id);root.scrollIntoView({block:'start'});});
+      button.addEventListener('click',()=>{forestStrategy='bfs';$('forest').value=forestStrategy;chooseExample(c.preset.id);focusWorkspace();});
       tableRow($('catalog-rows'),[c.preset.name,c.preset.group,c.weight,c.defects,badge(c.logical),button]);
     }
+    if(!matches.length){const row=document.createElement('tr'),cell=document.createElement('td');cell.colSpan=6;cell.textContent='No matching examples. Try a broader search or clear the filters.';row.append(cell);$('catalog-rows').append(row);}
+    $('catalog-status').textContent=`${matches.length} of ${presets.length} examples${query?' match your search':''}.`;
+    $('clear-filters').disabled=!query&&outcome==='all'&&$('category').value==='all';
   }
   function experimentRecord(){return {
     format:'decoder-lab.surface-code.v3',model:{distance:5,dataQubits:41,logicalQubits:1,noise:'Z only; perfect syndrome; one round',edgeWeights:'uniform unit weights'},
@@ -318,16 +384,16 @@
   function recompute({changed=false,message=''}={}) {
     stop();data=M.decode(patch,error,forestStrategy);analysis=M.analyze(patch,data,forestStrategy);error=data.error;frames=data.trace.frames.filter(f=>!f.micro);traceIndex=0;
     const key=data.observed.join('');if(key!==spectrumKey||!spectrum){spectrum=F.spectrum(patch,data.observed);spectrumKey=key;}
-    posterior=F.posterior(spectrum,confidenceP,analysis.parity);
     neighborRows=null;$('neighbor-results').hidden=true;$('restore-neighbor').hidden=!neighborOrigin;
     $('neighbor-status').textContent='The scan exhausts the 41 neighbors of the current E. These are controlled cases, not probability-weighted samples.';
     if(changed){$('example').value='custom';$('example-title').textContent='Explore your own error pattern.';$('example-note').textContent='The syndrome, UF correction, and exact logical/stabilizer decomposition update together.';}
     if(changed&&!sampleOrigin)$('sample-status').textContent='Custom error pattern. Export or create a case link to preserve it exactly.';
     $('equivalence-status').textContent=message||'Try either transformation. Both preserve the syndrome and deterministic correction.';
-    $('share-url').hidden=$('share-label').hidden=true;
+    invalidateShare();
     $('case-position').textContent=changed?'Custom pattern':`${presets.findIndex(p=>p.id===selected)+1} / ${presets.length}`;
-    $('previous-example').disabled=presets.findIndex(p=>p.id===selected)===0;
-    $('next-example').disabled=presets.findIndex(p=>p.id===selected)===presets.length-1;
+    $('previous-example').disabled=changed||presets.findIndex(p=>p.id===selected)===0;
+    $('next-example').disabled=changed||presets.findIndex(p=>p.id===selected)===presets.length-1;
+    $('story-kind').textContent=changed?(sampleOrigin?'GENERATED EXPERIMENT':'CUSTOM ERROR PATTERN'):'WORKED EXPLANATION · DEFAULT BFS';
     $('forest-note').hidden=changed||forestStrategy==='bfs';
     const preset=presets.find(p=>p.id===selected);$('companion').hidden=changed||!preset?.partner;
     if(!changed&&preset?.partner){$('companion-note').textContent=preset.partnerNote;$('open-companion').textContent='Open paired example '+(presets.findIndex(p=>p.id===preset.partner)+1);}
@@ -350,7 +416,7 @@
     $('equivalence-status').textContent=`✓ Same syndrome · same correction C · logical class ${isLogical?'flipped':'unchanged'}.`;
     view='decomposition';editing=false;drawMain();
   }
-  function setView(next){stop();$('share-url').hidden=$('share-label').hidden=true;view=next;if(next!=='error')editing=false;drawMain();}
+  function setView(next){stop();invalidateShare();view=next;if(next!=='error')editing=false;drawMain();}
   function goTrace(i){stop();traceIndex=Math.max(0,Math.min(frames.length-1,i));drawMain();}
   for(const group of [...new Set(presets.map(p=>p.group))]){
     const optgroup=document.createElement('optgroup');optgroup.label=group;
@@ -363,7 +429,7 @@
   for(const f of patch.faces)$('face').append(new Option(`S${f.id+1} · ${f.edges.length}-qubit ${f.edges.length===3?'boundary':'plaquette'} stabilizer`,String(f.id)));
   $('face').value='8';
   $('example').addEventListener('change',()=>chooseExample($('example').value));
-  $('open-companion').addEventListener('click',()=>chooseExample(presets.find(p=>p.id===selected)?.partner));
+  $('open-companion').addEventListener('click',()=>{chooseExample(presets.find(p=>p.id===selected)?.partner);focusWorkspace();});
   $('confidence-p').addEventListener('input',()=>setPrior(Number($('confidence-p').value)/100));
   $('confidence-number').addEventListener('change',()=>{if($('confidence-number').value!==''&&$('confidence-number').reportValidity())setPrior(Number($('confidence-number').value)/100);else $('confidence-number').value=Number((confidenceP*100).toPrecision(12));});
   root.querySelectorAll('[data-sc-prior]').forEach(b=>b.addEventListener('click',()=>setPrior(Number(b.dataset.scPrior))));
@@ -372,16 +438,18 @@
   $('restore-neighbor').addEventListener('click',()=>{
     if(!neighborOrigin)return;const old=neighborOrigin;neighborOrigin=null;forestStrategy=old.forestStrategy;$('forest').value=forestStrategy;view=old.view;
     if(!old.custom)chooseExample(old.selected);else{selected=old.selected;error=old.error.slice();sampleOrigin=old.sampleOrigin;recompute({changed:true});}
-    $('neighbor-status').textContent='Restored the scan’s original error and forest.';root.scrollIntoView({block:'start'});
+    $('neighbor-status').textContent='Restored the scan’s original error and forest.';focusWorkspace();
   });
   $('forest').addEventListener('change',()=>changeForest($('forest').value));
   $('previous-example').addEventListener('click',()=>chooseExample(presets[presets.findIndex(p=>p.id===selected)-1]?.id));
   $('next-example').addEventListener('click',()=>chooseExample(presets[presets.findIndex(p=>p.id===selected)+1]?.id));
   $('category').addEventListener('change',renderCatalog);
+  $('search').addEventListener('input',renderCatalog);$('outcome-filter').addEventListener('change',renderCatalog);
+  $('clear-filters').addEventListener('click',()=>{$('search').value='';$('outcome-filter').value='all';$('category').value='all';renderCatalog();$('search').focus();});
   root.querySelectorAll('[data-sc-reference]').forEach(b=>b.addEventListener('click',()=>{referenceView=b.dataset.scReference;drawReferences();}));
   for(const [id,predicate] of [['jump-merge',f=>f.action==='merge'],['jump-forest',f=>f.phase==='forest']])$(id).addEventListener('click',()=>goTrace(frames.findIndex(predicate)));
   $('jump-reactivate').addEventListener('click',()=>{const next=frames.findIndex((f,i)=>i>traceIndex&&f.reactivated);goTrace(next<0?frames.findIndex(f=>f.reactivated):next);});
-  $('inspect-growth').addEventListener('click',()=>{setView('trace');goTrace(frames.findIndex(f=>f.phase==='forest'));$('graph').scrollIntoView({block:'center'});});
+  $('inspect-growth').addEventListener('click',()=>{setView('trace');goTrace(frames.findIndex(f=>f.phase==='forest'));$('view-title').focus({preventScroll:true});$('view-title').scrollIntoView({block:'start'});});
   $('sample-mode').addEventListener('change',()=>{const fixed=$('sample-mode').value==='fixed';$('probability-field').hidden=fixed;$('probability').disabled=fixed;$('weight-field').hidden=!fixed;$('sample-weight').disabled=!fixed;});
   $('sample-form').addEventListener('submit',event=>{event.preventDefault();generateSample();});
   $('next-seed').addEventListener('click',()=>{if(!$('sample-form').reportValidity())return;$('seed').value=(Number($('seed').value)+1)>>>0;generateSample();});
@@ -394,11 +462,17 @@
     const url=new URL(location.href);url.search='';url.hash='';url.searchParams.set('sc','2');url.searchParams.set('e',data.error.join(','));url.searchParams.set('forest',forestStrategy);url.searchParams.set('view',view);
     url.searchParams.set('prior',String(confidenceP));
     if($('example').value!=='custom')url.searchParams.set('example',selected);
-    $('share-url').value=url.href;$('share-url').hidden=$('share-label').hidden=false;$('share-url').focus();$('share-url').select();
+    $('share-url').value=url.href;$('share-url').hidden=$('share-label').hidden=$('copy-link').hidden=false;$('share-url').focus();$('share-url').select();
     $('sample-status').textContent='Case link ready. It preserves the exact error, forest, diagram view, and assumed confidence prior; select and copy it.';
   });
+  $('copy-link').addEventListener('click',async()=>{
+    const text=$('share-url').value;
+    try{await navigator.clipboard.writeText(text);if(!$('share-url').hidden&&$('share-url').value===text)$('sample-status').textContent='Case link copied. It restores the exact error, forest, view, and confidence prior.';}
+    catch{if(!$('share-url').hidden){$('share-url').focus();$('share-url').select();$('sample-status').textContent='Automatic copying is unavailable. The case link is selected; copy it with your keyboard or device menu.';}}
+  });
   viewButtons.forEach(b=>b.addEventListener('click',()=>setView(b.dataset.scView)));
-  $('edit').addEventListener('click',()=>{stop();editing=!editing;view='error';drawMain();});
+  $('edit').addEventListener('click',()=>{editing=!editing;setView('error');});
+  $('qubit').addEventListener('change',()=>{focusedQubit=Number($('qubit').value);updateQubitState();drawMain();});
   $('toggle-qubit').addEventListener('click',()=>toggleQubit(Number($('qubit').value)));
   $('clear').addEventListener('click',()=>{sampleOrigin=null;neighborOrigin=null;error=[];recompute({changed:true});});
   $('cut').addEventListener('change',drawMain);$('ids').addEventListener('change',drawMain);
@@ -415,27 +489,47 @@
   });
   document.addEventListener('visibilitychange',()=>{if(document.hidden)stop();});
   document.addEventListener('keydown',event=>{
-    if(root.hidden||/INPUT|SELECT|TEXTAREA|BUTTON|A/.test(event.target.tagName)||event.altKey||event.ctrlKey||event.metaKey)return;
+    if(root.hidden||event.target.closest('a,button,input,select,textarea,summary,[role="button"],[role="tab"],[contenteditable=""],[contenteditable="true"]')||event.altKey||event.ctrlKey||event.metaKey)return;
     if(view==='trace'&&['ArrowLeft','ArrowRight',' '].includes(event.key)){
       event.preventDefault();if(event.key===' ')$('trace-play').click();else goTrace(traceIndex+(event.key==='ArrowRight'?1:-1));
     }
   });
   const oldRoot=document.getElementById('uf-decoder-lesson');
+  const sectionLinks=[...$('section-nav').querySelectorAll('a')];
+  function markSection(){
+    if(root.hidden)return;
+    let active=sectionLinks[0];
+    for(const link of sectionLinks.slice(1)){
+      const target=document.getElementById(link.hash.slice(1));
+      if(target&&target.getBoundingClientRect().top<=150)active=link;
+    }
+    for(const link of sectionLinks){if(link===active)link.setAttribute('aria-current','location');else link.removeAttribute('aria-current');}
+  }
+  let scrollQueued=false;
+  window.addEventListener('scroll',()=>{if(scrollQueued)return;scrollQueued=true;requestAnimationFrame(()=>{scrollQueued=false;markSection();});},{passive:true});
   function route(){
     const walkthrough=['#walkthrough','#structures','#field-guide','#sources','#uf-decoder-lesson'].includes(location.hash);
+    const changed=root.hidden!==walkthrough;
     root.hidden=walkthrough;oldRoot.hidden=!walkthrough;
     document.querySelectorAll('[data-lab-mode]').forEach(a=>{if(a.dataset.labMode===(walkthrough?'walkthrough':'logical'))a.setAttribute('aria-current','page');else a.removeAttribute('aria-current');});
     if(walkthrough)stop();
-    else {const play=document.getElementById('uf-play');if(play.getAttribute('aria-pressed')==='true')play.click();drawMain();drawFactors();}
+    else if(changed){const play=document.getElementById('uf-play');if(play.getAttribute('aria-pressed')==='true')play.click();drawMain();drawFactors();}
     if(location.hash){const target=location.hash==='#walkthrough'?oldRoot:document.getElementById(location.hash.slice(1));if(target)requestAnimationFrame(()=>target.scrollIntoView({block:'start'}));}
   }
-  new ResizeObserver(()=>{drawMain();drawFactors();}).observe(root);
+  let previousWidth=-1,resizeFrame=null;
+  if(typeof ResizeObserver==='function')new ResizeObserver(entries=>{
+    const width=entries[0].contentRect.width;if(root.hidden||Math.abs(width-previousWidth)<.5)return;previousWidth=width;
+    if(resizeFrame!==null)cancelAnimationFrame(resizeFrame);
+    resizeFrame=requestAnimationFrame(()=>{resizeFrame=null;drawMain();drawFactors();});
+  }).observe(root);
+  else window.addEventListener('resize',()=>{drawMain();drawFactors();});
   window.addEventListener('hashchange',route);
   chooseExample(selected);
   const query=new URLSearchParams(location.search);
   if(query.has('sc')){
     try{
       const raw=query.get('e'),strategy=query.get('forest'),nextView=query.get('view');
+      if(['sc','e','forest','view','prior','example'].some(key=>query.getAll(key).length>1))throw new Error('Ambiguous shared case');
       if(query.get('sc')!=='2'||raw===null||raw.length>160||!/^(?:\d+(?:,\d+)*)?$/.test(raw)||!Object.hasOwn(forestNames,strategy)||!Object.hasOwn(views,nextView))throw new Error('Invalid shared case');
       const ids=raw===''?[]:raw.split(',').map(Number);
       if(ids.some(id=>!Number.isInteger(id)||id<0||id>=patch.n)||new Set(ids).size!==ids.length)throw new Error('Invalid qubit support');
@@ -446,9 +540,9 @@
       const preset=presets.find(p=>p.id===query.get('example')&&p.error.slice().sort((a,b)=>a-b).join(',')===ids.slice().sort((a,b)=>a-b).join(','));
       if(preset)chooseExample(preset.id);else{error=ids;recompute({changed:true});$('example-title').textContent='Shared error pattern';}
       $('sample-status').textContent='Shared case restored: exact error, forest, diagram view, and confidence prior.';
-    }catch(e){$('sample-status').textContent='This case link is invalid or uses an unsupported version. The default example is shown.';}
+    }catch(e){$('sample-status').textContent='This case link is invalid or uses an unsupported version. The default example is shown.';$('load-notice').hidden=false;$('load-notice').textContent=$('sample-status').textContent;}
   }
-  renderCatalog();route();
+  renderCatalog();route();markSection();
   root.surfaceInspect=()=>({view,editing,selected,forestStrategy,referenceView,confidenceP,posterior,neighbors:neighborRows,error:data.error,correction:data.correction,residual:data.residual,syndrome:data.observed,result:data.result,analysis,frame:frames[traceIndex],traceIndex,frames:frames.length});
   root.surfaceExport=experimentRecord;
 })();

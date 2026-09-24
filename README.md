@@ -44,6 +44,16 @@ Generate a single error using independent Bernoulli(p) Z errors or a fixed-weigh
 
 **Create case link** encodes the exact error support, forest, diagram view, and assumed confidence prior in the URL. **Export JSON** writes schema `decoder-lab.surface-code.v3` with the full qubit/check geometry, error, syndrome, correction, residual, stabilizer witness, both logical-class minima and counts, grown support, all forest outcomes, full class weight spectra, assumed prior and posterior, any current sensitivity scan, and sampling parameters when applicable. Older case links without a prior remain supported and use p=0.1. Editing E clears stale generation metadata. All calculations remain in the browser. Curated cases and individual generated shots cannot establish comparative logical error rates.
 
+## Interface reliability
+
+The research navigation remains available while scrolling and indicates the current section. Search the 24-case catalog by mechanism or number and combine concept/outcome filters. Empty searches explain how to recover. Result tables are named, keyboard-focusable scroll regions.
+
+In the error editor, the lattice is an interactive group with one keyboard entry point. Arrow keys move through qubit IDs, Home/End reach the first/last qubit, and Enter/Space toggles the focused error. The native qubit selector reports whether that qubit currently carries Z. Focus survives a toggle or width change; opening a paired case, catalog case, or neighbor moves focus to its destination. Shortcut handling leaves form controls, links, and expandable explanations alone. The mechanics tabs use a single tab stop with arrow-key navigation.
+
+The confidence plot caches its fixed-syndrome probability curve. Changing p updates one posterior, the marker, and weight contributions while retaining the curve and table nodes. Width-only redraws preserve focus; changing a section’s height does not redraw the lattice. These are UI optimizations and do not change decoder results or imply production-decoder latency.
+
+Case links invalidate whenever their encoded state changes. Copying offers a manual selection fallback if clipboard access is unavailable; ambiguous or invalid URLs show a visible notice. JavaScript-disabled browsers receive an explanatory notice. The page requires a modern browser and remains self-contained and usable offline. It has no analytics, external font dependencies, or server-side computation. Only the theme preference is saved automatically.
+
 ## Explore
 
 - Light, dark, and system themes with a saved preference.
@@ -63,7 +73,7 @@ Generate a single error using independent Bernoulli(p) Z errors or a fixed-weigh
 
 Use **Theme** in the header to choose Light, Dark, or System. System follows your device appearance; explicit choices are remembered in this browser. Printing always uses the light palette.
 
-With page focus outside a control, Left/Right changes steps and Space toggles playback.
+With page focus outside an interactive control or expandable explanation, Left/Right changes steps and Space toggles playback. Reduced-motion preferences disable animated scrolling and cosmetic transitions; trace playback starts only when requested.
 
 ## Original mechanics model
 
@@ -81,6 +91,9 @@ Commit `index.html` in the root of the repository. In Settings → Pages, choose
 
 ## Validation
 
+Run `python3 verify.py` before publishing (Python 3.10+ and Node.js required). It checks JavaScript syntax, runs all four mathematical test suites below, validates static HTML ID/label/ARIA/fragment references, and rebuilds in a temporary directory to compare `app.js` and `index.html` byte for byte. It uses no network and does not rewrite the working copy. If generated files are stale, run `python3 build_site.py` and review the outputs first. Browser/visual and assistive-technology checks are separate from this gate.
+
+
 Run `node surface-model.test.js` for the surface-code checks. They verify CSS commutation, matrix ranks, primal/dual distance, logical/stabilizer equivalence, and exact reconstruction. The 1,470 decoder runs include every distance-5 error of weight at most two, all displayed examples and their logical/stabilizer transforms, and seeded larger error patterns.
 
 Run `node surface-reference.test.js` for independent reference checks: all 64 syndromes on distance 3 under three edge-support restrictions (192 exact problems), plus all 4,194,304 representatives in the two logical cosets of two distance-5 cases. Exhaustive enumeration verifies both the global and grown-region minima and their counts. Tests also check the mechanism advertised by each advanced case, all three forests, deterministic sampling, and reference witnesses through distance 9.
@@ -91,7 +104,7 @@ Run `node surface-confidence.test.js` for independent exhaustive confidence chec
 
 Run `node surface-edge.test.js` for the nine new mechanisms, identical paired traces across three forests, 35 decoder/witness checks, and 410 one-qubit neighbors verified independently through check incidence, support bit masks, and logical-cut intersections.
 
-Browser verification covers all 24 cases × 3 forest strategies × 7 views, cluster jumps, reference diagrams, editing and equivalence transforms, sampling, JSON exports, shared/invalid URLs, the existing mechanics view, and both themes at 320–1440px. Additional flows verify the likelihood crossover, same-syndrome posterior invariance, endpoint behavior, q16 neighbor/restore, cancellation marks, delayed reactivation, v3 exports, and prior-preserving/legacy/invalid links.
+Browser verification covers all 24 cases × 3 forest strategies × 7 views, cluster jumps, reference diagrams, editing and equivalence transforms, sampling, JSON exports, shared/invalid URLs, the existing mechanics view, and both themes at 320–1440px. Additional flows verify the likelihood crossover, same-syndrome posterior invariance, endpoint behavior, q16 neighbor/restore, cancellation marks, delayed reactivation, v3 exports, and prior-preserving/legacy/invalid links. Production-readiness checks cover keyboard details and tabs, lattice and forest focus, search/filter empty states, copy fallback, invalid-link notices, no-JavaScript behavior, reduced motion, and sticky section navigation.
 
 ## Reading
 

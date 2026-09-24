@@ -249,7 +249,7 @@
     }
     $('run-metrics').textContent=`${analysis.rounds} half-edge growth rounds · ${analysis.unions} unions · ${analysis.reactivations} merge batch${analysis.reactivations===1?'':'es'} with an even-to-odd transition · ${data.trace.fullEdges.length} fully grown edges.`;
   }
-  const percent=value=>value===null?'—':value>0&&value<.000001?(value*100).toExponential(2)+'%':(value*100).toFixed(2)+'%';
+  const percent=value=>value===null?'—':value>0&&value<.0001?(value*100).toExponential(2)+'%':value<1&&value>.9999?'>99.99%':(value*100).toFixed(2)+'%';
   function drawConfidenceCurve(){
     if(!spectrum||root.hidden)return;
     const svg=$('confidence-curve'),g=$('confidence-curve-drawing');
@@ -351,10 +351,10 @@
   const catalog=dataset.cases,caseById=new Map(catalog.map(c=>[c.id,c])),pageSize=25;
   let catalogPage=0;
   const catalogRisk=c=>c.conditionalFailure.find(v=>v.p===.1).failure;
-  function catalogFilters(){return {query:$('search').value.trim().toLowerCase(),category:$('category').value,outcome:$('outcome-filter').value,mechanism:$('mechanism').value,sort:$('catalog-sort').value};}
+  function catalogFilters(){return {query:$('search').value.trim().toLowerCase(),collection:$('collection').value,category:$('category').value,outcome:$('outcome-filter').value,mechanism:$('mechanism').value,sort:$('catalog-sort').value};}
   function catalogMatches(){
     const f=catalogFilters();
-    const matches=catalog.filter(c=>(f.category==='all'||c.group===f.category)&&(f.outcome==='all'||!!c.metrics.logical===(f.outcome==='failure'))&&(f.mechanism==='all'||c.tags.includes(f.mechanism))&&(!f.query||(/^\d+$/.test(f.query)?c.number===Number(f.query):[c.id,c.name,c.group,c.title,c.note,...c.tags].join(' ').toLowerCase().includes(f.query))));
+    const matches=catalog.filter(c=>(f.collection==='all'||(f.collection==='new'?c.number>100:c.number<=100))&&(f.category==='all'||c.group===f.category)&&(f.outcome==='all'||!!c.metrics.logical===(f.outcome==='failure'))&&(f.mechanism==='all'||c.tags.includes(f.mechanism))&&(!f.query||(/^\d+$/.test(f.query)?c.number===Number(f.query):[c.id,c.name,c.group,c.title,c.note,...c.tags].join(' ').toLowerCase().includes(f.query))));
     const score=c=>({number:c.number,correction:-c.metrics.correctionWeight,peeling:-c.metrics.peelingExcess,defects:-c.metrics.defects,ambiguity:Math.abs(catalogRisk(c)-.5),gap:c.metrics.gap}[f.sort]);
     return matches.sort((a,b)=>score(a)-score(b)||a.number-b.number);
   }
@@ -378,13 +378,13 @@
     $('catalog-page').textContent=matches.length?`Page ${catalogPage+1} of ${pages} · ${catalogPage*pageSize+1}–${Math.min((catalogPage+1)*pageSize,matches.length)} of ${matches.length}`:'No matching cases';
     $('catalog-prev').disabled=catalogPage===0;$('catalog-next').disabled=catalogPage===pages-1;
     $('catalog-csv').disabled=$('catalog-json').disabled=!matches.length;
-    $('clear-filters').disabled=!f.query&&f.outcome==='all'&&f.category==='all'&&f.mechanism==='all'&&f.sort==='number';
+    $('clear-filters').disabled=!f.query&&f.collection==='all'&&f.outcome==='all'&&f.category==='all'&&f.mechanism==='all'&&f.sort==='number';
   }
   function resetCatalog(){catalogPage=0;renderCatalog();$('catalog-export-status').textContent='Exports include every matching case across all pages. JSON includes geometry, exact spectra, all three forests, and provenance.';}
   function renderCaseRecord(changed){
     const c=changed?null:caseById.get(selected);$('case-record').hidden=!c;if(!c)return;
     $('record-id').textContent=`${c.id} · catalog ${dataset.catalogVersion}`;
-    $('record-keys').textContent=`E ${c.errorKey} / s ${c.syndromeKey}`;
+    $('record-keys').textContent=`E ${c.errorKey} / s ${c.syndromeKey} / geometry ${c.syndromeOrbitKey}`;
     $('record-criterion').textContent=c.provenance.criterion;
     $('record-method').textContent=`Selection: ${c.provenance.method}${c.provenance.seed===undefined?'':` · source seed ${c.provenance.seed}`}. Full construction details are included in JSON exports.`;
     $('record-tags').replaceChildren(...c.tags.map(tag=>{const span=document.createElement('span');span.textContent=tag.replace(/-/g,' ');return span;}));
@@ -396,14 +396,14 @@
   function exportCatalog(format){
     const matches=catalogMatches();if(!matches.length)return;
     const ids=new Set(matches.map(c=>c.id));
-    const filtered={...dataset,sourceSummary:dataset.summary,summary:{cases:matches.length,uniqueErrors:new Set(matches.map(c=>c.errorKey)).size,uniqueSyndromes:new Set(matches.map(c=>c.syndromeKey)).size,pairedStudies:new Set(matches.filter(c=>c.partner&&ids.has(c.partner)).map(c=>[c.id,c.partner].sort().join(':'))).size,groups:new Set(matches.map(c=>c.group)).size},filters:catalogFilters(),cases:matches};
+    const filtered={...dataset,sourceSummary:dataset.summary,summary:{cases:matches.length,uniqueErrors:new Set(matches.map(c=>c.errorKey)).size,uniqueSyndromes:new Set(matches.map(c=>c.syndromeKey)).size,uniqueSyndromeOrbits:new Set(matches.map(c=>c.syndromeOrbitKey)).size,pairedStudies:new Set(matches.filter(c=>c.partner&&ids.has(c.partner)).map(c=>[c.id,c.partner].sort().join(':'))).size,groups:new Set(matches.map(c=>c.group)).size},filters:catalogFilters(),cases:matches};
     downloadRecord(format==='csv'?R.csv(matches):JSON.stringify(filtered,null,2)+'\n',format==='csv'?'text/csv;charset=utf-8':'application/json',`decoder-lab-catalog-${dataset.catalogVersion}-${matches.length}-cases.${format}`);
     $('catalog-export-status').textContent=`Exported ${matches.length} matching cases across all pages as ${format.toUpperCase()}. Reference metrics use BFS; probabilities use the four documented priors.`;
   }
   function experimentRecord(){return {
     format:'decoder-lab.surface-code.v3',model:{distance:5,dataQubits:41,logicalQubits:1,noise:'Z only; perfect syndrome; one round',edgeWeights:'uniform unit weights'},
     example:$('example').value==='custom'?null:selected,sampling:sampleOrigin,forestStrategy,view,error:data.error,syndrome:data.observed,correction:data.correction,residual:data.residual,
-    catalog:$('example').value==='custom'?null:{version:dataset.catalogVersion,caseId:selected,provenance:caseById.get(selected).provenance,tags:caseById.get(selected).tags,errorKey:R.errorKey(data.error),syndromeKey:R.syndromeKey(data.observed)},
+    catalog:$('example').value==='custom'?null:{version:dataset.catalogVersion,caseId:selected,provenance:caseById.get(selected).provenance,tags:caseById.get(selected).tags,errorKey:R.errorKey(data.error),syndromeKey:R.syndromeKey(data.observed),syndromeOrbitKey:R.syndromeOrbitKey(data.observed),study:caseById.get(selected).study},
     decomposition:data.result,reference:analysis,fullyGrownEdges:data.trace.fullEdges,
     confidence:{assumedNoise:'iid Z, independent of how this displayed E was selected',p:confidenceP,spectrum,posterior},localSensitivity:neighborRows,
     geometry:{qubits:patch.edges,checks:patch.nodes.filter(v=>!v.boundary),stabilizers:patch.faces,logicalZ:patch.logicalZ,logicalX:patch.logicalX},
@@ -485,9 +485,9 @@
   $('forest').addEventListener('change',()=>changeForest($('forest').value));
   $('previous-example').addEventListener('click',()=>chooseExample(presets[presets.findIndex(p=>p.id===selected)-1]?.id));
   $('next-example').addEventListener('click',()=>chooseExample(presets[presets.findIndex(p=>p.id===selected)+1]?.id));
-  for(const id of ['category','outcome-filter','mechanism','catalog-sort'])$(id).addEventListener('change',resetCatalog);
+  for(const id of ['collection','category','outcome-filter','mechanism','catalog-sort'])$(id).addEventListener('change',resetCatalog);
   $('search').addEventListener('input',resetCatalog);
-  $('clear-filters').addEventListener('click',()=>{$('search').value='';for(const id of ['outcome-filter','category','mechanism'])$(id).value='all';$('catalog-sort').value='number';resetCatalog();$('search').focus();});
+  $('clear-filters').addEventListener('click',()=>{$('search').value='';for(const id of ['collection','outcome-filter','category','mechanism'])$(id).value='all';$('catalog-sort').value='number';resetCatalog();$('search').focus();});
   $('catalog-prev').addEventListener('click',()=>{catalogPage--;renderCatalog();});
   $('catalog-next').addEventListener('click',()=>{catalogPage++;renderCatalog();});
   for(const format of ['csv','json'])$('catalog-'+format).addEventListener('click',()=>exportCatalog(format));

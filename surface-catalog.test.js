@@ -5,6 +5,7 @@
 const assert=require('node:assert/strict');
 const fs=require('node:fs');
 const path=require('node:path');
+const crypto=require('node:crypto');
 require('./model.js');
 require('./surface-model.js');
 require('./surface-confidence.js');
@@ -14,12 +15,14 @@ const patch=M.makePatch(5),examples=M.examples(patch);
 const fixtures=JSON.parse(fs.readFileSync(path.join(__dirname,'surface-cases.json'),'utf8'));
 const stored=JSON.parse(fs.readFileSync(path.join(__dirname,'catalog-reference.json'),'utf8'));
 const stableIds=['exact','stabilizer','logical','dressed','invisible','boundary','independent','two-strings','three-strings','islands','reactivation','forest-choice','growth-trap','uf-wins','dense','likelihood-crossover','likelihood-companion','perturb-before','perturb-after','all-checks','boundary-fronts','delayed-reactivation','equal-weight-success','equal-weight-failure',
-  ...Array.from({length:20},(_,i)=>`growth-${i+25}`),...Array.from({length:20},(_,i)=>`likelihood-${i+45}`),...Array.from({length:20},(_,i)=>`perturbation-${i+65}`),...Array.from({length:16},(_,i)=>`topology-${i+85}`)];
-assert.equal(examples.length,100,'The catalog must contain exactly 100 cases.');
-assert.equal(fixtures.length,76,'The 24 original cases must have 76 additions.');
+  ...Array.from({length:20},(_,i)=>`growth-${i+25}`),...Array.from({length:20},(_,i)=>`likelihood-${i+45}`),...Array.from({length:20},(_,i)=>`perturbation-${i+65}`),...Array.from({length:16},(_,i)=>`topology-${i+85}`),
+  ...Array.from({length:25},(_,i)=>`growth-extended-${i+101}`),...Array.from({length:25},(_,i)=>`likelihood-extended-${i+126}`),
+  ...Array.from({length:25},(_,i)=>`geometry-extended-${i+151}`),...Array.from({length:25},(_,i)=>`sensitivity-extended-${i+176}`)];
+assert.equal(examples.length,200,'The catalog must contain exactly 200 cases.');
+assert.equal(fixtures.length,176,'The 24 original cases must have 176 additions.');
 assert.deepEqual(examples.map(e=>e.id),stableIds,'Case URLs and number order are stable.');
-assert.deepEqual(fixtures.map(e=>e.number),Array.from({length:76},(_,i)=>i+25));
-assert.equal(new Set(examples.map(e=>e.id)).size,100);
+assert.deepEqual(fixtures.map(e=>e.number),Array.from({length:176},(_,i)=>i+25));
+assert.equal(new Set(examples.map(e=>e.id)).size,200);
 
 const bit=q=>1n<<BigInt(q);
 const mask=ids=>ids.reduce((m,q)=>m^bit(q),0n);
@@ -45,19 +48,50 @@ const validateSupport=(support,label)=>{assert(Array.isArray(support),label);ass
 for(const face of faceMasks){assert.equal(syndrome(face),0n);assert.equal(parity(face),0);}
 assert.equal(syndrome(logicalZ),0n);assert.equal(parity(logicalZ),1);
 for(const example of examples){validateSupport(example.error,example.id);assert(example.name.startsWith(`${stableIds.indexOf(example.id)+1} · `));}
-assert.equal(new Set(examples.map(e=>mask(e.error).toString())).size,100,'Every support is distinct.');
+assert.equal(new Set(examples.map(e=>mask(e.error).toString())).size,200,'Every support is distinct.');
 
 const rebuilt=C.build(patch,examples);
 assert.deepEqual(stored,rebuilt,'catalog-reference.json is stale; run node build_catalog.js.');
-assert.equal(stored.summary.cases,100);assert.equal(stored.summary.uniqueErrors,100);
+assert.equal(stored.summary.cases,200);assert.equal(stored.summary.uniqueErrors,200);
+// Freeze published cases without depending on a workspace snapshot or helper.
+// Explicit fields tolerate additive catalog metadata while preserving every
+// original decoder, homology, exact-minimum and likelihood result.
+const stableFields=r=>({id:r.id,number:r.number,name:r.name,error:r.error,syndrome:r.syndrome,metrics:r.metrics,bfs:r.bfs,forests:r.forests,minimumClasses:r.minimumClasses,grownClasses:r.grownClasses,fullyGrownEdges:r.fullyGrownEdges,conditionalFailure:r.conditionalFailure,weightSpectrum:r.weightSpectrum});
+const baselineDigest=crypto.createHash('sha256').update(JSON.stringify(stored.cases.slice(0,100).map(stableFields))).digest('hex');
+assert.equal(baselineDigest,'926af14aab373cf8d20b3f410e35f2ebacd4636ce656ab7e182273a24ba8d778','The first 100 published mathematical records and case names must be preserved.');
+
+// Reflections act on the measured checks as a 5-row × 4-column rectangle.
+// Taking the minimum bit mask over D2 identifies syndrome orbits without
+// relying on the implementation's own orbit helper.
+const transformSyndrome=(s,flipX,flipY)=>{
+  let out=0n;
+  for(let row=0;row<5;row++)for(let col=0;col<4;col++){
+    if(s&bit(row*4+col))out|=bit((flipY?4-row:row)*4+(flipX?3-col:col));
+  }
+  return out;
+};
+const orbit=s=>[s,transformSyndrome(s,true,false),transformSyndrome(s,false,true),transformSyndrome(s,true,true)].reduce((a,b)=>a<b?a:b);
+const oldOrbits=new Set(stored.cases.slice(0,100).map(r=>orbit(syndrome(mask(r.error))).toString()));
+assert.equal(oldOrbits.size,86,'The published baseline contains 86 syndrome orbits.');
+const usedOrbits=new Set(oldOrbits);
+for(const record of stored.cases.slice(100)){
+  const key=orbit(syndrome(mask(record.error))).toString();
+  assert(!usedOrbits.has(key),`${record.id}: new cases must have distinct measured syndromes even after reflection or half-turn`);
+  usedOrbits.add(key);
+}
+assert.equal(usedOrbits.size,186);
+assert.equal(new Set(stored.cases.map(r=>r.syndromeKey)).size,189);
+assert.equal(stored.summary.uniqueSyndromes,189);
+assert.equal(stored.summary.uniqueSyndromeOrbits,186);
 const records=new Map(stored.cases.map(r=>[r.id,r]));
 const source=new Map(examples.map(e=>[e.id,e]));
-const traces=new Map();let decoded=0,expectedChecks=0,seedChecks=0,pairChecks=0;
+const traces=new Map();let decoded=0,expectedChecks=0,seedChecks=0,pairChecks=0,studyChecks=0;
 for(const record of stored.cases){
   const E=mask(record.error),s=syndrome(E);
   assert.equal(observedMask(record.syndrome),s,`${record.id}: independent syndrome`);
   assert.equal(record.errorKey,E.toString(16).padStart(11,'0'));
   assert.equal(record.syndromeKey,s.toString(16).padStart(5,'0'));
+  assert.equal(record.syndromeOrbitKey,orbit(s).toString(16).padStart(5,'0'));
   const variants=new Map();
   for(const strategy of ['bfs','reverse-bfs','dfs']){
     const data=M.decode(patch,record.error,strategy),correction=mask(data.correction),residual=E^correction;
@@ -96,6 +130,19 @@ for(const record of stored.cases){
     const p=probability.p,masses=record.weightSpectrum.map(sector=>sector.counts.reduce((sum,n,k)=>sum+n*p**k*(1-p)**(41-k),0));
     eqClose(probability.failure,masses[record.bfs.parity^1]/(masses[0]+masses[1]),`${record.id}: independently summed posterior`);
   }
+  // Reserved filter labels are scientific claims. Derive them from checked
+  // corrections, class minima and raw growth frames rather than trusting the
+  // catalog metrics or copying its tagging function.
+  const bfs=variants.get('bfs'),selectedParity=parity(mask(bfs.correction));
+  const reservedTags={
+    'forest-sensitive':new Set([...variants.values()].map(d=>parity(E^mask(d.correction)))).size>1,
+    'growth-trap':record.grownClasses[parity(E)].weight===null,
+    'peeling-overhead':bfs.correction.length>record.grownClasses[selectedParity].weight,
+    'growth-penalty':record.grownClasses[selectedParity].weight>record.minimumClasses[selectedParity].weight,
+    'reactivation':bfs.trace.frames.some(frame=>frame.reactivated),
+    'tied-minima':record.minimumClasses[0].weight===record.minimumClasses[1].weight
+  };
+  for(const [tag,present] of Object.entries(reservedTags))assert.equal(record.tags.includes(tag),present,`${record.id}: reserved scientific tag ${tag}`);
 }
 
 const expectedRates={pFailure01:.01,pFailure05:.05,pFailure10:.10,pFailure15:.15};
@@ -142,6 +189,23 @@ function transform(support,relation){
     if(q<25){let row=Math.floor(q/5),col=q%5;if(flipY)row=4-row;if(flipX)col=4-col;return h(row,col);}
     let row=Math.floor((q-25)/4),col=(q-25)%4+1;if(flipY)row=3-row;if(flipX)col=5-col;return v(row,col);
   }).sort((a,b)=>a-b);
+}
+// Verify the three nonidentity symmetries at the incidence level for every
+// qubit, including boundary edges. Quarter-turns are deliberately excluded:
+// they exchange the rough and smooth boundary types of this fixed-Z model.
+for(const relation of ['horizontal-reflection','vertical-reflection','rotation-180']){
+  const flipX=relation!=='vertical-reflection',flipY=relation!=='horizontal-reflection';
+  for(let q=0;q<41;q++){
+    const image=transform([q],relation);
+    assert.equal(syndrome(mask(image)),transformSyndrome(incidence[q],flipX,flipY),`${relation}: incidence equivariance at q${q}`);
+    assert.deepEqual(transform(image,relation),[q],`${relation}: involution at q${q}`);
+  }
+  for(const face of faceMasks){
+    const image=mask(transform(ids(face),relation));
+    assert.equal(syndrome(image),0n);assert.equal(parity(image),0);
+  }
+  const transformedLogical=mask(transform(ids(logicalZ),relation));
+  assert.equal(syndrome(transformedLogical),0n);assert.equal(parity(transformedLogical),1);
 }
 const visitedPairs=new Set();
 for(const example of examples){
@@ -204,6 +268,51 @@ for(const example of examples){
 }
 assert.equal(stored.summary.pairedStudies,visitedPairs.size);
 
+// Sensitivity studies are local experiments attached to distinct catalog
+// inputs. Their counterfactuals do not count as additional catalog examples.
+for(const fixture of fixtures){
+  if(fixture.number>=176)assert(fixture.study,`${fixture.id}: documented sensitivity experiment`);
+  if(!fixture.study)continue;
+  const record=records.get(fixture.id),study=fixture.study,E=mask(record.error),C0=mask(record.bfs.correction);
+  assert.deepEqual(record.study,study,`${fixture.id}: published sensitivity metadata`);
+  if(study.originalForestLogical)assert.deepEqual(study.originalForestLogical,['bfs','reverse-bfs','dfs'].map(strategy=>traces.get(record.id).get(strategy).result.logical));
+  const neighbor=q=>{
+    assert(Number.isInteger(q)&&q>=0&&q<41,`${fixture.id}: counterfactual qubit`);
+    const nextE=E^bit(q),data=M.decode(patch,ids(nextE),'bfs'),nextC=mask(data.correction),change=C0^nextC;
+    const residualChange=bit(q)^change;
+    assert.equal(syndrome(nextC),syndrome(nextE),`${fixture.id}/q${q}: neighboring correction incidence`);
+    assert.equal(syndrome(residualChange),0n,`${fixture.id}/q${q}: closed residual change`);
+    assert.equal(parity(nextE^nextC),data.result.logical,`${fixture.id}/q${q}: neighboring cut parity`);
+    assert.equal(parity(residualChange),record.bfs.logical^data.result.logical,`${fixture.id}/q${q}: outcome-change identity`);
+    assert.equal(witness(data.result.logical,data.result.stabilizers),nextE^nextC,`${fixture.id}/q${q}: neighboring witness`);
+    return {error:ids(nextE),correction:data.correction,logical:data.result.logical,changedCorrection:ids(change),operation:(E&bit(q))?'remove':'add'};
+  };
+  if(study.kind==='single-qubit'){
+    const actual=neighbor(study.qubit);
+    assert.equal(study.operation,actual.operation);
+    assert.deepEqual(study.changedCorrection,actual.changedCorrection);
+    assert.deepEqual(study.neighborError,actual.error);assert.deepEqual(study.neighborCorrection,actual.correction);
+    assert.equal(study.originalLogical,record.bfs.logical);assert.equal(study.neighborLogical,actual.logical);
+    validateSupport(study.changedCorrection,`${fixture.id}: correction-change support`);
+    if(study.neighborForestLogical){
+      const outcomes=['bfs','reverse-bfs','dfs'].map(strategy=>{
+        const data=M.decode(patch,actual.error,strategy),residual=mask(actual.error)^mask(data.correction);
+        assert.equal(syndrome(residual),0n);assert.equal(parity(residual),data.result.logical);
+        assert.equal(witness(data.result.logical,data.result.stabilizers),residual);
+        return data.result.logical;
+      });
+      assert.deepEqual(study.neighborForestLogical,outcomes);
+    }
+  }else if(study.kind==='neighbor-scan'){
+    const neighbors=Array.from({length:41},(_,q)=>neighbor(q));
+    const flipQubits=neighbors.flatMap((n,q)=>n.logical!==record.bfs.logical?[q]:[]);
+    assert.deepEqual(study.flipQubits,flipQubits);
+    assert.equal(study.maxChange,Math.max(...neighbors.map(n=>n.changedCorrection.length)));
+  }else assert.fail(`Unhandled sensitivity study kind ${fixture.id}.${study.kind}`);
+  studyChecks++;
+}
+assert.equal(studyChecks,25,'All 25 sensitivity examples must publish reproducible counterfactual metadata.');
+
 // RFC-style quoted fields: commas, quotes and embedded newlines must round-trip.
 function parseCsv(text){
   const rows=[];let row=[],cell='',quoted=false;
@@ -217,10 +326,11 @@ function parseCsv(text){
   }
   assert(!quoted,'CSV contains an unterminated quoted cell.');if(cell!==''||row.length){row.push(cell);rows.push(row);}return rows;
 }
-const csv=parseCsv(C.csv(stored.cases)),header=csv[0];assert.equal(csv.length,101);assert.equal(new Set(header).size,header.length);
+const csv=parseCsv(C.csv(stored.cases)),header=csv[0];assert.equal(csv.length,201);assert.equal(new Set(header).size,header.length);
 for(let i=1;i<csv.length;i++){
   const row=csv[i],r=stored.cases[i-1];assert.equal(row.length,header.length);const cell=name=>row[header.indexOf(name)];
   assert.equal(cell('case_id'),r.id);assert.equal(cell('number'),String(i));assert.equal(cell('error_key'),r.errorKey);
+  assert.equal(cell('syndrome_orbit_key'),r.syndromeOrbitKey);assert.equal(cell('study_kind'),r.study?.kind??'');
   assert.equal(cell('logical'),String(r.bfs.logical));assert.equal(cell('signed_gap'),String(r.metrics.gap));
   assert.equal(cell('selection_criterion'),r.provenance.criterion);
 }
@@ -230,4 +340,4 @@ const escaped=parseCsv(C.csv([synthetic]));assert.equal(escaped.length,2);
 assert.equal(escaped[1][header.indexOf('name')],quotedName);
 assert.equal(escaped[1][header.indexOf('selection_method')],"'+formula");
 assert.equal(escaped[1][header.indexOf('selection_criterion')],"'=1+1");
-console.log(`Catalog verified: 100 unique cases, ${decoded} independent incidence/cut/witness checks, ${expectedChecks} expected fields, ${seedChecks} seeded constructions, ${pairChecks} paired studies, exact spectrum totals/minima/posteriors, deterministic dataset, and 100 CSV records.`);
+console.log(`Catalog verified: 200 distinct supports, 189 syndromes, 186 reflection/half-turn orbits, ${decoded} independent incidence/cut/witness checks, ${expectedChecks} expected fields, ${seedChecks} seeded constructions, ${pairChecks} paired studies, ${studyChecks} independently reconstructed sensitivity studies, exact spectrum totals/minima/posteriors, deterministic dataset, and 200 CSV records.`);

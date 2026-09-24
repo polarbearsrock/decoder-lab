@@ -42,7 +42,7 @@ nav='''</style></head><body><a class="skip-link" href="#main-content">Skip to de
 foot='''</main><footer class="site-footer"><span>Decoder lab / Union-Find</span><span>Deterministic educational model · not a decoder performance benchmark</span></footer>'''
 styles=style+'\n'+p.joinpath('site.css').read_text()+'\n'+p.joinpath('surface.css').read_text()
 # Self-contained index supports local download and GitHub Pages without a build step.
-scripts='\n'.join('<script>\n'+p.joinpath(f).read_text()+'\n</script>' for f in ['model.js','extras.js','app.js','surface-model.js','surface-app.js'])
+scripts='\n'.join('<script>\n'+p.joinpath(f).read_text()+'\n</script>' for f in ['model.js','extras.js','app.js','surface-model.js','surface-confidence.js','surface-app.js'])
 theme_script='<script>\n'+p.joinpath('theme.js').read_text()+'\n</script>'
 p.joinpath('index.html').write_text(head.replace('<style>',theme_script+'<style>')+styles+nav+p.joinpath('surface.html').read_text()+markup+foot+scripts+'</body></html>')
 print('Built',p/'index.html')

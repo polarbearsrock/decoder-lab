@@ -421,6 +421,51 @@ body{-webkit-font-smoothing:antialiased}button,select{line-height:1.35}.site-hea
 @media(max-width:850px) { .sc-growth-layout,.sc-sampling-grid { grid-template-columns:1fr; } .sc-gap { grid-template-columns:1fr; gap:12px; } .sc-reference-card { padding:20px; } }
 @media(max-width:600px) { .sc-reference-grid { grid-template-columns:1fr; gap:15px; } .sc-research-section { margin:30px 0; } .sc-research-section .section-heading h2 { font-size:23px; } .sc-section-nav { gap:10px 20px; } .sc-sampling-grid { padding:20px 16px; } .sc-gap { padding:20px; } .sc-growth-layout table { min-width:355px; } .sc-strategy .form-select { font-size:13px; } }
 @media print { .sc-case-navigation,.sc-section-nav,.sc-reference-toggle,.sc-trace-jumps,.sc-preserve,.sc-sample-form,#sc-catalog,#sc-sampling,#sc-inspect-growth,.sc-strategy { display:none!important; } .sc-reference-grid { grid-template-columns:1fr 1fr; } .sc-reference-card,.sc-gap { break-inside:avoid; } }
+
+/* Exact class probabilities and controlled local perturbations. */
+.sc-overlay-button { grid-column:1/-1; }
+.sc-companion { display:flex; align-items:center; gap:24px; border-left:2px solid var(--border); padding:13px 0 13px 18px; margin-top:20px; }
+.sc-companion p { flex:1; font-size:14px; }
+.sc-companion .btn { flex-shrink:0; font-size:13px; }
+.sc-prior-controls { display:flex; align-items:end; justify-content:space-between; gap:24px; padding:20px 24px; background:var(--muted); border-radius:8px; margin-bottom:20px; }
+.sc-prior-controls>div:first-child { flex:1; max-width:630px; min-width:0; }
+.sc-prior-input { display:flex; align-items:center; gap:20px; }
+.sc-prior-input .form-range { flex:1; min-width:60px; }
+#logical-lab .sc-prior-input .form-control { width:88px; flex-shrink:0; font-variant-numeric:tabular-nums; }
+.sc-prior-shortcuts { display:flex; flex-wrap:wrap; gap:6px; padding-bottom:1px; }
+.sc-prior-shortcuts .btn { min-height:42px; font-size:13px; padding:8px 12px; background:var(--background); }
+.sc-confidence-layout { display:grid; grid-template-columns:minmax(0,.9fr) minmax(0,1.3fr); gap:38px; align-items:start; padding:27px; background:var(--background); border:1px solid var(--border); border-radius:10px; }
+.sc-confidence-readout { padding-top:4px; min-width:0; }
+.sc-probability-row { display:flex; align-items:center; justify-content:space-between; gap:15px; padding:9px 0; }
+.sc-probability-row>span { display:flex; align-items:center; gap:8px; font-size:14px; }
+.sc-probability-row strong { font-size:27px; font-weight:550; font-variant-numeric:tabular-nums; }
+.sc-probability-row i { width:9px; height:9px; border-radius:2px; flex-shrink:0; }
+.sc-class-zero,#sc-confidence-bar-zero { background:var(--viz-series-2); }
+.sc-class-one,#sc-confidence-bar-one { background:var(--viz-series-5); }
+.sc-probability-bar { display:flex; height:7px; overflow:hidden; border-radius:3px; margin:14px 0 22px; }
+.sc-probability-bar span { display:block; }
+.sc-probability-bar.unavailable { opacity:.22; }
+.sc-confidence-formula { font:italic 19px/1.5 Georgia,serif; margin:0 0 16px; }
+#sc-confidence-decision { font-size:16px; margin-bottom:12px; }
+#sc-confidence-llr { font:12px/1.7 ui-monospace,monospace; margin-bottom:0; overflow-wrap:anywhere; }
+.sc-confidence-figure { min-width:0; margin:0; }
+#sc-confidence-curve { display:block; width:100%; overflow:visible; }
+.sc-confidence-figure figcaption { color:var(--muted-foreground); font-size:13px; line-height:1.65; margin-top:12px; }
+.sc-confidence-status { border-left:3px solid var(--viz-series-5); padding:3px 0 3px 17px; color:var(--muted-foreground); font-size:15px; margin:22px 0; }
+.sc-spectrum-scroll,.sc-neighbor-scroll { max-height:390px; border:1px solid var(--border); border-radius:7px; margin-top:18px; }
+.sc-spectrum-scroll table { min-width:590px; }
+.sc-spectrum-scroll caption { padding:14px!important; }
+.sc-spectrum-scroll thead,.sc-neighbor-scroll thead { position:sticky; top:0; z-index:1; }
+.sc-neighbor-toolbar { display:flex; justify-content:space-between; align-items:end; gap:24px; margin:23px 0 16px; }
+.sc-neighbor-toolbar p { max-width:660px; margin:0; font-size:15px; }
+.sc-neighbor-toolbar>div { flex:0 0 240px; }
+.sc-neighbor-scroll table { min-width:650px; }
+#sc-restore-neighbor { margin-top:14px; }
+@media(max-width:850px) { .sc-confidence-layout { grid-template-columns:1fr 1.2fr; gap:24px; padding:22px; } .sc-prior-controls { align-items:stretch; flex-direction:column; gap:14px; } .sc-prior-controls>div:first-child { max-width:none; } .sc-companion { flex-wrap:wrap; gap:12px; } .sc-companion p { flex-basis:100%; } }
+@media(max-width:650px) { .sc-confidence-layout { grid-template-columns:1fr; gap:25px; padding:20px 16px; } .sc-prior-controls { padding:17px 16px; } .sc-prior-input { gap:12px; } .sc-neighbor-toolbar { align-items:stretch; flex-direction:column; gap:16px; } .sc-neighbor-toolbar>div { flex:auto; } }
+@media print { .sc-prior-controls,#sc-neighbors,.sc-companion { display:none!important; } .sc-confidence-layout { break-inside:avoid; } .sc-spectrum-scroll { max-height:none; overflow:visible; } }
+
+#sc-forest-note { margin-top:12px; font-size:13px; }
 </style></head><body><a class="skip-link" href="#main-content">Skip to decoder</a><header class="site-header"><a class="brand" href="#"><span class="brand-symbol">∪</span> Decoder lab</a><div class="header-actions"><nav aria-label="Page"><a href="#structures">Structures</a><a href="#field-guide">Field guide</a><a href="#sources">Sources</a></nav><div class="theme-control"><label for="theme-select">Theme</label><select id="theme-select"><option value="system">System</option><option value="light">Light</option><option value="dark">Dark</option></select></div></div></header><main id="main-content"><nav class="lab-switch" aria-label="Choose a lab"><a href="#logical-lab" data-lab-mode="logical" aria-current="page">Surface code · logical errors</a><a href="#walkthrough" data-lab-mode="walkthrough">UF mechanics</a></nav><section id="logical-lab" aria-label="Surface-code logical recovery">
   <div class="sc-heading">
     <div><div class="eyebrow">SURFACE-CODE MEMORY</div><h1>Union-Find and logical errors</h1><p>Planar [[41, 1, 5]] code · Z errors · perfect syndrome measurements</p></div>
@@ -437,6 +482,7 @@ body{-webkit-font-smoothing:antialiased}button,select{line-height:1.35}.site-hea
         <button class="btn" data-sc-view="correction" aria-pressed="false">4. Correction C</button>
         <button class="btn" data-sc-view="residual" aria-pressed="false">5. Product CE</button>
         <button class="btn" data-sc-view="decomposition" aria-pressed="true">6. Logical × stabilizer</button>
+        <button class="btn sc-overlay-button" data-sc-view="overlay" aria-pressed="false">Overlay E and C · see cancellations</button>
       </div>
       <div class="sc-view-heading"><h2 id="sc-view-title">The remaining operator</h2><span id="sc-view-meta" class="text-muted"></span></div>
       <figure class="sc-figure"><svg id="sc-graph" role="img" aria-labelledby="sc-graph-title sc-graph-desc"><title id="sc-graph-title">Surface-code patch</title><desc id="sc-graph-desc"></desc><g id="sc-drawing"></g></svg><figcaption id="sc-legend" class="sc-legend"></figcaption></figure>
@@ -445,7 +491,7 @@ body{-webkit-font-smoothing:antialiased}button,select{line-height:1.35}.site-hea
         <div class="sc-trace-caption"><strong id="sc-trace-title"></strong><span id="sc-trace-count"></span></div>
         <input type="range" id="sc-trace-scrub" class="form-range" min="0" max="1" value="0" aria-label="Surface-code UF step">
         <div class="sc-trace-buttons"><button class="btn" id="sc-trace-start">Start</button><button class="btn" id="sc-trace-back">Back</button><button class="btn" id="sc-trace-play" aria-pressed="false">Play</button><button class="btn btn-primary" id="sc-trace-next">Next</button><button class="btn btn-ghost" id="sc-trace-end">Final correction</button></div>
-        <div class="sc-trace-jumps"><span>Jump to</span><button class="btn btn-ghost" id="sc-jump-merge">First merge</button><button class="btn btn-ghost" id="sc-jump-reactivate">Reactivation</button><button class="btn btn-ghost" id="sc-jump-forest">Forest</button></div>
+        <div class="sc-trace-jumps"><span>Jump to</span><button class="btn btn-ghost" id="sc-jump-merge">First merge</button><button class="btn btn-ghost" id="sc-jump-reactivate">Next reactivation</button><button class="btn btn-ghost" id="sc-jump-forest">Forest</button></div>
         <div class="sc-trace-metrics" id="sc-trace-metrics"></div>
         <details class="sc-clusters"><summary>Live clusters and their stopping conditions</summary><div class="sc-table-scroll"><table><thead><tr><th scope="col">Cluster</th><th scope="col">Defects</th><th scope="col">Vertices</th><th scope="col">Growth</th></tr></thead><tbody id="sc-cluster-rows"></tbody></table></div><p class="sc-secondary">Counts refer to original defects in each cluster. Peeling updates the separate residual syndrome. Boundary contact permits a cluster to stop even with odd parity.</p></details>
       </div>
@@ -464,9 +510,9 @@ body{-webkit-font-smoothing:antialiased}button,select{line-height:1.35}.site-hea
     </aside>
   </div>
 
-  <div class="sc-example-story"><span class="eyebrow">THIS EXAMPLE</span><h2 id="sc-example-title"></h2><p id="sc-example-note"></p></div>
+  <div class="sc-example-story"><span class="eyebrow">WORKED EXPLANATION · DEFAULT BFS</span><h2 id="sc-example-title"></h2><p id="sc-example-note"></p><p class="sc-secondary" id="sc-forest-note" hidden>The explanation above uses default BFS. The diagrams and computed results use the selected forest.</p><div class="sc-companion" id="sc-companion" hidden><p id="sc-companion-note"></p><button class="btn" id="sc-open-companion">Open paired case</button></div></div>
 
-  <nav class="sc-section-nav" aria-label="Research tools"><a href="#sc-comparison">Logical-class comparison</a><a href="#sc-growth">Growth versus peeling</a><a href="#sc-catalog">All 15 examples</a><a href="#sc-sampling">Reproducible experiments</a></nav>
+  <nav class="sc-section-nav" aria-label="Research tools"><a href="#sc-comparison">Logical classes</a><a href="#sc-confidence">Exact confidence</a><a href="#sc-growth">Growth versus peeling</a><a href="#sc-neighbors">One-qubit sensitivity</a><a href="#sc-catalog" id="sc-catalog-link">All examples</a><a href="#sc-sampling">Reproduce a case</a></nav>
 
   <section class="sc-research-section" id="sc-comparison" aria-label="Exact logical-class comparison">
     <div class="section-heading"><div><div class="eyebrow">EXACT UNIT-WEIGHT REFERENCE</div><h2>Compare the two logical classes</h2></div><div class="sc-reference-toggle" role="group" aria-label="Reference diagram"><button class="btn" data-sc-reference="correction" aria-pressed="true">Corrections C₀, C₁</button><button class="btn" data-sc-reference="residual" aria-pressed="false">Residuals CᵢE</button></div></div>
@@ -479,10 +525,27 @@ body{-webkit-font-smoothing:antialiased}button,select{line-height:1.35}.site-hea
     <details class="sc-method"><summary>What the exact reference computes</summary><div><p>For each correction class, minimize |Cᵢ| subject to H<sub>X</sub>cᵢ = s and |Cᵢ ∩ X̄| mod 2 = bᵢ. The two parities differ by one. A row-by-row dynamic program enumerates every allowed horizontal assignment while tracking the vertical frontier and logical parity. It retains one minimum-weight witness and counts all minimum-weight corrections in each class.</p><p>This is an exact reference for this finite, unit-weight graph, implemented without Blossom. It is not maximum-likelihood class decoding, which would sum probabilities over every error in a class. The “success” labels use E after the solve, only as simulation ground truth. Tied witnesses use a fixed traversal order.</p><p id="sc-reference-check" class="sc-secondary"></p></div></details>
   </section>
 
+  <section class="sc-research-section" id="sc-confidence" aria-label="Exact conditional logical confidence">
+    <div class="section-heading"><div><div class="eyebrow">BEYOND THE SHORTEST CORRECTION</div><h2>Count every compatible error</h2></div><span class="model-tag">Exact on this [[41, 1, 5]] patch</span></div>
+    <p class="sc-section-intro">A class contains many errors of different weights. Under independent Z noise, sum their probabilities to obtain P(class | syndrome). Here C₀ and C₁ label the entire classes containing the reference corrections. The error E and the UF correction stay fixed as you change the assumed noise rate.</p>
+    <div class="sc-prior-controls"><div><label class="form-label" for="sc-confidence-p">Assumed per-qubit Z error probability p (%)</label><div class="sc-prior-input"><input class="form-range" id="sc-confidence-p" type="range" min="0" max="50" step="0.1" value="10"><input class="form-control" id="sc-confidence-number" type="number" min="0" max="50" step="any" value="10" aria-label="Assumed Z error probability in percent"></div></div><div class="sc-prior-shortcuts" role="group" aria-label="Noise-rate examples"><button class="btn" data-sc-prior="0.01">1%</button><button class="btn" data-sc-prior="0.10">10%</button><button class="btn" data-sc-prior="0.15">15%</button><button class="btn" data-sc-prior="0.50">50%</button></div></div>
+    <div class="sc-confidence-layout"><div class="sc-confidence-readout"><div class="sc-probability-row"><span><i class="sc-class-zero"></i>C₀ · UF’s class</span><strong id="sc-confidence-zero"></strong></div><div class="sc-probability-row"><span><i class="sc-class-one"></i>C₁ · opposite class</span><strong id="sc-confidence-one"></strong></div><div class="sc-probability-bar" aria-hidden="true"><span id="sc-confidence-bar-zero"></span><span id="sc-confidence-bar-one"></span></div><p class="sc-confidence-formula">P(UF failure | s, p) = P(C₁ | s, p)</p><p id="sc-confidence-decision" role="status"></p><p class="sc-secondary" id="sc-confidence-truth"></p><p class="sc-secondary" id="sc-confidence-llr"></p></div><figure class="sc-confidence-figure"><svg id="sc-confidence-curve" role="img" aria-labelledby="sc-confidence-curve-title sc-confidence-curve-desc"><title id="sc-confidence-curve-title">Conditional UF failure probability versus assumed noise rate</title><desc id="sc-confidence-curve-desc"></desc><g id="sc-confidence-curve-drawing"></g></svg><figcaption>This is a probability conditioned on one fixed syndrome, not a logical-error-rate curve over sampled shots. At p = 50%, the two classes are equally likely.</figcaption></figure></div>
+    <p class="sc-confidence-status" id="sc-confidence-status"></p>
+    <details class="sc-method"><summary>Exact weight spectrum and probability calculation</summary><div><p>For class b, A<sub>b,k</sub> is the number of syndrome-compatible errors of weight k. The class mass is M<sub>b</sub>(p) = Σ<sub>k</sub> A<sub>b,k</sub> p<sup>k</sup>(1 − p)<sup>41−k</sup>, and P(b | s, p) = M<sub>b</sub> / (M₀ + M₁). Each class contains exactly 2²⁰ = 1,048,576 distinct errors. A row-frontier calculation counts every weight; it does not truncate to the minima.</p><p>These posteriors are exact for the assumed independent-Z, perfect-syndrome model. They are not calibrated confidence for circuit noise, correlated faults, or a fixed-weight sampler. A probability describes uncertainty before E is revealed; the displayed shot’s success or failure is a separate, definite fact.</p><div class="sc-table-scroll sc-spectrum-scroll"><table><caption>All weights in the current syndrome’s two classes</caption><thead><tr><th scope="col">Weight k</th><th scope="col">Count A₀,k</th><th scope="col">Count A₁,k</th><th scope="col">P(C₀, k | s)</th><th scope="col">P(C₁, k | s)</th></tr></thead><tbody id="sc-spectrum-rows"></tbody></table></div></div></details>
+  </section>
+
   <section class="sc-research-section" id="sc-growth" aria-label="Growth and peeling comparison">
     <div class="section-heading"><div><div class="eyebrow">LOCATE THE DECISION</div><h2>Growth versus peeling</h2></div><button class="btn" id="sc-inspect-growth">Inspect the final grown region</button></div>
     <div class="sc-diagnosis"><h3 id="sc-growth-title"></h3><p id="sc-growth-note"></p></div>
     <div class="sc-growth-layout"><div><div class="sc-table-scroll"><table><caption>Allowed support and correction weight</caption><thead><tr><th scope="col">Logical class</th><th scope="col">Full patch</th><th scope="col">Grown edges only</th></tr></thead><tbody id="sc-growth-rows"></tbody></table></div><p class="sc-secondary">“Impossible” is an exact feasibility result: no syndrome-consistent correction in that class fits within the fully grown edges. Half-grown edges are excluded.</p><div class="sc-cost-note" id="sc-cost-note"></div></div><div><div class="sc-table-scroll"><table><caption>Same growth, different peeling forests</caption><thead><tr><th scope="col">Forest</th><th scope="col">|C|</th><th scope="col">Recovery for E</th><th scope="col">Select</th></tr></thead><tbody id="sc-forest-rows"></tbody></table></div><p class="sc-secondary">Changing this selection updates the entire lab. Each forest uses the same fully grown support. A longer correction can still be in the successful logical class.</p><p class="sc-secondary" id="sc-run-metrics"></p></div></div>
+  </section>
+
+  <section class="sc-research-section" id="sc-neighbors" aria-label="One-qubit sensitivity analysis">
+    <div class="section-heading"><div><div class="eyebrow">CONTROLLED PERTURBATIONS</div><h2>What can one qubit change?</h2></div><button class="btn" id="sc-scan-neighbors">Scan all 41 one-qubit toggles</button></div>
+    <p class="sc-section-intro">Toggle each physical Z error once, then decode the new syndrome from scratch. Compare logical outcomes and count how many correction edges change. A local syndrome change can produce a nonlocal decoding decision.</p>
+    <p id="sc-neighbor-status" class="sc-secondary" role="status">The scan exhausts the 41 neighbors of the current E. These are controlled cases, not probability-weighted samples.</p>
+    <div id="sc-neighbor-results" hidden><div class="sc-neighbor-toolbar"><p id="sc-neighbor-summary"></p><div><label class="form-label" for="sc-neighbor-filter">Show neighbors</label><select id="sc-neighbor-filter" class="form-select"><option value="flips">Logical outcome changes</option><option value="all">All 41 toggles</option></select></div></div><div class="sc-table-scroll sc-neighbor-scroll"><table><thead><tr><th scope="col">Toggle</th><th scope="col">New |E|</th><th scope="col">New |C|</th><th scope="col">Changed C edges</th><th scope="col">New outcome</th><th scope="col">Explore</th></tr></thead><tbody id="sc-neighbor-rows"></tbody></table></div><p class="sc-secondary">Changed correction edges means |C ⊕ C′|. The closed residual change is q ⊕ C ⊕ C′; its logical parity says whether the outcome flips. This diagnostic uses simulated E.</p></div>
+    <button class="btn" id="sc-restore-neighbor" hidden>Restore scan’s original error</button>
   </section>
 
   <section class="sc-witness" aria-label="Logical and stabilizer decomposition">
@@ -501,13 +564,13 @@ body{-webkit-font-smoothing:antialiased}button,select{line-height:1.35}.site-hea
   </section>
 
   <section class="sc-research-section" id="sc-catalog" aria-label="Worked example catalog">
-    <div class="section-heading"><div><div class="eyebrow">15 WORKED CASES</div><h2>Explore a specific failure mechanism</h2></div><div><label class="form-label" for="sc-category">Filter examples</label><select id="sc-category" class="form-select"><option value="all">All concepts</option></select></div></div>
+    <div class="section-heading"><div><div class="eyebrow" id="sc-catalog-count">WORKED CASES</div><h2>Explore a specific failure mechanism</h2></div><div><label class="form-label" for="sc-category">Filter examples</label><select id="sc-category" class="form-select"><option value="all">All concepts</option></select></div></div>
     <p class="sc-section-intro">Weights and outcomes in this catalog use the default BFS forest. Open a case to compare alternative forests and exact logical classes.</p><div class="sc-table-scroll"><table class="sc-catalog-table"><thead><tr><th scope="col">Example</th><th scope="col">Concept</th><th scope="col">|E|</th><th scope="col">Defects</th><th scope="col">BFS outcome</th><th scope="col">Explore</th></tr></thead><tbody id="sc-catalog-rows"></tbody></table></div>
   </section>
 
   <section class="sc-research-section" id="sc-sampling" aria-label="Reproducible error experiments">
     <div class="section-heading"><div><div class="eyebrow">REPRODUCIBLE EXPERIMENTS</div><h2>Generate and preserve an error pattern</h2></div></div>
-    <div class="sc-sampling-grid"><form id="sc-sample-form" class="sc-sample-form"><div><label class="form-label" for="sc-sample-mode">Sampling model</label><select class="form-select" id="sc-sample-mode"><option value="iid">Independent Z errors</option><option value="fixed">Fixed-weight Z errors</option></select></div><div><label class="form-label" for="sc-seed">Random seed</label><input class="form-control" id="sc-seed" type="number" min="0" max="4294967295" step="1" value="89" required></div><div id="sc-probability-field"><label class="form-label" for="sc-probability">Per-qubit probability p</label><input class="form-control" id="sc-probability" type="number" min="0" max="1" step="any" value="0.1" required></div><div id="sc-weight-field" hidden><label class="form-label" for="sc-sample-weight">Number of errors</label><input class="form-control" id="sc-sample-weight" type="number" min="0" max="41" step="1" value="7" required disabled></div><div class="sc-sample-actions"><button class="btn btn-primary" type="submit">Generate error</button><button class="btn" type="button" id="sc-next-seed">Next seed</button></div></form><div class="sc-preserve"><h3>Keep the exact experiment</h3><p>Export E, syndrome, UF correction, CE = LS, both exact references, growth support, and all three forest outcomes. A case link preserves the error, forest, and diagram view.</p><div><button class="btn" id="sc-export">Export JSON</button><button class="btn" id="sc-share">Create case link</button></div><label class="form-label" for="sc-share-url" id="sc-share-label" hidden>Case link · select and copy</label><input class="form-control" id="sc-share-url" type="text" readonly hidden></div></div>
+    <div class="sc-sampling-grid"><form id="sc-sample-form" class="sc-sample-form"><div><label class="form-label" for="sc-sample-mode">Sampling model</label><select class="form-select" id="sc-sample-mode"><option value="iid">Independent Z errors</option><option value="fixed">Fixed-weight Z errors</option></select></div><div><label class="form-label" for="sc-seed">Random seed</label><input class="form-control" id="sc-seed" type="number" min="0" max="4294967295" step="1" value="89" required></div><div id="sc-probability-field"><label class="form-label" for="sc-probability">Per-qubit probability p</label><input class="form-control" id="sc-probability" type="number" min="0" max="1" step="any" value="0.1" required></div><div id="sc-weight-field" hidden><label class="form-label" for="sc-sample-weight">Number of errors</label><input class="form-control" id="sc-sample-weight" type="number" min="0" max="41" step="1" value="7" required disabled></div><div class="sc-sample-actions"><button class="btn btn-primary" type="submit">Generate error</button><button class="btn" type="button" id="sc-next-seed">Next seed</button></div></form><div class="sc-preserve"><h3>Keep the exact experiment</h3><p>Export E, syndrome, UF correction, CE = LS, exact references, full weight spectra, posterior probabilities, and any sensitivity scan. A case link preserves the error, forest, diagram view, and confidence prior.</p><div><button class="btn" id="sc-export">Export JSON</button><button class="btn" id="sc-share">Create case link</button></div><label class="form-label" for="sc-share-url" id="sc-share-label" hidden>Case link · select and copy</label><input class="form-control" id="sc-share-url" type="text" readonly hidden></div></div>
     <p id="sc-sample-status" class="sc-equivalence-status" role="status">Seeds produce the same error pattern on every device. Each generation is one shot; this is not a logical-error-rate estimate.</p>
     <details class="sc-method"><summary>Sampling and reproducibility details</summary><div><p>Independent sampling draws one Bernoulli(p) Z error per data qubit. Fixed-weight sampling selects a subset without replacement; it conditions the weight and is not an independent noise model. The deterministic 32-bit generator uses state ← (1664525 · state + 1013904223) mod 2³². Fixed-weight samples use a Fisher–Yates shuffle in descending qubit order.</p><p>These experiments model a single perfect-syndrome round. They contain no measurement faults, circuit propagation, temporal correlations, or X/Y errors. Curated examples are selected to illustrate mechanisms and cannot establish comparative decoder error rates.</p></div></details>
   </section>
@@ -517,7 +580,7 @@ body{-webkit-font-smoothing:antialiased}button,select{line-height:1.35}.site-hea
     <details><summary>Geometry, boundaries, and model limits</summary><div><p>This is an unrotated distance-5 planar CSS code. Its 41 data qubits lie on edges. The 20 measured X checks sit at non-boundary vertices; the 20 Z stabilizers surround faces. Boundary faces have weight 3. The left and right boundaries are rough, allowing Z chains to terminate without a measured endpoint.</p><p>The example uses only Pauli Z errors, perfect syndrome extraction, uniform unit-cost UF growth, and deterministic BFS, reverse-BFS, or DFS peeling forests. It models one recovery round, without measurement errors, circuit faults, correlations, or time. Outcomes here are exact for the displayed error pattern, not a measured logical error rate.</p><p>Both check matrices have rank 20 and H<sub>X</sub>H<sub>Z</sub><sup>T</sup> = 0, leaving 41 − 20 − 20 = 1 logical qubit. The displayed Z̄ and X̄ overlap on one data qubit and anticommute.</p></div></details>
     <details><summary>Is the physical correction actually applied?</summary><div><p>The display treats C as a Pauli operator for bookkeeping. A controller can instead track C in a Pauli frame and interpret later operations or measurements accordingly. The logical success criterion is still whether the tracked correction and actual error differ by a stabilizer.</p><p>In a real run, the decoder does not know E and cannot use this simulation’s logical verdict. Memory experiments use suitable logical preparation and final readout to assess outcomes; syndrome checks alone do not reveal an arbitrary encoded state.</p></div></details>
   </section>
-  <div class="sc-references"><span>References</span><a href="https://arxiv.org/abs/1208.0928" target="_blank" rel="noopener">Fowler et al. · Surface codes</a><a href="https://arxiv.org/abs/1709.06218" target="_blank" rel="noopener">Delfosse &amp; Nickerson · Union-Find decoding</a><a href="#walkthrough">Open the detailed UF walkthrough →</a></div>
+  <div class="sc-references"><span>References</span><a href="https://arxiv.org/abs/1208.0928" target="_blank" rel="noopener">Fowler et al. · Surface codes</a><a href="https://arxiv.org/abs/1709.06218" target="_blank" rel="noopener">Delfosse &amp; Nickerson · Union-Find decoding</a><a href="https://arxiv.org/abs/1405.4883" target="_blank" rel="noopener">Bravyi et al. · Maximum-likelihood decoding</a><a href="#walkthrough">Open the detailed UF walkthrough →</a></div>
 </section>
 <div id="uf-decoder-lesson" hidden>
   
@@ -1382,6 +1445,20 @@ const {makeGraph,run,presets,minimumCorrection}=globalThis.__ufLessonModel;
     return ids.slice(0,weight).sort((a,b)=>a-b);
   }
 
+  // Counterfactual single-qubit toggles. These are an exhaustive local probe,
+  // not a stochastic sample or an error-rate estimate. UF sees only the new s.
+  function neighbors(patch,data,forestStrategy='bfs') {
+    return patch.edges.map(edge=>{
+      const error=xor(data.error,[edge.id]),next=decode(patch,error,forestStrategy);
+      const changedCorrection=xor(data.correction,next.correction);
+      const residualChange=xor([edge.id],changedCorrection),difference=decompose(patch,residualChange);
+      if(!difference.closed||difference.logical!==(data.result.logical^next.result.logical))throw new Error('Neighbor residual identity failed.');
+      return {qubit:edge.id,operation:data.error.includes(edge.id)?'remove':'add',error,correction:next.correction,
+        residual:next.residual,logical:next.result.logical,changedCorrection,residualChange,
+        outcomeChanged:next.result.logical!==data.result.logical,defects:next.observed.reduce((a,b)=>a+b,0)};
+    });
+  }
+
   function examples(patch) {
     const h=(x,y)=>patch.edge('h',x,y),v=(x,y)=>patch.edge('v',x,y);
     const m=Math.floor(patch.d/2),right=Array.from({length:patch.d-m},(_,i)=>h(m+i,m));
@@ -1407,20 +1484,169 @@ const {makeGraph,run,presets,minimumCorrection}=globalThis.__ufLessonModel;
       {id:'forest-choice',group:'Growth and peeling',name:'12 · Forest choice changes the logical class',error:[3,16,27,29,30,33,38],title:'The same grown region can support both logical outcomes.',note:'Default BFS and reverse BFS fail on this error; DFS succeeds. Both logical classes have a global minimum correction of weight five, but with different numbers of minimum-weight representatives. A zero weight gap does not specify a probability of logical failure.'},
       {id:'growth-trap',group:'Growth and peeling',name:'13 · Growth excludes the correct class',error:[1,3,10,13,23,30,39],title:'Changing the peeling forest cannot repair this grown region.',note:'Eleven defects lead UF to a weight-eight correction in the wrong logical class. The full patch admits successful weight-seven corrections, but none in that class fit inside the fully grown edges. Every correction confined to this grown region therefore fails for this E.'},
       {id:'uf-wins',group:'Decoder disagreements',name:'14 · UF succeeds, minimum weight fails',error:[9,13,15,23,34,40],title:'Minimum weight is a decision rule, not a guarantee for each shot.',note:'Default BFS UF succeeds using six edges. Every globally minimum-weight correction has five edges and fails for this particular E. This selected counterexample says nothing about which decoder has the better average logical error rate.'},
-      {id:'dense',group:'Decoder disagreements',name:'15 · Dense syndrome and degenerate minima',error:[3,8,11,16,20,35,39],title:'Many shortest representatives can share a logical class.',note:'Eleven defects interact through repeated mergers. Both classes have minimum weight seven, with 16 and 4 distinct minimum-weight corrections. Default BFS fails while DFS succeeds. Compare their residuals, and distinguish minimum-weight multiplicity from a full class likelihood.'}
+      {id:'dense',group:'Decoder disagreements',name:'15 · Dense syndrome and degenerate minima',error:[3,8,11,16,20,35,39],title:'Many shortest representatives can share a logical class.',note:'Eleven defects interact through repeated mergers. Both classes have minimum weight seven, with 16 and 4 distinct minimum-weight corrections. Default BFS fails while DFS succeeds. Compare their residuals, and distinguish minimum-weight multiplicity from a full class likelihood.'},
+      {"id":"likelihood-crossover","group":"Likelihood and confidence","name":"16 · Minimum weight and likelihood disagree","error":[7,10,12,14,19,37,40],"title":"The more likely logical class can change with the noise model.","note":"UF returns the unique weight-five correction, but this error leaves CE = Z̄S20. The opposite class starts at weight six with eight representatives. Summing every syndrome-consistent chain changes the preferred class near p = 0.11052: UF’s class has probability 52.27% at p = 0.10, but 44.61% at p = 0.15. These are conditional probabilities under independent Z errors, not an observed failure flag.","partner":"likelihood-companion","partnerNote":"The paired case has the same syndrome, correction, and confidence, but the opposite actual outcome."},
+      {"id":"likelihood-companion","group":"Likelihood and confidence","name":"17 · Same syndrome and confidence, exact recovery","error":[7,11,13,24,37],"title":"Identical decoder information can accompany opposite actual outcomes.","note":"This error equals the correction from Example 16, so CE = I. Both examples have exactly the same measured syndrome, UF trace, correction, class weights, and conditional likelihoods. Only the ground-truth error changes. A confidence estimate does not reveal which error actually occurred.","partner":"likelihood-crossover","partnerNote":"The paired case has the same syndrome, correction, and confidence, but the opposite actual outcome."},
+      {"id":"perturb-before","group":"One-qubit perturbation","name":"18 · Before one added error: logical failure","error":[19,21,38,39],"title":"A four-error configuration sits at a decoder decision boundary.","note":"UF returns C = {q17, q18, q20, q39}, leaving a nontrivial logical operator. Both global correction classes have minimum weight four, but only the failing class is available inside the grown support. Compare Example 19, which adds only q16.","partner":"perturb-after","partnerNote":"The paired case changes only q16. Watch how the selected correction changes on five edges."},
+      {"id":"perturb-after","group":"One-qubit perturbation","name":"19 · Add q16: recovery becomes successful","error":[16,19,21,38,39],"title":"Adding one error can change the selected correction on several qubits.","note":"Relative to Example 18, adding q16 leaves the error’s fixed-cut parity unchanged but changes the syndrome. UF now returns {q19, q37, q39}; five correction edges change, its weight falls from four to three, and CE = S17. This selected pair demonstrates a nonmonotonic per-shot outcome, not an improvement from adding noise.","partner":"perturb-before","partnerNote":"The paired case changes only q16. Watch how the selected correction changes on five edges."},
+      {"id":"all-checks","group":"Boundary and dense syndromes","name":"20 · Every measured check is violated","error":[1,3,6,8,11,13,16,18,21,23],"title":"A dense syndrome can finish growth in a single round.","note":"All 20 X checks are defects, so neighboring active clusters rapidly join and become even. Growth ends after one half-edge tick. UF succeeds with a weight-ten correction. Its class contains 95 weight-ten minima; the opposite class starts at weight eleven with 323 minima. Defect count and minimum-representative count are each incomplete descriptions of confidence or decoder work."},
+      {"id":"boundary-fronts","group":"Boundary and dense syndromes","name":"21 · Ten rough-boundary contacts","error":[0,4,5,9,10,14,15,19,20,24],"title":"The same boundary roots can produce different correction costs.","note":"Five defects lie beside each rough boundary. The default multi-source BFS forest uses ten boundary edges; DFS pairs some defects internally and uses six correction edges on the same grown support. Both yield logical success. Compare the forests to see why touching opposite rough boundaries in separate components does not make a logical crossing."},
+      {"id":"delayed-reactivation","group":"Growth and peeling","name":"22 · Delayed reactivation across four growth ticks","error":[7,8,18,19,22,26,29],"title":"An even cluster can wait before a later odd merger restarts it.","note":"The BD cluster becomes even at tick one and stays inactive through tick two. It absorbs A at tick three, becomes odd, and resumes growth. The full trace ends growth at tick four. Default BFS uses eleven correction edges although both global classes have weight-seven minima; DFS selects the opposite logical class and fails for this E."},
+      {"id":"equal-weight-success","group":"Indistinguishable errors","name":"23 · Equal-weight pair: logical success","error":[9,13,16,21,26,33],"title":"The syndrome and error weight do not determine the actual outcome.","note":"This six-qubit error and Example 24 create exactly the same nine defects. UF returns the same six-qubit correction for both. Here CE = S12 and recovery succeeds. Both classes have weight-six minima, with four representatives in UF’s class and three in the opposite class.","partner":"equal-weight-failure","partnerNote":"The paired error has the same weight and syndrome. UF cannot distinguish the two actual logical outcomes."},
+      {"id":"equal-weight-failure","group":"Indistinguishable errors","name":"24 · Equal-weight pair: logical failure","error":[10,12,21,26,32,34],"title":"An equally heavy, indistinguishable error changes CE to a logical operator.","note":"This error has the same weight and syndrome as Example 23. The decoder and its confidence cannot distinguish the pair. The identical UF correction now leaves CE = Z̄S10. Switching to DFS reverses which member of this pair is recovered successfully.","partner":"equal-weight-success","partnerNote":"The paired error has the same weight and syndrome. UF cannot distinguish the two actual logical outcomes."}
     ];
   }
-  globalThis.__surfaceModel={makePatch,syndrome,decompose,decode,examples,xor,cutParity,minimumCorrections,analyze,sample};
+  globalThis.__surfaceModel={makePatch,syndrome,decompose,decode,examples,xor,cutParity,minimumCorrections,analyze,sample,neighbors};
+})();
+
+</script>
+<script>
+/* Exact logical-class weight spectra for the canonical unrotated planar patch.
+ * Supported geometry: __surfaceModel.makePatch(3) or makePatch(5), with the
+ * canonical middle-column Xbar cut. This is a bounded teaching/reference solver,
+ * not a scalable decoder or a calibrated confidence for circuit-level noise.
+ *
+ * A_b[w] counts ALL Z chains of weight w with the supplied measured syndrome
+ * and absolute cut parity b. Each class contains exactly 2^(d(d-1)) chains.
+ * Counts are exact integers <= 2^20; no actual error or UF trace is consulted.
+ * posterior() assumes independent, identically distributed data-qubit Z errors
+ * and perfect checks. Its referenceParity is the UF correction's cut parity;
+ * matching that parity means CE is a stabilizer, regardless of its weight.
+ */
+(() => {
+  'use strict';
+  const MODEL='iid-z-perfect-syndrome';
+  const METHOD='exact row-frontier weight-enumerator dynamic programming';
+
+  function validatePatch(patch) {
+    if(!patch || ![3,5].includes(patch.d)) throw new Error('Exact spectra support canonical planar patches of distance 3 or 5.');
+    const d=patch.d,m=d*(d-1),n=d*d+(d-1)*(d-1);
+    if(patch.n!==n || !Array.isArray(patch.nodes) || patch.nodes.length!==m+2*d || !Array.isArray(patch.edges) || patch.edges.length!==n) throw new Error('Invalid planar-patch geometry.');
+    const node=(col,row)=>col===0?m+row:col===d?m+d+row:row*(d-1)+col-1;
+    for(let row=0;row<d;row++) for(let col=0;col<=d;col++) {
+      const id=node(col,row),v=patch.nodes[id];
+      if(!v || v.id!==id || v.col!==col || v.row!==row || v.boundary!==(col===0||col===d)) throw new Error('Spectra require canonical planar-patch node ordering.');
+    }
+    const checkEdge=(id,kind,col,row,a,b)=>{
+      const e=patch.edges[id];
+      if(!e || e.id!==id || e.kind!==kind || e.col!==col || e.row!==row || !((e.a===a&&e.b===b)||(e.a===b&&e.b===a))) throw new Error('Spectra require canonical planar-patch edge ordering.');
+    };
+    for(let row=0;row<d;row++) for(let col=0;col<d;col++) checkEdge(row*d+col,'h',col,row,node(col,row),node(col+1,row));
+    for(let row=0;row<d-1;row++) for(let col=1;col<d;col++) checkEdge(d*d+row*(d-1)+col-1,'v',col,row,node(col,row),node(col,row+1));
+    const cut=Array.from({length:d},(_,row)=>row*d+Math.floor(d/2));
+    if(!Array.isArray(patch.logicalX) || patch.logicalX.length!==d || new Set(patch.logicalX).size!==d || !cut.every(id=>patch.logicalX.includes(id))) throw new Error('Spectra require the canonical middle-column logical X cut.');
+    return {d,m,n};
+  }
+
+  function spectrum(patch,bits) {
+    const {d,m,n}=validatePatch(patch);
+    if((!Array.isArray(bits)&&!ArrayBuffer.isView(bits)) || bits.length!==patch.nodes.length) throw new Error('Supply one binary syndrome entry per patch node.');
+    const syndrome=Array.from(bits);
+    if(syndrome.some(b=>b!==0&&b!==1) || syndrome.slice(m).some(Boolean)) throw new Error('Measured syndrome entries must be binary; virtual boundary entries must be zero.');
+    const width=1<<(d-1),states=2*width,allH=(1<<d)-1;
+    const pop=Array.from({length:1<<d},(_,value)=>{let count=0;for(;value;value&=value-1)count++;return count;});
+    // h_0=0 fixes one of two horizontal solutions. The other complements all
+    // d horizontal edges. At check j: h_(j-1) + h_j = s_j + up_j + down_j.
+    const horizontal=Array.from({length:width},(_,check)=>{
+      let h=0,bit=0;
+      for(let col=1;col<d;col++){bit^=(check>>(col-1))&1;h|=bit<<col;}
+      return h;
+    });
+    let polynomials=Array.from({length:states},()=>new Float64Array(n+1));
+    polynomials[0][0]=1;
+    let previousMax=0;
+    for(let row=0;row<d;row++) {
+      let rowSyndrome=0;
+      for(let col=0;col<d-1;col++) rowSyndrome|=syndrome[row*(d-1)+col]<<col;
+      const next=Array.from({length:states},()=>new Float64Array(n+1));
+      const downLimit=row===d-1?1:width;
+      for(let up=0;up<width;up++) for(let down=0;down<downLimit;down++) {
+        const base=horizontal[rowSyndrome^up^down];
+        for(const h of [base,base^allH]) {
+          const added=pop[h]+pop[down],cross=(h>>Math.floor(d/2))&1;
+          for(let parity=0;parity<2;parity++) {
+            const source=polynomials[2*up+parity],target=next[2*down+(parity^cross)];
+            for(let weight=0;weight<=previousMax;weight++) if(source[weight]) target[weight+added]+=source[weight];
+          }
+        }
+      }
+      previousMax+=d+(row===d-1?0:d-1);
+      polynomials=next;
+    }
+    const totalPerSector=2**m;
+    const sectors=[0,1].map(parity=>{
+      const counts=Array.from(polynomials[parity]),total=counts.reduce((a,b)=>a+b,0);
+      if(total!==totalPerSector || counts.some(c=>!Number.isSafeInteger(c)||c<0)) throw new Error('Exact spectrum failed its class-size invariant.');
+      const minimumWeight=counts.findIndex(Boolean);
+      return {parity,counts,total,minimumWeight,minimumCount:counts[minimumWeight]};
+    });
+    return {schemaVersion:1,model:MODEL,method:METHOD,d,n,syndrome,syndromeWeight:syndrome.reduce((a,b)=>a+b,0),totalPerSector,sectors};
+  }
+
+  function validateSpectrum(result) {
+    if(!result || result.schemaVersion!==1 || result.model!==MODEL || ![3,5].includes(result.d) || result.n!==result.d**2+(result.d-1)**2 || result.totalPerSector!==2**(result.d*(result.d-1)) || !Array.isArray(result.sectors) || result.sectors.length!==2) throw new Error('Supply a supported exact logical-class spectrum.');
+    const m=result.d*(result.d-1);
+    if(!Array.isArray(result.syndrome) || result.syndrome.length!==m+2*result.d || Array.from(result.syndrome).some(b=>b!==0&&b!==1) || result.syndrome.slice(m).some(Boolean) || result.syndromeWeight!==result.syndrome.reduce((a,b)=>a+b,0)) throw new Error('Invalid spectrum syndrome.');
+    for(let parity=0;parity<2;parity++) {
+      const sector=result.sectors[parity];
+      if(!sector || sector.parity!==parity || !Array.isArray(sector.counts) || sector.counts.length!==result.n+1 || Array.from(sector.counts).some(c=>!Number.isSafeInteger(c)||c<0) || sector.total!==result.totalPerSector || sector.counts.reduce((a,b)=>a+b,0)!==result.totalPerSector) throw new Error('Invalid exact spectrum counts.');
+    }
+  }
+
+  // log(sum(exp(x))) avoids underflow when a rare observed syndrome has an
+  // extremely small unconditional probability. Return null for true log(0),
+  // so the result remains valid and unambiguous in exported JSON.
+  function logSum(values) {
+    if(!values.length) return null;
+    const maximum=Math.max(...values);
+    return maximum+Math.log(values.reduce((sum,value)=>sum+Math.exp(value-maximum),0));
+  }
+
+  // sector.logMass = ln P(syndrome, absolute parity), before normalization.
+  // logLikelihoodRatio = ln P(UF succeeds | s) / P(UF fails | s).
+  // Positive LLR favors the UF class. This is conditional model confidence,
+  // never a claim that the known simulated error in this shot was corrected.
+  function posterior(result,p,referenceParity) {
+    validateSpectrum(result);
+    if(!Number.isFinite(p) || p<0 || p>.5) throw new Error('Use an iid Z-error probability from 0 to 0.5.');
+    if(referenceParity!==0&&referenceParity!==1) throw new Error('The reference correction parity must be 0 or 1.');
+    const notes=[];
+    if(p===0&&result.syndromeWeight>0) {
+      return {available:false,p,referenceParity,sectors:[0,1].map(parity=>({parity,probability:null,logMass:null})),ufSuccessProbability:null,ufFailureProbability:null,logLikelihoodRatio:null,syndromeProbability:0,logSyndromeProbability:null,notes:['This nonzero syndrome has probability zero at p = 0, so conditioning on it is undefined. Null log masses represent log(0).']};
+    }
+    if(p===0) {
+      return {available:true,p,referenceParity,sectors:[{parity:0,probability:1,logMass:0},{parity:1,probability:0,logMass:null}],ufSuccessProbability:referenceParity===0?1:0,ufFailureProbability:referenceParity===0?0:1,logLikelihoodRatio:null,syndromeProbability:1,logSyndromeProbability:0,notes:[`At p = 0 only the identity error occurs. The log-likelihood ratio is ${referenceParity===0?'positive':'negative'} infinity; it is exported as null. The null sector log mass represents log(0).`]};
+    }
+    if(p===.5) {
+      const logSyndromeProbability=-result.d*(result.d-1)*Math.LN2;
+      return {available:true,p,referenceParity,sectors:[0,1].map(parity=>({parity,probability:.5,logMass:logSyndromeProbability-Math.LN2})),ufSuccessProbability:.5,ufFailureProbability:.5,logLikelihoodRatio:0,syndromeProbability:2**(-result.d*(result.d-1)),logSyndromeProbability,notes:['At p = 0.5 every error chain is equally likely. The two logical classes have equal size and equal posterior probability.']};
+    }
+    const logP=Math.log(p),logQ=Math.log1p(-p);
+    const masses=result.sectors.map(sector=>logSum(sector.counts.flatMap((count,weight)=>count?[Math.log(count)+weight*logP+(result.n-weight)*logQ]:[])));
+    const logSyndromeProbability=logSum(masses);
+    // Normalize by a two-term logistic expression. This retains the smaller
+    // probability when the larger one rounds to one in floating-point output.
+    const delta=masses[1]-masses[0],ratio=Math.exp(-Math.abs(delta));
+    const smaller=ratio/(1+ratio),larger=1/(1+ratio);
+    const probabilities=delta>=0?[smaller,larger]:[larger,smaller];
+    const syndromeProbability=Math.exp(logSyndromeProbability);
+    if(syndromeProbability===0) notes.push('The syndrome probability underflows floating-point output; its finite log probability is retained.');
+    if(probabilities.some(value=>value===0)) notes.push('A positive class probability underflows floating-point output; finite log masses and the log-likelihood ratio are retained.');
+    return {available:true,p,referenceParity,sectors:[0,1].map(parity=>({parity,probability:probabilities[parity],logMass:masses[parity]})),ufSuccessProbability:probabilities[referenceParity],ufFailureProbability:probabilities[referenceParity^1],logLikelihoodRatio:masses[referenceParity]-masses[referenceParity^1],syndromeProbability,logSyndromeProbability,notes};
+  }
+
+  globalThis.__surfaceConfidence={spectrum,posterior};
 })();
 
 </script>
 <script>
 (() => {
   'use strict';
-  const M=globalThis.__surfaceModel, patch=M.makePatch(5), presets=M.examples(patch);
+  const M=globalThis.__surfaceModel, F=globalThis.__surfaceConfidence, patch=M.makePatch(5), presets=M.examples(patch);
   const root=document.getElementById('logical-lab'), $=id=>document.getElementById('sc-'+id);
   const NS='http://www.w3.org/2000/svg';
-  let selected='growth-trap',error=presets.find(p=>p.id===selected).error.slice(),data,analysis;
+  let selected='likelihood-crossover',error=presets.find(p=>p.id===selected).error.slice(),data,analysis;
+  let confidenceP=.1,spectrum=null,spectrumKey='',posterior=null,neighborRows=null,neighborOrigin=null;
   let forestStrategy='bfs',referenceView='correction',sampleOrigin=null;
   let view='decomposition',editing=false,traceIndex=0,timer=null,frames=[];
   const viewButtons=[...root.querySelectorAll('[data-sc-view]')];
@@ -1431,7 +1657,8 @@ const {makeGraph,run,presets,minimumCorrection}=globalThis.__ufLessonModel;
     trace:['Uniform-growth UF','Follow the same UF engine on this surface-code graph. The actual error is hidden: growth and peeling use only the syndrome and allowed boundaries.'],
     correction:['Decoder correction C','Green edges are the Z correction returned by UF. They reproduce the observed syndrome. Matching those check bits does not guarantee logical recovery.'],
     residual:['Product CE = E ⊕ C','Combine the two supports modulo 2. A qubit hit by both E and C cancels because Z² = I. The remaining operator has no measured syndrome.'],
-    decomposition:['CE = logical × stabilizer','Purple is the remaining operator. The dashed middle-row Z̄ and the shaded stabilizers multiply to it; shared edges cancel.']
+    decomposition:['CE = logical × stabilizer','Purple is the remaining operator. The dashed middle-row Z̄ and the shaded stabilizers multiply to it; shared edges cancel.'],
+    overlay:['Error and correction together','Orange is E only; green is C only. Dashed edges marked × are hit by both operators and cancel because Z² = I. The remaining orange and green edges form CE.']
   };
   function svgEl(parent,tag,attrs={},text) {
     const e=document.createElementNS(NS,tag);
@@ -1450,7 +1677,7 @@ const {makeGraph,run,presets,minimumCorrection}=globalThis.__ufLessonModel;
     svg.setAttribute('viewBox',`0 0 ${width} ${height}`);svg.setAttribute('height',height);
     return {width,margin,top,dy,dx,height,narrow,pos:v=>({x:margin+v.col*dx,y:top+v.row*dy})};
   }
-  function drawPatch(svg,{chain=[],color='var(--foreground)',bits=[],faces=[],logical=false,cut=false,ids=false,edit=false,trace=null,mini=false}={}) {
+  function drawPatch(svg,{chain=[],color='var(--foreground)',bits=[],faces=[],logical=false,cut=false,ids=false,edit=false,trace=null,mini=false,edgeColors={},cancelled=[]}={}) {
     let drawing;
     if(svg===$('graph')) {drawing=$('drawing');drawing.replaceChildren();}
     else {svg.replaceChildren();drawing=svg;}
@@ -1493,11 +1720,15 @@ const {makeGraph,run,presets,minimumCorrection}=globalThis.__ufLessonModel;
       if(['forest','peel'].includes(trace.phase)) for(const id of trace.remaining) edgeLine(id,{stroke:'var(--foreground)','stroke-width':2,'stroke-dasharray':'5 4'});
     }
     if(logical) for(const id of patch.logicalZ) edgeLine(id,{stroke:colors.logical,'stroke-width':2,'stroke-dasharray':'5 4'},-5);
-    for(const id of chain) edgeLine(id,{stroke:color,'stroke-width':mini?4:5.5});
+    for(const id of chain) edgeLine(id,{stroke:edgeColors[id]||color,'stroke-width':mini?4:5.5,...(cancelled.includes(id)?{'stroke-dasharray':'3 5','stroke-width':2}:{} )});
     // Small ticks mark the data qubits; vertices are parity checks, not data qubits.
     for(const e of patch.edges) {
       const a=nodePos(e.a),b=nodePos(e.b),x=(a.x+b.x)/2,y=(a.y+b.y)/2,on=chain.includes(e.id);
-      if(!mini) svgEl(drawing,'circle',{cx:x,cy:y,r:edit?3.4:2.3,fill:on?color:'var(--muted-foreground)',opacity:on?1:.6});
+      if(cancelled.includes(e.id)){
+        svgEl(drawing,'circle',{cx:x,cy:y,r:7,fill:'var(--background)'});
+        line({x:x-3,y:y-3},{x:x+3,y:y+3},{stroke:'var(--muted-foreground)','stroke-width':1.5});
+        line({x:x-3,y:y+3},{x:x+3,y:y-3},{stroke:'var(--muted-foreground)','stroke-width':1.5});
+      }else if(!mini) svgEl(drawing,'circle',{cx:x,cy:y,r:edit?3.4:2.3,fill:on?(edgeColors[e.id]||color):'var(--muted-foreground)',opacity:on?1:.6});
       if(ids&&!mini) text(x+(e.kind==='v'?6:0),y+(e.kind==='v'?4:15),`q${e.id}`,{'text-anchor':e.kind==='v'?'start':'middle','font-size':11});
     }
     for(const v of patch.nodes) {
@@ -1512,7 +1743,7 @@ const {makeGraph,run,presets,minimumCorrection}=globalThis.__ufLessonModel;
     if(!mini) for(const e of patch.edges) {
       const a=nodePos(e.a),b=nodePos(e.b),horizontal=e.kind==='h';
       const hit=svgEl(drawing,'rect',{x:horizontal?a.x+7:a.x-9,y:horizontal?a.y-9:a.y+7,width:horizontal?b.x-a.x-14:18,height:horizontal?18:b.y-a.y-14,rx:3,fill:'transparent',...(edit?{class:'sc-edge-hit',role:'button',tabindex:0,'aria-label':`Toggle Z error on q${e.id}`,'aria-pressed':String(data.error.includes(e.id))}:{})});
-      svgEl(hit,'title',{},`q${e.id}${edit?': click to toggle a Z error':chain.includes(e.id)?': selected operator acts here':''}`);
+      svgEl(hit,'title',{},`q${e.id}${edit?': click to toggle a Z error':cancelled.includes(e.id)?': E and C both act; the two Z operators cancel':chain.includes(e.id)?': selected operator acts here':''}`);
       if(edit){hit.addEventListener('click',()=>toggleQubit(e.id));hit.addEventListener('keydown',event=>{if(event.key==='Enter'||event.key===' '){event.preventDefault();toggleQubit(e.id);const replacement=$('drawing').querySelector(`[aria-label="Toggle Z error on q${e.id}"]`);replacement?.focus();}});}
     }
   }
@@ -1534,6 +1765,11 @@ const {makeGraph,run,presets,minimumCorrection}=globalThis.__ufLessonModel;
     if(view==='correction'){Object.assign(params,{chain:data.correction,color:colors.correction,bits:data.observed});items=[['Correction C',colors.correction],['Input syndrome',null,'dot']];}
     if(view==='residual'){Object.assign(params,{chain:data.residual,color:colors.residual});items=[['Remaining CE',colors.residual]];}
     if(view==='decomposition'){Object.assign(params,{chain:data.residual,color:colors.residual,faces:data.result.stabilizers,logical:!!data.result.logical});items=[['CE',colors.residual],['Logical L',colors.logical,'dashed'],['Z stabilizer S',colors.stabilizer]];}
+    if(view==='overlay'){
+      const both=data.error.filter(q=>data.correction.includes(q)),chain=[...new Set([...data.error,...data.correction])];
+      Object.assign(params,{chain,bits:data.observed,cancelled:both,edgeColors:Object.fromEntries(chain.map(q=>[q,both.includes(q)?'var(--muted-foreground)':data.error.includes(q)?colors.error:colors.correction]))});
+      items=[['E only',colors.error],['C only',colors.correction],['Both · cancel','var(--muted-foreground)','dashed']];
+    }
     if(view==='trace'){Object.assign(params,{chain:frame.correction,color:colors.correction,bits:frame.bits,trace:frame,cut:false});items=[['Grown region','var(--viz-series-1)'],['Remaining forest','var(--foreground)','dashed'],['Correction C',colors.correction]];}
     if(params.cut)items.push(['X̄ reference',colors.cut,'dashed']);
     drawPatch($('graph'),params);legend(items);
@@ -1556,6 +1792,7 @@ const {makeGraph,run,presets,minimumCorrection}=globalThis.__ufLessonModel;
     drawPatch($('logical-factor'),{mini:true,chain:data.result.logical?patch.logicalZ:[],color:colors.residual,cut:true});
     drawPatch($('stabilizer-factor'),{mini:true,chain:data.result.stabilizerEdges,color:colors.stabilizer,faces:data.result.stabilizers});
     drawReferences();
+    drawConfidenceCurve();
   }
   function renderResult(){
     const r=data.result,sHTML=stabilizerHTML(r.stabilizers),logical=r.logical?'Z̄':'I';
@@ -1624,7 +1861,74 @@ const {makeGraph,run,presets,minimumCorrection}=globalThis.__ufLessonModel;
     }
     $('run-metrics').textContent=`${analysis.rounds} half-edge growth rounds · ${analysis.unions} unions · ${analysis.reactivations} round${analysis.reactivations===1?'':'s'} with reactivation · ${data.trace.fullEdges.length} fully grown edges.`;
   }
-  function changeForest(strategy){forestStrategy=strategy;$('forest').value=strategy;recompute({changed:$('example').value==='custom'});}
+  const percent=value=>value===null?'—':value>0&&value<.000001?(value*100).toExponential(2)+'%':(value*100).toFixed(2)+'%';
+  function drawConfidenceCurve(){
+    if(!spectrum||root.hidden)return;
+    const svg=$('confidence-curve'),g=$('confidence-curve-drawing');g.replaceChildren();
+    const width=Math.max(250,svg.getBoundingClientRect().width||520),height=260,left=44,right=16,top=29,bottom=42;
+    svg.setAttribute('viewBox',`0 0 ${width} ${height}`);svg.setAttribute('height',height);
+    const x=p=>left+p/.5*(width-left-right),y=p=>height-bottom-p*(height-top-bottom);
+    const label=(px,py,value,anchor='middle')=>svgEl(g,'text',{x:px,y:py,'text-anchor':anchor,fill:'var(--muted-foreground)','font-size':12},value);
+    for(const value of [0,.5,1]){svgEl(g,'line',{x1:left,y1:y(value),x2:width-right,y2:y(value),stroke:'var(--border)','stroke-dasharray':value===.5?'4 4':''});label(left-8,y(value)+4,Math.round(value*100)+'%','end');}
+    for(const p of [0,.1,.2,.3,.4,.5])label(x(p),height-bottom+20,Math.round(p*100)+'%');
+    label(left,15,'P(UF failure | s, p)','start');label((left+width-right)/2,height-3,'Assumed per-qubit Z error probability');
+    let path='',started=false;
+    for(let i=0;i<=100;i++){
+      const p=i/200,result=F.posterior(spectrum,p,analysis.parity);
+      if(!result.available){started=false;continue;}
+      path+=(started?' L ':'M ')+x(p).toFixed(2)+' '+y(result.ufFailureProbability).toFixed(2);started=true;
+    }
+    svgEl(g,'path',{d:path,fill:'none',stroke:'var(--viz-series-5)','stroke-width':2.5,'stroke-linejoin':'round'});
+    if(posterior?.available){
+      svgEl(g,'line',{x1:x(confidenceP),y1:top,x2:x(confidenceP),y2:height-bottom,stroke:'var(--muted-foreground)','stroke-dasharray':'3 5',opacity:.7});
+      const point=svgEl(g,'circle',{cx:x(confidenceP),cy:y(posterior.ufFailureProbability),r:5,fill:'var(--viz-series-5)',stroke:'var(--background)','stroke-width':2});
+      svgEl(point,'title',{},`p = ${percent(confidenceP)}: conditional failure probability ${percent(posterior.ufFailureProbability)}`);
+    }
+    $('confidence-curve-desc').textContent=`The input syndrome and UF correction are fixed. At assumed p = ${percent(confidenceP)}, conditional UF failure is ${posterior?.available?percent(posterior.ufFailureProbability):'undefined because the syndrome has zero probability'}. The horizontal dashed line marks 50%.`;
+  }
+  function renderConfidence(){
+    posterior=F.posterior(spectrum,confidenceP,analysis.parity);
+    $('confidence-p').value=confidenceP*100;$('confidence-number').value=Number((confidenceP*100).toPrecision(12));
+    $('confidence-zero').textContent=percent(posterior.ufSuccessProbability);$('confidence-one').textContent=percent(posterior.ufFailureProbability);
+    $('confidence-bar-zero').style.width=(posterior.available?posterior.ufSuccessProbability*100:50)+'%';
+    $('confidence-bar-one').style.width=(posterior.available?posterior.ufFailureProbability*100:50)+'%';
+    $('confidence-bar-zero').parentElement.classList.toggle('unavailable',!posterior.available);
+    const failure=posterior.ufFailureProbability;
+    $('confidence-decision').textContent=!posterior.available?'Undefined at p = 0: this nonzero syndrome has probability zero.':Math.abs(failure-.5)<1e-12?'The two logical classes are equally likely at this precision.':failure>.5?'The opposite class C₁ is more likely under this noise model.':'UF’s class C₀ is more likely under this noise model.';
+    $('confidence-truth').textContent=`For the displayed E, UF ${data.result.logical?'has a logical failure':'recovers successfully'}. This definite outcome does not change when the assumed p changes.`;
+    $('confidence-llr').textContent=!posterior.available?'Conditional log-likelihood ratio: undefined.':`ln[P(C₀ | s) / P(C₁ | s)] = ${posterior.logLikelihoodRatio===null?(posterior.ufSuccessProbability===1?'+∞':'−∞'):posterior.logLikelihoodRatio.toFixed(5)}. Positive values favor UF’s class.`;
+    $('confidence-status').textContent=!posterior.available?'Select p > 0 to condition on this syndrome.':analysis.gap>0&&failure>.5?'Minimum weight favors C₀, but the full probability sum favors C₁. The combined probability of higher-weight errors reverses the preference.':analysis.gap<0&&failure<.5?'Minimum weight favors C₁, but the full probability sum favors C₀. The most likely class need not contain the lightest individual error.':analysis.gap===0&&Math.abs(failure-.5)>1e-12?'The minimum weights tie, but the full class probabilities differ. Degeneracy at all weights resolves this likelihood comparison.':'All 2,097,152 syndrome-compatible error patterns are included. Higher p values illustrate the limits of inferring the logical class from this syndrome.';
+    $('spectrum-rows').replaceChildren();
+    for(let k=0;k<=patch.n;k++){
+      const counts=[0,1].map(i=>spectrum.sectors[analysis.parity^i].counts[k]);if(!counts[0]&&!counts[1])continue;
+      const masses=counts.map((count,i)=>!posterior.available?null:confidenceP===0?(k===0&&(analysis.parity^i)===0?1:0):count?Math.exp(Math.log(count)+k*Math.log(confidenceP)+(patch.n-k)*Math.log1p(-confidenceP)-posterior.logSyndromeProbability):0);
+      tableRow($('spectrum-rows'),[k,counts[0].toLocaleString('en-US'),counts[1].toLocaleString('en-US'),percent(masses[0]),percent(masses[1])]);
+    }
+    drawConfidenceCurve();
+  }
+  function setPrior(p){
+    if(!Number.isFinite(p)||p<0||p>.5)return;
+    confidenceP=p;$('share-url').hidden=$('share-label').hidden=true;renderConfidence();
+  }
+  function renderNeighbors(){
+    $('neighbor-results').hidden=!neighborRows;if(!neighborRows)return;
+    const flips=neighborRows.filter(r=>r.outcomeChanged),largest=Math.max(...neighborRows.map(r=>r.changedCorrection.length));
+    $('neighbor-summary').textContent=`${flips.length} of 41 toggles change the logical outcome. The largest correction change spans ${largest} edges.`;
+    $('neighbor-rows').replaceChildren();
+    const rows=neighborRows.filter(r=>$('neighbor-filter').value==='all'||r.outcomeChanged).slice().sort((a,b)=>b.changedCorrection.length-a.changedCorrection.length||a.qubit-b.qubit);
+    for(const row of rows){
+      const button=document.createElement('button');button.className='btn btn-ghost';button.textContent='Open';button.setAttribute('aria-label','Open neighbor q'+row.qubit);
+      button.addEventListener('click',()=>{
+        neighborOrigin={error:data.error.slice(),selected,forestStrategy,view,custom:$('example').value==='custom',sampleOrigin};
+        error=row.error.slice();sampleOrigin=null;view='overlay';editing=false;recompute({changed:true});
+        $('neighbor-status').textContent=`Opened ${row.operation} Z on q${row.qubit}. ${row.changedCorrection.length} correction edges changed; the logical outcome ${row.outcomeChanged?'flipped':'stayed the same'}.`;
+        $('restore-neighbor').hidden=false;root.scrollIntoView({block:'start'});
+      });
+      tableRow($('neighbor-rows'),[`${row.operation==='add'?'Add':'Remove'} q${row.qubit}`,row.error.length,row.correction.length,row.changedCorrection.length,badge(row.logical),button]);
+    }
+    if(!rows.length)tableRow($('neighbor-rows'),['No outcome-changing neighbors','—','—','—','Try “All 41 toggles”.','—']);
+  }
+  function changeForest(strategy){neighborOrigin=null;forestStrategy=strategy;$('forest').value=strategy;recompute({changed:$('example').value==='custom'});}
   const catalog=presets.map(p=>{const d=M.decode(patch,p.error);return {preset:p,weight:d.error.length,defects:d.observed.reduce((a,b)=>a+b,0),logical:d.result.logical};});
   function renderCatalog(){
     $('catalog-rows').replaceChildren();
@@ -1635,9 +1939,10 @@ const {makeGraph,run,presets,minimumCorrection}=globalThis.__ufLessonModel;
     }
   }
   function experimentRecord(){return {
-    format:'decoder-lab.surface-code.v2',model:{distance:5,dataQubits:41,logicalQubits:1,noise:'Z only; perfect syndrome; one round',edgeWeights:'uniform unit weights'},
+    format:'decoder-lab.surface-code.v3',model:{distance:5,dataQubits:41,logicalQubits:1,noise:'Z only; perfect syndrome; one round',edgeWeights:'uniform unit weights'},
     example:$('example').value==='custom'?null:selected,sampling:sampleOrigin,forestStrategy,view,error:data.error,syndrome:data.observed,correction:data.correction,residual:data.residual,
     decomposition:data.result,reference:analysis,fullyGrownEdges:data.trace.fullEdges,
+    confidence:{assumedNoise:'iid Z, independent of how this displayed E was selected',p:confidenceP,spectrum,posterior},localSensitivity:neighborRows,
     geometry:{qubits:patch.edges,checks:patch.nodes.filter(v=>!v.boundary),stabilizers:patch.faces,logicalZ:patch.logicalZ,logicalX:patch.logicalX},
     convention:'All supports multiply by symmetric difference. Reference sector parity is intersection with the fixed logical-X cut; reference.parity identifies UF’s class. Success labels use the simulated error only after decoding.'
   };}
@@ -1646,7 +1951,7 @@ const {makeGraph,run,presets,minimumCorrection}=globalThis.__ufLessonModel;
     try{
       const params={seed:Number($('seed').value),mode:$('sample-mode').value};
       if(params.mode==='iid')params.p=Number($('probability').value);else params.weight=Number($('sample-weight').value);
-      error=M.sample(patch,params);sampleOrigin=params;editing=false;view='error';recompute({changed:true});
+      error=M.sample(patch,params);sampleOrigin=params;neighborOrigin=null;editing=false;view='error';recompute({changed:true});
       $('example-title').textContent=`Seed ${params.seed} · ${params.mode==='iid'?'independent Z errors':'fixed-weight Z errors'}`;
       $('example-note').textContent=`${error.length} physical errors generated deterministically. Compare the observed syndrome, the UF correction, and the two logical classes.`;
       $('sample-status').textContent=`Generated seed ${params.seed}: ${error.length} errors, ${data.observed.reduce((a,b)=>a+b,0)} defects, ${data.result.logical?'logical failure':'successful recovery'} with ${forestNames[forestStrategy]}.`;
@@ -1654,6 +1959,10 @@ const {makeGraph,run,presets,minimumCorrection}=globalThis.__ufLessonModel;
   }
   function recompute({changed=false,message=''}={}) {
     stop();data=M.decode(patch,error,forestStrategy);analysis=M.analyze(patch,data,forestStrategy);error=data.error;frames=data.trace.frames.filter(f=>!f.micro);traceIndex=0;
+    const key=data.observed.join('');if(key!==spectrumKey||!spectrum){spectrum=F.spectrum(patch,data.observed);spectrumKey=key;}
+    posterior=F.posterior(spectrum,confidenceP,analysis.parity);
+    neighborRows=null;$('neighbor-results').hidden=true;$('restore-neighbor').hidden=!neighborOrigin;
+    $('neighbor-status').textContent='The scan exhausts the 41 neighbors of the current E. These are controlled cases, not probability-weighted samples.';
     if(changed){$('example').value='custom';$('example-title').textContent='Explore your own error pattern.';$('example-note').textContent='The syndrome, UF correction, and exact logical/stabilizer decomposition update together.';}
     if(changed&&!sampleOrigin)$('sample-status').textContent='Custom error pattern. Export or create a case link to preserve it exactly.';
     $('equivalence-status').textContent=message||'Try either transformation. Both preserve the syndrome and deterministic correction.';
@@ -1661,26 +1970,29 @@ const {makeGraph,run,presets,minimumCorrection}=globalThis.__ufLessonModel;
     $('case-position').textContent=changed?'Custom pattern':`${presets.findIndex(p=>p.id===selected)+1} / ${presets.length}`;
     $('previous-example').disabled=presets.findIndex(p=>p.id===selected)===0;
     $('next-example').disabled=presets.findIndex(p=>p.id===selected)===presets.length-1;
-    renderResult();renderResearch();
+    $('forest-note').hidden=changed||forestStrategy==='bfs';
+    const preset=presets.find(p=>p.id===selected);$('companion').hidden=changed||!preset?.partner;
+    if(!changed&&preset?.partner){$('companion-note').textContent=preset.partnerNote;$('open-companion').textContent='Open paired example '+(presets.findIndex(p=>p.id===preset.partner)+1);}
+    renderResult();renderResearch();renderConfidence();
   }
   function chooseExample(id){
     const p=presets.find(p=>p.id===id);if(!p)return;
-    selected=id;error=p.error.slice();editing=false;sampleOrigin=null;$('example').value=id;
+    selected=id;error=p.error.slice();editing=false;sampleOrigin=null;neighborOrigin=null;$('example').value=id;
     $('sample-status').textContent='Seeds produce the same error pattern on every device. Each generation is one shot; this is not a logical-error-rate estimate.';
     $('example-title').textContent=p.title;$('example-note').textContent=p.note;
     $('reset-example').textContent=`Reset example ${presets.indexOf(p)+1}`;
     recompute();
   }
-  function toggleQubit(id){sampleOrigin=null;error=M.xor(error,[id]);recompute({changed:true});}
+  function toggleQubit(id){sampleOrigin=null;neighborOrigin=null;error=M.xor(error,[id]);recompute({changed:true});}
   function transform(chain,isLogical){
-    const old=data;sampleOrigin=null;error=M.xor(error,chain);recompute({changed:true});
+    const old=data;sampleOrigin=null;neighborOrigin=null;error=M.xor(error,chain);recompute({changed:true});
     const sameS=old.observed.every((b,i)=>b===data.observed[i]);
     const sameC=old.correction.join(',')===data.correction.join(',');
     if(!sameS||!sameC||data.result.logical!==(old.result.logical^(isLogical?1:0)))throw new Error('Equivalence transformation failed.');
     $('equivalence-status').textContent=`✓ Same syndrome · same correction C · logical class ${isLogical?'flipped':'unchanged'}.`;
     view='decomposition';editing=false;drawMain();
   }
-  function setView(next){stop();view=next;if(next!=='error')editing=false;drawMain();}
+  function setView(next){stop();$('share-url').hidden=$('share-label').hidden=true;view=next;if(next!=='error')editing=false;drawMain();}
   function goTrace(i){stop();traceIndex=Math.max(0,Math.min(frames.length-1,i));drawMain();}
   for(const group of [...new Set(presets.map(p=>p.group))]){
     const optgroup=document.createElement('optgroup');optgroup.label=group;
@@ -1688,16 +2000,29 @@ const {makeGraph,run,presets,minimumCorrection}=globalThis.__ufLessonModel;
     $('category').append(new Option(group,group));
   }
   const custom=new Option('Custom / transformed error','custom');custom.disabled=true;$('example').append(custom);
+  $('catalog-count').textContent=`${presets.length} WORKED CASES`;$('catalog-link').textContent=`All ${presets.length} examples`;
   for(const e of patch.edges)$('qubit').append(new Option(`q${e.id} · ${e.kind==='h'?'horizontal':'vertical'} edge`,String(e.id)));
   for(const f of patch.faces)$('face').append(new Option(`S${f.id+1} · ${f.edges.length}-qubit ${f.edges.length===3?'boundary':'plaquette'} stabilizer`,String(f.id)));
   $('face').value='8';
   $('example').addEventListener('change',()=>chooseExample($('example').value));
+  $('open-companion').addEventListener('click',()=>chooseExample(presets.find(p=>p.id===selected)?.partner));
+  $('confidence-p').addEventListener('input',()=>setPrior(Number($('confidence-p').value)/100));
+  $('confidence-number').addEventListener('change',()=>{if($('confidence-number').value!==''&&$('confidence-number').reportValidity())setPrior(Number($('confidence-number').value)/100);else $('confidence-number').value=Number((confidenceP*100).toPrecision(12));});
+  root.querySelectorAll('[data-sc-prior]').forEach(b=>b.addEventListener('click',()=>setPrior(Number(b.dataset.scPrior))));
+  $('scan-neighbors').addEventListener('click',()=>{stop();neighborOrigin=null;$('restore-neighbor').hidden=true;neighborRows=M.neighbors(patch,data,forestStrategy);renderNeighbors();$('neighbor-status').textContent=`Scanned all 41 physical-qubit toggles with ${forestNames[forestStrategy]}. Each correction matches its new syndrome.`;});
+  $('neighbor-filter').addEventListener('change',renderNeighbors);
+  $('restore-neighbor').addEventListener('click',()=>{
+    if(!neighborOrigin)return;const old=neighborOrigin;neighborOrigin=null;forestStrategy=old.forestStrategy;$('forest').value=forestStrategy;view=old.view;
+    if(!old.custom)chooseExample(old.selected);else{selected=old.selected;error=old.error.slice();sampleOrigin=old.sampleOrigin;recompute({changed:true});}
+    $('neighbor-status').textContent='Restored the scan’s original error and forest.';root.scrollIntoView({block:'start'});
+  });
   $('forest').addEventListener('change',()=>changeForest($('forest').value));
   $('previous-example').addEventListener('click',()=>chooseExample(presets[presets.findIndex(p=>p.id===selected)-1]?.id));
   $('next-example').addEventListener('click',()=>chooseExample(presets[presets.findIndex(p=>p.id===selected)+1]?.id));
   $('category').addEventListener('change',renderCatalog);
   root.querySelectorAll('[data-sc-reference]').forEach(b=>b.addEventListener('click',()=>{referenceView=b.dataset.scReference;drawReferences();}));
-  for(const [id,predicate] of [['jump-merge',f=>f.action==='merge'],['jump-reactivate',f=>f.reactivated],['jump-forest',f=>f.phase==='forest']])$(id).addEventListener('click',()=>goTrace(frames.findIndex(predicate)));
+  for(const [id,predicate] of [['jump-merge',f=>f.action==='merge'],['jump-forest',f=>f.phase==='forest']])$(id).addEventListener('click',()=>goTrace(frames.findIndex(predicate)));
+  $('jump-reactivate').addEventListener('click',()=>{const next=frames.findIndex((f,i)=>i>traceIndex&&f.reactivated);goTrace(next<0?frames.findIndex(f=>f.reactivated):next);});
   $('inspect-growth').addEventListener('click',()=>{setView('trace');goTrace(frames.findIndex(f=>f.phase==='forest'));$('graph').scrollIntoView({block:'center'});});
   $('sample-mode').addEventListener('change',()=>{const fixed=$('sample-mode').value==='fixed';$('probability-field').hidden=fixed;$('probability').disabled=fixed;$('weight-field').hidden=!fixed;$('sample-weight').disabled=!fixed;});
   $('sample-form').addEventListener('submit',event=>{event.preventDefault();generateSample();});
@@ -1709,14 +2034,15 @@ const {makeGraph,run,presets,minimumCorrection}=globalThis.__ufLessonModel;
   });
   $('share').addEventListener('click',()=>{
     const url=new URL(location.href);url.search='';url.hash='';url.searchParams.set('sc','2');url.searchParams.set('e',data.error.join(','));url.searchParams.set('forest',forestStrategy);url.searchParams.set('view',view);
+    url.searchParams.set('prior',String(confidenceP));
     if($('example').value!=='custom')url.searchParams.set('example',selected);
     $('share-url').value=url.href;$('share-url').hidden=$('share-label').hidden=false;$('share-url').focus();$('share-url').select();
-    $('sample-status').textContent='Case link ready. It preserves the exact error, forest, and diagram view; select and copy it.';
+    $('sample-status').textContent='Case link ready. It preserves the exact error, forest, diagram view, and assumed confidence prior; select and copy it.';
   });
   viewButtons.forEach(b=>b.addEventListener('click',()=>setView(b.dataset.scView)));
   $('edit').addEventListener('click',()=>{stop();editing=!editing;view='error';drawMain();});
   $('toggle-qubit').addEventListener('click',()=>toggleQubit(Number($('qubit').value)));
-  $('clear').addEventListener('click',()=>{sampleOrigin=null;error=[];recompute({changed:true});});
+  $('clear').addEventListener('click',()=>{sampleOrigin=null;neighborOrigin=null;error=[];recompute({changed:true});});
   $('cut').addEventListener('change',drawMain);$('ids').addEventListener('change',drawMain);
   $('reset-example').addEventListener('click',()=>chooseExample(selected));
   $('add-logical').addEventListener('click',()=>transform(patch.logicalZ,true));
@@ -1755,14 +2081,17 @@ const {makeGraph,run,presets,minimumCorrection}=globalThis.__ufLessonModel;
       if(query.get('sc')!=='2'||raw===null||raw.length>160||!/^(?:\d+(?:,\d+)*)?$/.test(raw)||!Object.hasOwn(forestNames,strategy)||!Object.hasOwn(views,nextView))throw new Error('Invalid shared case');
       const ids=raw===''?[]:raw.split(',').map(Number);
       if(ids.some(id=>!Number.isInteger(id)||id<0||id>=patch.n)||new Set(ids).size!==ids.length)throw new Error('Invalid qubit support');
+      const prior=query.has('prior')?Number(query.get('prior')):.1;
+      if((query.has('prior')&&query.get('prior').trim()==='')||!Number.isFinite(prior)||prior<0||prior>.5)throw new Error('Invalid confidence prior');
+      confidenceP=prior;
       forestStrategy=strategy;$('forest').value=strategy;view=nextView;
       const preset=presets.find(p=>p.id===query.get('example')&&p.error.slice().sort((a,b)=>a-b).join(',')===ids.slice().sort((a,b)=>a-b).join(','));
       if(preset)chooseExample(preset.id);else{error=ids;recompute({changed:true});$('example-title').textContent='Shared error pattern';}
-      $('sample-status').textContent='Shared case restored: exact error, forest, and diagram view.';
+      $('sample-status').textContent='Shared case restored: exact error, forest, diagram view, and confidence prior.';
     }catch(e){$('sample-status').textContent='This case link is invalid or uses an unsupported version. The default example is shown.';}
   }
   renderCatalog();route();
-  root.surfaceInspect=()=>({view,editing,selected,forestStrategy,referenceView,error:data.error,correction:data.correction,residual:data.residual,syndrome:data.observed,result:data.result,analysis,frame:frames[traceIndex],traceIndex,frames:frames.length});
+  root.surfaceInspect=()=>({view,editing,selected,forestStrategy,referenceView,confidenceP,posterior,neighbors:neighborRows,error:data.error,correction:data.correction,residual:data.residual,syndrome:data.observed,result:data.result,analysis,frame:frames[traceIndex],traceIndex,frames:frames.length});
   root.surfaceExport=experimentRecord;
 })();
 

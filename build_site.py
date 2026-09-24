@@ -1,0 +1,37 @@
+from pathlib import Path
+p=Path(__file__).parent
+source=p.joinpath('source.html').read_text()
+markup=source[:source.index('<script>')]
+style=markup[markup.index('<style>')+7:markup.index('</style>')]
+markup=markup[:markup.index('<style>')]+markup[markup.index('</style>')+8:]
+ui=source[source.index("  const root=document.getElementById('uf-decoder-lesson');"):source.rindex('</script>')]
+ui="(() => {\n'use strict';\nconst {makeGraph,run,presets,minimumCorrection}=globalThis.__ufLessonModel;\n"+ui
+ui=ui.replace("fullTrace=run(graph);", "fullTrace=run(graph,{forestStrategy:$('forest-mode').value});")
+ui=ui.replace("Build a breadth-first spanning forest of the full edges.","Build the selected spanning forest using only full edges.")
+ui=ui.replace("This breadth-first forest is separate from the Union-Find parent tree.","This graph forest is separate from the Union-Find parent tree.")
+ui=ui.replace("This breadth-first forest adds", "This selected forest adds")
+ui=ui.replace("bit=s.phase==='done'?v.syndrome:(peeling?s.bits[v.id]:v.syndrome)","bit=peeling?s.bits[v.id]:v.syndrome")
+ui=ui.replace("s.phase==='peel'?'Working bit 1':'Observed syndrome 1'","['peel','done'].includes(s.phase)?'Residual bit 1':'Observed syndrome 1'")
+ui=ui.replace("    updatePanels(s);","    updatePanels(s);\n    document.dispatchEvent(new CustomEvent('uf-state',{detail:{graph,trace,fullTrace,s,index,reference,grownReference,editing}}));")
+ui=ui.replace("parent.appendChild(v);return v;", "if(attrs?.['data-tooltip']){const t=document.createElementNS(NS,'title');t.textContent=attrs['data-tooltip'];v.appendChild(t);}parent.appendChild(v);return v;")
+ui=ui.replace("  load('pair');", """  $('forest-mode').addEventListener('change',()=>{pause();const phase=trace.frames[index].phase;compile(graph.key,graph.nodes.filter(v=>v.syndrome).map(v=>[v.col,v.row]),graph.preset.boundary);const i=trace.frames.findIndex(f=>f.phase===phase);index=Math.max(0,i);draw();});
+  document.addEventListener('keydown',e=>{if(/INPUT|SELECT|TEXTAREA|BUTTON/.test(e.target.tagName)||e.altKey||e.ctrlKey||e.metaKey)return;if(e.key==='ArrowRight'){e.preventDefault();next.click();}if(e.key==='ArrowLeft'){e.preventDefault();back.click();}if(e.code==='Space'){e.preventDefault();play.click();}});
+  load('pair');""")
+p.joinpath('app.js').write_text(ui)
+markup=markup.replace('<h2>Inside the Union-Find decoder</h2>','<div class="eyebrow">QUANTUM ERROR CORRECTION / INTERACTIVE LAB</div><h1>Inside Union-Find<span class="title-dot">.</span></h1>')
+markup=markup.replace('Uniform growth · unit costs · one error type','Watch a syndrome become a correction, one decision at a time.')
+markup=markup.replace('<label class="form-label" for="uf-example">Example</label>','<label class="form-label" for="uf-example">Choose a guided experiment</label>')
+markup=markup.replace('<div class="uf-stage-row text-small"','<div class="lab-layout"><section class="simulation" aria-label="Decoder simulation"><div class="surface-heading"><span>01 / DECODING GRAPH</span><span class="model-tag">Unit edge costs · uniform growth</span></div><div class="uf-stage-row text-small"')
+markup=markup.replace('  <figure class="uf-figure">','  <div class="example-intro"><strong id="lesson-title">Pair two defects</strong><span id="lesson-goal"></span></div><figure class="uf-figure">')
+markup=markup.replace('  <div class="nav nav-pills uf-detail-tabs"','  </section><aside class="detail-sidebar" aria-label="Live explanation"><div class="surface-heading"><span>02 / UNDER THE HOOD</span><span id="current-round"></span></div><div class="live-summary"><span class="eyebrow" id="phase-name">SEED</span><h2 id="step-title">Seed the defects</h2><p id="step-intro"></p><div class="live-metrics"><div><strong id="metric-active">2</strong><span>active clusters</span></div><div><strong id="metric-residual">2</strong><span>residual bits</span></div><div><strong id="metric-cost">0</strong><span>chosen edges</span></div></div></div><div class="nav nav-pills uf-detail-tabs"')
+# Replace final root closing with sidebar close; additional sections within same root.
+end=markup.rfind('</div>')
+markup=markup[:end]+ '</aside></div>\n' + p.joinpath('details.html').read_text() + '\n</div>'
+head='''<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="description" content="An interactive quantum error correction lab: step through Union-Find growth, parent pointers, spanning forests and peeling."><meta name="theme-color" content="#f4f3ee"><title>Union-Find Decoder Lab</title><link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%231f403b'/%3E%3Cpath d='M16 18L32 34L48 18M32 34V48' stroke='%23e9f1bc' stroke-width='5' fill='none'/%3E%3Ccircle cx='16' cy='18' r='6' fill='%23e9f1bc'/%3E%3Ccircle cx='48' cy='18' r='6' fill='%23e9f1bc'/%3E%3Ccircle cx='32' cy='48' r='6' fill='%23e9f1bc'/%3E%3C/svg%3E"><style>'''
+nav='''</style></head><body><a class="skip-link" href="#uf-decoder-lesson">Skip to decoder</a><header class="site-header"><a class="brand" href="#"><span class="brand-symbol">∪</span> Decoder notebook</a><nav aria-label="Page"><a href="#structures">Structures</a><a href="#field-guide">Field guide</a><a href="#sources">Sources</a></nav></header><main>'''
+foot='''</main><footer class="site-footer"><span>Decoder notebook / Union-Find</span><span>An inspectable teaching model. No installation required.</span></footer>'''
+styles=style+'\n'+p.joinpath('site.css').read_text()
+# Self-contained index supports local download and GitHub Pages without a build step.
+scripts='\n'.join('<script>\n'+p.joinpath(f).read_text()+'\n</script>' for f in ['model.js','extras.js','app.js'])
+p.joinpath('index.html').write_text(head+styles+nav+markup+foot+scripts+'</body></html>')
+print('Built',p/'index.html')

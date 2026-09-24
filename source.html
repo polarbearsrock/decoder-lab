@@ -1,0 +1,622 @@
+<div id="uf-decoder-lesson">
+  <style>
+    #uf-decoder-lesson { color:var(--foreground); }
+    #uf-decoder-lesson .uf-top { display:flex; flex-wrap:wrap; gap:8px 24px; align-items:end; justify-content:space-between; }
+    #uf-decoder-lesson .uf-title h2 { margin:0 0 4px; }
+    #uf-decoder-lesson .uf-picker { flex:0 1 280px; min-width:0; }
+    #uf-decoder-lesson .uf-stage-row { display:flex; flex-wrap:wrap; gap:6px 18px; margin:22px 0 8px; }
+    #uf-decoder-lesson .uf-figure { margin:0; }
+    #uf-decoder-lesson .uf-graph { display:block; width:100%; overflow:visible; }
+    #uf-decoder-lesson .uf-graph text { fill:var(--foreground); font-weight:400; }
+    #uf-decoder-lesson .uf-graph .uf-letter { font-weight:500; }
+    #uf-decoder-lesson .uf-clusters { display:flex; flex-wrap:wrap; gap:8px 22px; min-height:28px; align-items:center; }
+    #uf-decoder-lesson .uf-cluster { display:inline-flex; align-items:center; gap:7px; }
+    #uf-decoder-lesson .uf-swatch { display:inline-block; width:10px; height:10px; border-radius:50%; flex:none; }
+    #uf-decoder-lesson .uf-legend { display:flex; flex-wrap:wrap; gap:7px 20px; margin:12px 0; }
+    #uf-decoder-lesson .uf-key { display:inline-flex; gap:7px; align-items:center; }
+    #uf-decoder-lesson .uf-key-mark { display:inline-block; flex:none; }
+    #uf-decoder-lesson .uf-key-syndrome { width:10px; height:10px; border-radius:50%; background:var(--foreground); }
+    #uf-decoder-lesson .uf-key-growth { width:20px; height:7px; border-radius:5px; background:color-mix(in srgb,var(--viz-series-1) 28%,transparent); }
+    #uf-decoder-lesson .uf-key-forest { width:20px; height:0; border-top:2px dashed var(--foreground); }
+    #uf-decoder-lesson .uf-key-correction { width:20px; height:4px; background:var(--viz-series-3); }
+    #uf-decoder-lesson .uf-note { min-height:44px; margin:14px 0 10px; display:flex; align-items:center; }
+    #uf-decoder-lesson .uf-footer { display:flex; flex-wrap:wrap; align-items:center; justify-content:space-between; gap:12px; }
+    #uf-decoder-lesson .uf-counter { overflow-wrap:anywhere; }
+    #uf-decoder-lesson .uf-live { display:contents; }
+    #uf-decoder-lesson .uf-timeline { margin:14px 0 8px; }
+    #uf-decoder-lesson .uf-timeline-label { display:flex; flex-wrap:wrap; align-items:baseline; justify-content:space-between; gap:5px 16px; }
+    #uf-decoder-lesson .uf-options { display:flex; flex-wrap:wrap; gap:12px 22px; align-items:center; margin:12px 0; }
+    #uf-decoder-lesson .uf-detail-tabs { margin:20px 0 12px; }
+    #uf-decoder-lesson .uf-panel { padding:4px 0; }
+    #uf-decoder-lesson .uf-panel h3 { margin:0 0 10px; }
+    #uf-decoder-lesson .uf-detail-table th { width:100px; font-weight:500; }
+    #uf-decoder-lesson .uf-code { margin:0; padding:0; list-style:none; }
+    #uf-decoder-lesson .uf-code li { display:flex; gap:12px; padding:5px 8px; }
+    #uf-decoder-lesson .uf-code li.uf-code-active { background:var(--accent); color:var(--accent-foreground); font-weight:500; }
+    #uf-decoder-lesson .uf-code-no { color:var(--muted-foreground); flex:0 0 20px; text-align:right; }
+    #uf-decoder-lesson .uf-code-text { white-space:pre-wrap; overflow-wrap:anywhere; }
+    #uf-decoder-lesson .uf-inspection-controls { margin-bottom:12px; }
+    #uf-decoder-lesson .uf-editor { margin:12px 0; }
+    #uf-decoder-lesson .uf-editor-row { display:flex; flex-wrap:wrap; gap:10px 20px; align-items:end; }
+    #uf-decoder-lesson .uf-field { flex:0 1 230px; min-width:0; }
+    #uf-decoder-lesson .uf-speed-field { width:120px; }
+    #uf-decoder-lesson .uf-metrics { display:flex; flex-wrap:wrap; gap:7px 20px; margin-top:10px; }
+    #uf-decoder-lesson .uf-op-log { margin-top:12px; }
+    #uf-decoder-lesson .uf-op-log td { overflow-wrap:anywhere; }
+    #uf-decoder-lesson .uf-reference-legend { display:none; }
+    #uf-decoder-lesson .uf-key-reference { width:20px; height:0; border-top:3px dashed var(--viz-series-5); }
+    #uf-decoder-lesson [hidden] { display:none !important; }
+    @media(max-width:500px) { #uf-decoder-lesson .uf-picker { flex:1 1 100%; } #uf-decoder-lesson .uf-top { gap:12px; } }
+  </style>
+  <div class="uf-top">
+    <div class="uf-title">
+      <h2>Inside the Union-Find decoder</h2>
+      <div class="text-small text-muted">Uniform growth · unit costs · one error type</div>
+    </div>
+    <div class="uf-picker">
+      <label class="form-label" for="uf-example">Example</label>
+      <select id="uf-example" class="form-select">
+        <option value="pair">1 · Pair two defects</option>
+        <option value="reactivate">2 · An even cluster grows again</option>
+        <option value="boundary">3 · Reach a boundary</option>
+        <option value="forest">4 · The forest changes the answer</option>
+        <option value="clustering">5 · A limit of cluster growth</option>
+        <option value="custom">6 · Your own syndrome</option>
+      </select>
+    </div>
+  </div>
+  <div class="uf-stage-row text-small" aria-label="Jump to decoder phase">
+    <button type="button" class="btn btn-ghost uf-stage" data-phase="seed">1. Seed</button>
+    <button type="button" class="btn btn-ghost uf-stage" data-phase="grow">2. Grow &amp; merge</button>
+    <button type="button" class="btn btn-ghost uf-stage" data-phase="forest">3. Forest</button>
+    <button type="button" class="btn btn-ghost uf-stage" data-phase="peel">4. Peel</button>
+    <button type="button" class="btn btn-ghost uf-stage" data-phase="done">5. Correction</button>
+  </div>
+  <div class="uf-editor" id="uf-editor" hidden>
+    <div class="uf-editor-row">
+      <div class="uf-field"><label class="form-label" for="uf-edit-node">Toggle a defect · or select a vertex</label><select class="form-select" id="uf-edit-node"></select></div>
+      <div class="viz-controls"><button class="btn" id="uf-toggle-defect" type="button">Toggle defect</button><button class="btn btn-ghost" id="uf-clear" type="button">Clear</button><button class="btn btn-primary" id="uf-run" type="button">Run decoder</button></div>
+    </div>
+    <div class="uf-options"><label class="form-check"><input class="form-check-input" id="uf-boundary" type="checkbox" checked><span class="form-check-label">Allow the left boundary</span></label><span id="uf-editor-status" class="text-small" aria-live="polite"></span></div>
+    <div id="uf-editor-error" class="text-destructive" role="alert" hidden></div>
+  </div>
+  <figure class="uf-figure">
+    <svg class="uf-graph text-small" role="img" aria-labelledby="uf-svg-title uf-svg-desc">
+      <title id="uf-svg-title">Union-Find decoding, step by step</title>
+      <desc id="uf-svg-desc">Defects seed clusters on a decoding graph. Odd clusters grow and merge. A forest is peeled to produce correction edges.</desc>
+      <g id="uf-drawing"></g>
+    </svg>
+    <figcaption class="uf-legend text-small">
+      <span class="uf-key"><span class="uf-key-mark uf-key-syndrome"></span><span id="uf-bit-key">Syndrome 1</span></span>
+      <span class="uf-key"><span class="uf-key-mark uf-key-growth"></span>Grown region</span>
+      <span class="uf-key"><span class="uf-key-mark uf-key-forest"></span>Remaining tree</span>
+      <span class="uf-key"><span class="uf-key-mark uf-key-correction"></span>Correction</span>
+      <span class="uf-key uf-reference-legend" id="uf-reference-legend"><span class="uf-key-mark uf-key-reference"></span>Exact minimum</span>
+      <span class="uf-key" id="uf-cut-legend" hidden>× Omitted from forest</span>
+    </figcaption>
+  </figure>
+  <div class="uf-clusters text-small" id="uf-clusters" aria-label="Cluster defect counts and growth status"></div>
+  <div class="uf-note" id="uf-note" aria-live="polite" aria-atomic="true"></div>
+  <div class="uf-timeline">
+    <div class="uf-timeline-label"><label class="form-label" for="uf-scrub">Walkthrough</label><span id="uf-counter" class="uf-counter text-small tabular-nums"></span></div>
+    <input class="form-range" id="uf-scrub" type="range" min="0" max="10" value="0" aria-label="Walkthrough step">
+  </div>
+  <div class="uf-footer">
+    <div class="viz-controls" aria-label="Step controls">
+      <button class="btn btn-ghost" id="uf-first" type="button" aria-label="Return to first step">Start</button>
+      <button class="btn" id="uf-back" type="button">Back</button>
+      <button class="btn" id="uf-play" type="button" aria-pressed="false">Play</button>
+      <button class="btn btn-primary" id="uf-next" type="button">Next</button>
+    </div>
+    <div class="viz-controls"><div class="uf-speed-field"><label class="sr-only" for="uf-speed">Playback speed</label><select class="form-select" id="uf-speed" aria-label="Playback speed"><option value="2400">Slow</option><option value="1500" selected>Normal</option><option value="650">Fast</option></select></div><button class="btn btn-ghost" type="button" id="uf-edit">Edit defects</button></div>
+  </div>
+  <div class="uf-options">
+    <label class="form-check"><input class="form-check-input" type="checkbox" id="uf-micro"><span class="form-check-label">Show every Find / Union</span></label>
+    <label class="form-check"><input class="form-check-input" type="checkbox" id="uf-ids"><span class="form-check-label">Vertex IDs</span></label>
+  </div>
+  <div class="nav nav-pills uf-detail-tabs" role="tablist" aria-label="Decoder details">
+    <button class="nav-link active" type="button" role="tab" id="uf-tab-step" aria-controls="uf-panel-step" aria-selected="true">Step</button>
+    <button class="nav-link" type="button" role="tab" id="uf-tab-code" aria-controls="uf-panel-code" aria-selected="false">Pseudocode</button>
+    <button class="nav-link" type="button" role="tab" id="uf-tab-clusters" aria-controls="uf-panel-clusters" aria-selected="false">Clusters</button>
+    <button class="nav-link" type="button" role="tab" id="uf-tab-inspect" aria-controls="uf-panel-inspect" aria-selected="false">Inspect</button>
+    <button class="nav-link" type="button" role="tab" id="uf-tab-compare" aria-controls="uf-panel-compare" aria-selected="false">Compare</button>
+  </div>
+  <div class="uf-panel" role="tabpanel" id="uf-panel-step" aria-labelledby="uf-tab-step">
+    <table class="table table-sm uf-detail-table"><tbody id="uf-step-details"></tbody></table>
+    <div id="uf-operation-log" class="uf-op-log"></div>
+  </div>
+  <div class="uf-panel" role="tabpanel" id="uf-panel-code" aria-labelledby="uf-tab-code" hidden>
+    <ol id="uf-code" class="uf-code text-small" aria-label="Pseudocode with the current instruction highlighted"></ol>
+  </div>
+  <div class="uf-panel" role="tabpanel" id="uf-panel-clusters" aria-labelledby="uf-tab-clusters" hidden>
+    <div class="table-responsive"><table class="table table-sm text-small"><thead><tr><th>Cluster</th><th>Root</th><th class="text-end">Nodes</th><th class="text-end">Defects</th><th>State</th></tr></thead><tbody id="uf-cluster-table"></tbody></table></div>
+    <div id="uf-cluster-summary" class="text-small"></div>
+  </div>
+  <div class="uf-panel" role="tabpanel" id="uf-panel-inspect" aria-labelledby="uf-tab-inspect" hidden>
+    <div class="uf-inspection-controls"><label class="form-label" for="uf-inspect">Inspect a vertex or edge</label><select class="form-select" id="uf-inspect"><option value="auto">Current operation</option></select></div>
+    <table class="table table-sm uf-detail-table"><tbody id="uf-inspect-table"></tbody></table>
+  </div>
+  <div class="uf-panel" role="tabpanel" id="uf-panel-compare" aria-labelledby="uf-tab-compare" hidden>
+    <div id="uf-comparison"></div>
+    <div class="uf-options"><label class="form-check"><input class="form-check-input" type="checkbox" id="uf-reference"><span class="form-check-label">Overlay the exact minimum</span></label></div>
+    <div id="uf-comparison-note" class="text-small"></div>
+  </div>
+</div>
+<script>
+(() => {
+  'use strict';
+  const presets = {
+    pair: { name:'Pair two defects', defects:[[3,1],[5,1]], boundary:false },
+    reactivate: { name:'An even cluster grows again', defects:[[2,1],[3,1],[5,1]], boundary:true },
+    boundary: { name:'Reach a boundary', defects:[[1,1]], boundary:true },
+    forest: {name:'The forest changes the answer',defects:[[1,0],[3,0],[3,1],[4,1]],boundary:false},
+    clustering: {name:'A limit of cluster growth',defects:[[1,0],[2,0],[4,0],[6,0],[2,1],[4,2]],boundary:false},
+    custom: {name:'Your own syndrome',defects:[[2,1],[5,1]],boundary:true}
+  };
+
+  function makeGraph(key, customDefects, boundaryOverride) {
+    const preset={...presets[key]};
+    if(boundaryOverride!==undefined) preset.boundary=boundaryOverride;
+    const defects=customDefects || preset.defects;
+    const nodes=[], edges=[], ids=new Map();
+    for(let row=0;row<3;row++) {
+      for(let col=1;col<=7;col++) {
+        const labelIndex=defects.findIndex(p=>p[0]===col && p[1]===row);
+        const id=nodes.length;
+        ids.set(`${col},${row}`,id);
+        nodes.push({id,col,row,boundary:false,syndrome:labelIndex>=0?1:0,label:labelIndex>=0?String.fromCharCode(65+labelIndex):'',name:`(${col},${row+1})`});
+      }
+    }
+    if(preset.boundary) {
+      for(let row=0;row<3;row++) {
+        const id=nodes.length;
+        ids.set(`0,${row}`,id);
+        nodes.push({id,col:0,row,boundary:true,syndrome:0,label:'',name:`boundary ${row+1}`});
+      }
+    }
+    const add=(a,b)=>edges.push({id:edges.length,a:ids.get(a),b:ids.get(b)});
+    for(let row=0;row<3;row++) {
+      for(let col=1;col<7;col++) add(`${col},${row}`,`${col+1},${row}`);
+      if(preset.boundary) add(`0,${row}`,`1,${row}`);
+    }
+    for(let row=0;row<2;row++) for(let col=1;col<=7;col++) add(`${col},${row}`,`${col},${row+1}`);
+    return {nodes,edges,key,preset,cols:7,rows:3};
+  }
+
+  function run(graph) {
+    const {nodes,edges}=graph, n=nodes.length;
+    const parent=nodes.map(v=>v.id), size=nodes.map(()=>1), count=nodes.map(v=>v.syndrome), atBoundary=nodes.map(v=>v.boundary);
+    const support=edges.map(()=>[0,0]);
+    let bits=nodes.map(v=>v.syndrome), forest=[], remaining=[], removed=[], correction=[], tick=0,operations=[],peelRoots=[];
+    const frames=[];
+    const peek=v=>{while(parent[v]!==v)v=parent[v];return v;};
+    function find(v) {
+      let r=v;
+      while(parent[r]!==r) r=parent[r];
+      while(parent[v]!==v) { const next=parent[v]; parent[v]=r; v=next; }
+      return r;
+    }
+    const active=r=>(count[r]%2===1 && !atBoundary[r]);
+    function members(r) { return nodes.filter(v=>peek(v.id)===r); }
+    function name(r) { return members(r).filter(v=>v.label).map(v=>v.label).sort().join(''); }
+    function union(a,b) {
+      let ra=find(a), rb=find(b);
+      if(ra===rb) return ra;
+      if(size[ra]<size[rb] || (size[ra]===size[rb] && ra>rb)) [ra,rb]=[rb,ra];
+      parent[rb]=ra; size[ra]+=size[rb]; count[ra]+=count[rb]; atBoundary[ra]=atBoundary[ra]||atBoundary[rb];
+      return ra;
+    }
+    function snapshot(phase,title,note,focus={}) {
+      const roots=[...new Set(nodes.map(v=>peek(v.id)))];
+      const groups=roots.filter(r=>count[r]>0).map(r=>({root:r,members:members(r).map(v=>v.id),label:name(r),count:count[r],boundary:atBoundary[r],active:active(r)}));
+      const nodeGroups=nodes.map(v=>groups.findIndex(g=>g.root===peek(v.id)));
+      frames.push({phase,title,note,tick,groups,nodeGroups,support:support.map(p=>p.slice()),bits:bits.slice(),forest:forest.slice(),remaining:remaining.slice(),removed:removed.slice(),correction:correction.slice(),focusNodes:focus.nodes||[],focusEdges:focus.edges||[],action:focus.action||'',reactivated:focus.reactivated||false,parents:parent.slice(),sizes:size.slice(),operations:operations.map(o=>({...o})),peelRoots:peelRoots.slice(),micro:!!focus.micro,raw:frames.length});
+    }
+    const totalDefects=count.reduce((a,b)=>a+b,0);
+    snapshot('seed','Seed the defects',totalDefects===0?'No defects: the empty correction already matches this syndrome.':graph.preset.boundary && totalDefects===1 ? 'A seeds one odd cluster; square vertices mark an allowed boundary.' : 'Each defect seeds an odd cluster; parity counts defects, not all vertices.');
+    if(totalDefects%2 && !graph.preset.boundary) return {frames,valid:false,error:'An odd number of defects needs a boundary or another defect.',correction:[],forest:[],fullEdges:[]};
+    while([...new Set(nodes.map(v=>peek(v.id)))].some(active)) {
+      if(++tick>100) throw new Error('Growth failed to terminate.');
+      operations=[];
+      const changed=[], full=[];
+      for(const e of edges) {
+        const ra=peek(e.a), rb=peek(e.b), s=support[e.id], total=s[0]+s[1];
+        if(ra===rb || total>=1-1e-9) continue;
+        const da=active(ra)?0.5:0, db=active(rb)?0.5:0;
+        if(da+db===0) continue;
+        const scale=Math.min(1,(1-total)/(da+db));
+        s[0]+=da*scale; s[1]+=db*scale;
+        changed.push(e.id);
+        if(s[0]+s[1]>=1-1e-9) full.push(e.id);
+      }
+      if(!changed.length) throw new Error('An odd cluster cannot grow on this graph.');
+      snapshot('grow','Grow by half an edge',full.length ? 'Growth completes edges; clusters connected by them will now merge.' : 'Only active odd clusters extend; two half-edges complete a connection.',{edges:changed,action:'growth'});
+      if(full.length) {
+        const events=[];
+        let reactivated=false;
+        for(const eid of full) {
+          const e=edges[eid];
+          const before=parent.slice();
+          const oldPath=v=>{const path=[v];while(before[v]!==v){v=before[v];path.push(v);}return path;};
+          const pathA=oldPath(e.a),pathB=oldPath(e.b);
+          const ra=find(e.a),rb=find(e.b);
+          const compressed=parent.reduce((sum,p,i)=>sum+(p!==before[i]?1:0),0);
+          const operation={edge:eid,a:e.a,b:e.b,ra,rb,sa:size[ra],sb:size[rb],ca:count[ra],cb:count[rb],compressed,pathA,pathB,result:ra,same:ra===rb};
+          operations.push(operation);
+          snapshot('grow','Find the endpoint roots',`Find(v${e.a}) = v${ra}; Find(v${e.b}) = v${rb}.`,{nodes:[e.a,e.b],edges:[eid],action:'find',micro:true});
+          if(ra===rb) {
+            snapshot('grow','Already one cluster','Both endpoints already share a root; no Union is needed.',{edges:[eid],action:'same',micro:true});
+            continue;
+          }
+          const ca=count[ra],cb=count[rb], ba=atBoundary[ra],bb=atBoundary[rb];
+          const na=name(ra),nb=name(rb);
+          const wasEven=(ca>0 && ca%2===0 && !ba) || (cb>0 && cb%2===0 && !bb);
+          const r=union(ra,rb);
+          operation.result=r;
+          if(atBoundary[r] && !(ba&&bb) && ca+cb>0 && (ba!==bb)) events.push(`${name(r)} reaches the boundary; the cluster stops even with odd parity.`);
+          else if(ca>0 && cb>0) {
+            if(active(r) && wasEven) { reactivated=true; events.push(`${na} and ${nb} merge: ${count[r]} defects make the cluster odd, so growth resumes.`); }
+            else if(!active(r)) events.push(`${na} and ${nb} merge: ${count[r]} defects make the cluster even, so growth pauses.`);
+            else events.push(`${na} and ${nb} merge; the combined cluster is still odd and keeps growing.`);
+          }
+          snapshot('grow','Union by tree size',`Attach the smaller set to root v${r}; the merged set has ${size[r]} vertices and ${count[r]} defects.`,{nodes:[ra,rb,r],edges:[eid],action:'union',micro:true});
+        }
+        snapshot('grow',reactivated?'An even cluster grows again':'Merge and update parity',events.length?events[events.length-1]:'New vertices join through full edges; the defect counts stay the same.',{edges:full,action:'merge',reactivated});
+      }
+    }
+    operations=[];
+    const fullEdges=edges.filter(e=>support[e.id][0]+support[e.id][1]>=1-1e-9);
+    const adj=nodes.map(()=>[]);
+    for(const e of fullEdges) {adj[e.a].push([e.b,e.id]);adj[e.b].push([e.a,e.id]);}
+    const seen=new Set(), roots=new Set();
+    for(const r of [...new Set(nodes.map(v=>peek(v.id)))]) {
+      if(count[r]===0) continue;
+      const component=members(r);
+      let seeds=component.filter(v=>v.boundary).map(v=>v.id);
+      if(!seeds.length) seeds=[component.find(v=>v.syndrome).id];
+      const queue=seeds.slice();
+      for(const s of seeds) {seen.add(s);roots.add(s);}
+      for(let qi=0;qi<queue.length;qi++) {
+        for(const [v,eid] of adj[queue[qi]]) {
+          if(seen.has(v)) continue;
+          seen.add(v);queue.push(v);forest.push(eid);
+        }
+      }
+    }
+    remaining=forest.slice();
+    peelRoots=[...roots];
+    const cut=fullEdges.length-forest.length;
+    snapshot('forest','Choose a spanning forest',cut>0 ? `Use a forest of full edges; ${cut} redundant connection${cut===1?' is':'s are'} omitted.` : 'Use a tree of full edges; unfinished half-edges are excluded.');
+    let peelGuard=0;
+    while(remaining.length) {
+      if(++peelGuard>n*3) throw new Error('Peeling failed to terminate.');
+      const degree=nodes.map(()=>0), leafEdge=nodes.map(()=>-1);
+      for(const eid of remaining) {const e=edges[eid];degree[e.a]++;degree[e.b]++;leafEdge[e.a]=eid;leafEdge[e.b]=eid;}
+      const leaves=nodes.filter(v=>degree[v.id]===1 && !roots.has(v.id));
+      if(!leaves.length) throw new Error('No non-root leaf in a forest.');
+      const zero=leaves.filter(v=>bits[v.id]===0);
+      if(zero.length) {
+        const dropped=[...new Set(zero.map(v=>leafEdge[v.id]))];
+        remaining=remaining.filter(eid=>!dropped.includes(eid));
+        removed.push(...zero.map(v=>v.id));
+        snapshot('peel','Discard zero-bit leaves',`${zero.length} leaf bit${zero.length===1?' is':'s are'} 0; drop ${zero.length===1?'its':'their'} tree edge${zero.length===1?'':'s'} without choosing a correction.`,{nodes:zero.map(v=>v.id),edges:dropped,action:'discard'});
+      } else {
+        const v=leaves[0],eid=leafEdge[v.id],e=edges[eid],other=e.a===v.id?e.b:e.a;
+        const label=v.label||'The highlighted leaf';
+        snapshot('peel','Inspect a one-bit leaf',`${label} has bit 1; its only remaining tree edge must enter the correction.`,{nodes:[v.id],edges:[eid],action:'inspect'});
+        correction.push(eid);
+        bits[v.id]^=1;
+        if(!nodes[other].boundary) bits[other]^=1;
+        remaining=remaining.filter(id=>id!==eid);removed.push(v.id);
+        snapshot('peel','Keep the edge and update bits',nodes[other].boundary ? 'Keep this edge; its boundary endpoint has no syndrome constraint.' : 'Keep this edge; flip both endpoint bits and remove the cleared leaf.',{nodes:[v.id,other],edges:[eid],action:'keep'});
+      }
+    }
+    const reproduced=nodes.map(()=>0);
+    for(const eid of correction) {const e=edges[eid];if(!nodes[e.a].boundary)reproduced[e.a]^=1;if(!nodes[e.b].boundary)reproduced[e.b]^=1;}
+    const valid=nodes.every(v=>v.boundary || (reproduced[v.id]===v.syndrome && bits[v.id]===0));
+    if(!valid) throw new Error('Correction failed the syndrome check.');
+    snapshot('done','Syndrome matched','The correction matches the observed syndrome; logical success also depends on the actual error.');
+    return {frames,valid,reproduced,correction,forest,fullEdges:fullEdges.map(e=>e.id)};
+  }
+
+  function minimumCorrection(graph,allowedEdges) {
+    const {nodes,edges}=graph,defects=nodes.filter(v=>v.syndrome).map(v=>v.id);
+    if(defects.length>12)return {available:false,reason:'Exact comparison is available for up to 12 defects.'};
+    const included=new Set(allowedEdges||edges.map(e=>e.id)),adj=nodes.map(()=>[]),boundary=nodes.filter(v=>v.boundary).map(v=>v.id);
+    for(const e of edges)if(included.has(e.id)){adj[e.a].push([e.b,e.id]);adj[e.b].push([e.a,e.id]);}
+    const routes=defects.map(start=>{
+      const distance=nodes.map(()=>Infinity),prev=nodes.map(()=>null),q=[start];distance[start]=0;
+      for(let h=0;h<q.length;h++)for(const [v,eid]of adj[q[h]])if(distance[v]===Infinity){distance[v]=distance[q[h]]+1;prev[v]=[q[h],eid];q.push(v);}
+      const path=end=>{const result=[];if(!Number.isFinite(distance[end]))return result;while(end!==start){result.push(prev[end][1]);end=prev[end][0];}return result;};
+      return {distance,path};
+    });
+    const nearest=routes.map(r=>boundary.reduce((best,v)=>best===null||r.distance[v]<r.distance[best]?v:best,null));
+    const memo=new Map(),choices=new Map();
+    function solve(mask){
+      if(!mask)return 0;if(memo.has(mask))return memo.get(mask);
+      let i=0;while(!(mask&(1<<i)))i++;
+      const rest=mask^(1<<i);let best=Infinity,choice=null;
+      if(nearest[i]!==null){const cost=routes[i].distance[nearest[i]]+solve(rest);if(cost<best){best=cost;choice={i,boundary:nearest[i],rest};}}
+      for(let j=i+1;j<defects.length;j++)if(rest&(1<<j)){const next=rest^(1<<j),cost=routes[i].distance[defects[j]]+solve(next);if(cost<best){best=cost;choice={i,j,rest:next};}}
+      memo.set(mask,best);choices.set(mask,choice);return best;
+    }
+    let mask=(1<<defects.length)-1;
+    const cost=solve(mask),selected=new Set(),pairs=[];
+    if(!Number.isFinite(cost))return {available:false,reason:'No syndrome-consistent correction exists in this edge set.'};
+    while(mask){const c=choices.get(mask),end=c.j===undefined?c.boundary:defects[c.j],path=routes[c.i].path(end);for(const eid of path){if(selected.has(eid))selected.delete(eid);else selected.add(eid);}pairs.push([defects[c.i],end]);mask=c.rest;}
+    const check=nodes.map(()=>0);for(const eid of selected){const e=edges[eid];if(!nodes[e.a].boundary)check[e.a]^=1;if(!nodes[e.b].boundary)check[e.b]^=1;}
+    if(selected.size!==cost || !nodes.every(v=>v.boundary||check[v.id]===v.syndrome))throw new Error('Minimum correction validation failed.');
+    return {available:true,cost,edges:[...selected],pairs};
+  }
+
+  globalThis.__ufLessonModel={makeGraph,run,presets,minimumCorrection};
+  if(typeof document==='undefined') return;
+  const root=document.getElementById('uf-decoder-lesson');
+  if(!root) return;
+  const select=root.querySelector('#uf-example'),svg=root.querySelector('.uf-graph'),drawing=root.querySelector('#uf-drawing');
+  const next=root.querySelector('#uf-next'),back=root.querySelector('#uf-back'),first=root.querySelector('#uf-first'),play=root.querySelector('#uf-play');
+  const counter=root.querySelector('#uf-counter'),note=root.querySelector('#uf-note'),clusters=root.querySelector('#uf-clusters'),desc=root.querySelector('#uf-svg-desc');
+  const stages=[...root.querySelectorAll('.uf-stage')];
+  const NS='http://www.w3.org/2000/svg';
+  const $=id=>root.querySelector(`#uf-${id}`);
+  let graph,trace,fullTrace,reference,grownReference,index=0,timer=null,animation=null,lastCoordinates=null,lastIndex=-2,editing=false;
+  let draft=presets.custom.defects.map(p=>p.slice()),draftBoundary=true;
+  const codeLines=[
+    'Initialize one cluster per defect; all other vertices are singleton sets.',
+    'While an odd cluster has no allowed boundary:',
+    '  Grow every active frontier by up to half an edge.',
+    '  For each newly completed edge (u, v):',
+    '    ru = Find(u); rv = Find(v)  [path compression]',
+    '    If ru != rv: Union(ru, rv)  [union by size]',
+    '    Update defect count, parity, and boundary flag.',
+    'Build a breadth-first spanning forest of the full edges.',
+    'While a non-root leaf v remains:',
+    '  If bit[v] = 1: choose its edge and flip endpoint bits.',
+    '  Remove the leaf and its tree edge.',
+    'Return the syndrome-consistent correction.'
+  ];
+  for(let i=0;i<codeLines.length;i++){
+    const li=document.createElement('li'),num=document.createElement('span'),text=document.createElement('span');
+    num.className='uf-code-no tabular-nums';num.textContent=i+1;text.className='uf-code-text';text.textContent=codeLines[i];li.append(num,text);$('code').append(li);
+  }
+  const nodeName=v=>graph.nodes[v].label?`${graph.nodes[v].label} / v${v}`:`v${v}`;
+  function tableRows(target,rows){target.replaceChildren();for(const [name,value]of rows){const tr=document.createElement('tr'),th=document.createElement('th'),td=document.createElement('td');th.scope='row';th.textContent=name;td.textContent=value;tr.append(th,td);target.append(tr);}}
+  function parentChain(id,s){const chain=[id];let guard=0;while(s.parents[id]!==id){id=s.parents[id];chain.push(id);if(++guard>graph.nodes.length)throw new Error('Parent cycle');}return chain;}
+  function inspectTarget(s){const value=$('inspect').value;if(value!=='auto')return {type:value[0],id:Number(value.slice(1))};if(s.focusNodes.length)return {type:'v',id:s.focusNodes[0]};if(s.focusEdges.length)return {type:'e',id:s.focusEdges[0]};const v=graph.nodes.find(v=>v.syndrome);return {type:'v',id:v?v.id:0};}
+  function updatePanels(s){
+    const fullyGrown=s.support.filter(p=>p[0]+p[1]>=1-1e-9).length;
+    const reasons={
+      seed:['Each syndrome-1 vertex contributes one defect to its cluster.','An ordinary vertex can join without changing defect parity.'],
+      growth:['Only odd clusters without a boundary extend their frontier.','Full edges are processed together before the next growth round.'],
+      find:['Find follows parent pointers to the representative and compresses that path.','These parent pointers describe set membership.'],
+      same:['Both endpoint searches reached the same representative.','The edge may form a graph cycle; the sets are already joined.'],
+      union:['The smaller set attaches to the larger set; defect counts add.','Remaining full edges in this round can trigger further unions.'],
+      merge:['Even clusters pause; odd clusters keep growing unless they touch a boundary.','An even cluster can resume growth when an odd cluster joins it.'],
+      forest:['A graph forest provides the leaf order needed for peeling.','This breadth-first forest is separate from the Union-Find parent tree.'],
+      inspect:['A residual bit of 1 at a leaf forces its only remaining tree edge.','Peeling reads the current bit, which can differ from the original syndrome.'],
+      discard:['A zero-bit leaf needs no correction on its only tree edge.','Zero leaves can be removed together without flipping neighbors.'],
+      keep:['Selecting an edge toggles the residual bits at its constrained endpoints.','A virtual boundary endpoint has no measured syndrome constraint.'],
+      done:['Every measured vertex has zero residual after applying the correction.','A matching syndrome alone does not establish logical success.']
+    };
+    const action=s.action||s.phase,reason=reasons[action]||reasons[s.phase]||reasons.merge;
+    tableRows($('step-details'),[
+      ['Why',reason[0]],['Watch',reason[1]],
+      ['State',`${s.groups.filter(g=>g.active).length} active clusters · ${fullyGrown} full edges · ${s.correction.length} chosen edges`],
+      ['Growth',`Round ${s.tick} · equal half-edge growth budgets`]
+    ]);
+    const activeLines=s.phase==='seed'?[0]:s.action==='growth'?[1,2]:s.action==='find'?[3,4]:s.action==='union'?[5,6]:s.action==='same'?[4,5]:s.action==='merge'?[6]:s.phase==='forest'?[7]:s.action==='inspect'?[8,9]:s.action==='keep'?[9,10]:s.action==='discard'?[10]:[11];
+    [...$('code').children].forEach((li,i)=>{li.classList.toggle('uf-code-active',activeLines.includes(i));if(activeLines.includes(i))li.setAttribute('aria-current','step');else li.removeAttribute('aria-current');});
+    const log=$('operation-log');log.replaceChildren();
+    if(s.operations.length){
+      const table=document.createElement('table');table.className='table table-sm';
+      const head=document.createElement('thead');head.innerHTML='<tr><th>Full edge</th><th>Endpoint roots</th><th>Union result</th></tr>';table.append(head);const body=document.createElement('tbody');
+      const ops=s.micro?s.operations.slice(-1):s.operations;
+      for(const op of ops){const tr=document.createElement('tr');const cells=[`e${op.edge}: v${op.a}–v${op.b}`,`v${op.ra} (${op.sa}) · v${op.rb} (${op.sb})`,op.same?'Already joined':s.action==='find'?'Awaiting Union':`root v${op.result} · ${op.ca+op.cb} defects`];for(const cell of cells){const td=document.createElement('td');td.textContent=cell;tr.append(td);}body.append(tr);}table.append(body);log.append(table);
+      const key=document.createElement('div');key.className='text-small text-muted';key.textContent='Parentheses show set size in vertices.';log.append(key);
+      if(s.action==='find'){
+        const op=s.operations.at(-1),paths=document.createElement('div');paths.className='text-small';
+        paths.textContent=`Search paths: ${op.pathA.map(v=>`v${v}`).join(' → ')}; ${op.pathB.map(v=>`v${v}`).join(' → ')}. Parent pointers shortened: ${op.compressed}.`;log.append(paths);
+      }
+    }
+    $('cluster-table').replaceChildren();
+    for(const g of s.groups){const tr=document.createElement('tr');const status=g.boundary?`${g.count%2?'Odd':'Even'} · boundary`:g.active?'Odd · growing':`Even · ${['seed','grow'].includes(s.phase)?'paused':'valid'}`;for(const [i,text]of [g.label,`v${g.root}`,String(g.members.length),String(g.count),status].entries()){const td=document.createElement('td');td.textContent=text;if(i===2||i===3)td.className='text-end tabular-nums';tr.append(td);}$('cluster-table').append(tr);}
+    $('cluster-summary').textContent='Vertices determine union-by-size; defects determine parity.';
+    const target=inspectTarget(s);
+    if(target.type==='v'){
+      const v=graph.nodes[target.id],g=s.groups[s.nodeGroups[v.id]],chain=parentChain(v.id,s);
+      const degree=s.remaining.reduce((n,eid)=>n+(graph.edges[eid].a===v.id||graph.edges[eid].b===v.id?1:0),0);
+      tableRows($('inspect-table'),[['Vertex',`${nodeName(v.id)} · ${v.boundary?'virtual boundary':v.name}`],['Input bit',v.boundary?'Unconstrained':String(v.syndrome)],['Working bit',v.boundary?'Unconstrained':String(s.bits[v.id])],['Find path',chain.map(x=>`v${x}`).join(' → ')],['Cluster',g?`${g.label} · ${g.members.length} vertices · ${g.count} defects`:'No defects in this singleton set'],['Peeling',s.peelRoots.includes(v.id)?'Forest root':degree?`${degree} remaining tree edge${degree===1?'':'s'}`:'No remaining tree edge']]);
+    }else{
+      const e=graph.edges[target.id],p=s.support[e.id],total=p[0]+p[1];
+      tableRows($('inspect-table'),[['Edge',`e${e.id} · v${e.a}–v${e.b}`],['Unit cost','1'],['Growth',`${Number(total.toFixed(2))} / 1 · ${total>=1-1e-9?'full':total?'partial':'not grown'}`],['Contributions',`v${e.a}: ${Number(p[0].toFixed(2))} · v${e.b}: ${Number(p[1].toFixed(2))}`],['Endpoint roots',`v${parentChain(e.a,s).at(-1)} · v${parentChain(e.b,s).at(-1)}`],['Role',s.correction.includes(e.id)?'Chosen correction':s.remaining.includes(e.id)?'Remaining forest edge':s.forest.includes(e.id)?'Peeled forest edge':total>=1-1e-9?'Full edge outside the chosen forest':'Outside the peeling forest']]);
+    }
+    $('reference').disabled=s.phase!=='done'||!reference?.available||editing;
+    const comparison=$('comparison');comparison.replaceChildren();
+    if(s.phase!=='done'){
+      comparison.textContent='Advance to Correction to compare the three edge counts.';
+      $('comparison-note').textContent='Global minimum → best inside the grown region → this peeling result.';
+    }else if(!reference?.available){comparison.textContent=reference?.reason||'No reference is available.';$('comparison-note').textContent='The Union-Find walkthrough remains available.';}
+    else{
+      const table=document.createElement('table');table.className='table table-sm';const body=document.createElement('tbody');
+      tableRows(body,[['Exact minimum',`${reference.cost} edges`],['Best in grown region',`${grownReference.cost} edges`],['This UF correction',`${s.correction.length} edges`]]);table.append(body);comparison.append(table);
+      const regionGap=grownReference.cost-reference.cost,forestGap=s.correction.length-grownReference.cost;
+      const message=[];
+      if(regionGap)message.push(`Growth excludes all ${reference.cost}-edge solutions; any correction inside its region needs at least ${grownReference.cost} edges.`);
+      if(forestGap)message.push(`This breadth-first forest adds ${forestGap} edges beyond the best correction inside the grown region.`);
+      if(!regionGap&&!forestGap)message.push('UF attains the minimum edge count for this example.');
+      message.push('These costs compare corrections on the toy graph, not logical error rates.');
+      $('comparison-note').textContent=message.join(' ');
+    }
+  }
+  function prepareChoices(){
+    const inspect=$('inspect');inspect.replaceChildren(new Option('Current operation','auto'));
+    const vertices=document.createElement('optgroup');vertices.label='Vertices';
+    for(const v of graph.nodes)vertices.append(new Option(`${nodeName(v.id)} · ${v.boundary?'boundary':v.name}`,`v${v.id}`));
+    const edgesGroup=document.createElement('optgroup');edgesGroup.label='Edges';for(const e of graph.edges)edgesGroup.append(new Option(`e${e.id} · v${e.a}–v${e.b}`,`e${e.id}`));inspect.append(vertices,edgesGroup);
+    const old=$('edit-node').value;$('edit-node').replaceChildren();for(const v of graph.nodes.filter(v=>!v.boundary))$('edit-node').append(new Option(`${v.name} · v${v.id}`,String(v.id)));if([...$('edit-node').options].some(o=>o.value===old))$('edit-node').value=old;
+  }
+  const reduced=()=>globalThis.matchMedia && globalThis.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  function el(type,attrs,parent=drawing,text) {const v=document.createElementNS(NS,type);for(const [key,value] of Object.entries(attrs||{}))v.setAttribute(key,value);if(text!==undefined)v.textContent=text;parent.appendChild(v);return v;}
+  const statusColor=g=>g && !g.active?'var(--viz-series-2)':'var(--viz-series-1)';
+  function pause() { if(timer!==null) clearInterval(timer);timer=null;play.textContent='Play';play.setAttribute('aria-pressed','false'); }
+  function draw() {
+    if(animation!==null) {cancelAnimationFrame(animation);animation=null;}
+    const s=trace.frames[index];
+    const width=Math.max(280,svg.getBoundingClientRect().width || root.clientWidth || 736);
+    const narrow=width<450,margin=narrow?25:42,minCol=graph.preset.boundary?0:1;
+    const dx=(width-2*margin)/(7-minCol),dy=narrow?72:80,top=62,height=top+2*dy+43;
+    const position=id=>({x:margin+(graph.nodes[id].col-minCol)*dx,y:top+graph.nodes[id].row*dy});
+    svg.setAttribute('viewBox',`0 0 ${width} ${height}`);svg.setAttribute('height',height);
+    drawing.replaceChildren();
+    const growing=['seed','grow'].includes(s.phase),peeling=['peel','done'].includes(s.phase);
+    const focusEdges=new Set(s.focusEdges),focusNodes=new Set(s.focusNodes),remaining=new Set(s.remaining),chosen=new Set(s.correction),removed=new Set(s.removed);
+    const inspection=inspectTarget(s),inspectOpen=$('tab-inspect').getAttribute('aria-selected')==='true';
+    if(inspectOpen && inspection.type==='v')focusNodes.add(inspection.id);
+    const segment=(a,b,attrs)=>el('line',{x1:a.x,y1:a.y,x2:b.x,y2:b.y,'stroke-linecap':'round',...attrs});
+    if(graph.preset.boundary) {
+      const bp=position(21);
+      el('rect',{x:bp.x-8,y:top-22,width:16,height:2*dy+44,rx:4,fill:'var(--muted)',opacity:0.8});
+      el('text',{x:bp.x-9,y:26,'text-anchor':'start'},drawing,'Boundary');
+    }
+    for(const e of graph.edges) {const a=position(e.a),b=position(e.b);segment(a,b,{stroke:'var(--border)','stroke-width':1.3});}
+    const animated=[];
+    if(s.phase!=='done') {
+      for(const e of graph.edges) {
+        const a=position(e.a),b=position(e.b),p=s.support[e.id];
+        for(let side=0;side<2;side++) {
+          const amount=p[side];if(amount<=0)continue;
+          const start=side===0?a:b,end=side===0?b:a,node=side===0?e.a:e.b;
+          const group=s.groups[s.nodeGroups[node]],color=statusColor(group);
+          const target={x:start.x+(end.x-start.x)*amount,y:start.y+(end.y-start.y)*amount};
+          const thick=segment(start,target,{stroke:color,'stroke-width':narrow?15:22,opacity:growing?0.15:0.065});
+          const line=segment(start,target,{stroke:color,'stroke-width':growing?3:2,opacity:growing?0.72:0.16});
+          if(lastCoordinates && index===lastIndex+1 && s.action==='growth') {
+            const old=lastCoordinates[e.id][side];
+            if(old<amount) animated.push({thick,line,start,end,old,amount});
+          }
+        }
+      }
+      for(const v of graph.nodes) {
+        const group=s.groups[s.nodeGroups[v.id]];if(!group)continue;
+        const p=position(v.id);
+        el('circle',{cx:p.x,cy:p.y,r:narrow?12:16,fill:statusColor(group),opacity:growing?0.12:0.065});
+      }
+    }
+    for(const eid of remaining) {
+      const e=graph.edges[eid];segment(position(e.a),position(e.b),{stroke:'var(--foreground)','stroke-width':2,'stroke-dasharray':'5 5',opacity:0.62});
+    }
+    if(s.action==='discard') {
+      for(const eid of s.focusEdges) {const e=graph.edges[eid];segment(position(e.a),position(e.b),{stroke:'var(--foreground)','stroke-width':2,'stroke-dasharray':'2 6',opacity:0.25});}
+    }
+    for(const eid of chosen) {
+      const e=graph.edges[eid];segment(position(e.a),position(e.b),{stroke:'var(--viz-series-3)','stroke-width':5});
+    }
+    const showReference=$('reference').checked && reference?.available && s.phase==='done' && !editing;
+    if(showReference)for(const eid of reference.edges){const e=graph.edges[eid];segment(position(e.a),position(e.b),{stroke:'var(--viz-series-5)','stroke-width':3,'stroke-dasharray':'7 5'});}
+    $('reference-legend').style.display=showReference?'inline-flex':'none';
+    $('cut-legend').hidden=s.phase!=='forest'||!graph.edges.some(e=>s.support[e.id][0]+s.support[e.id][1]>=1-1e-9&&!s.forest.includes(e.id));
+    if(s.phase==='forest')for(const e of graph.edges){if(s.support[e.id][0]+s.support[e.id][1]<1-1e-9||s.forest.includes(e.id))continue;const a=position(e.a),b=position(e.b);el('circle',{cx:(a.x+b.x)/2,cy:(a.y+b.y)/2,r:8,fill:'var(--background)'});el('text',{x:(a.x+b.x)/2,y:(a.y+b.y)/2+4,'text-anchor':'middle'},drawing,'×');}
+    if(s.action==='inspect') {
+      for(const eid of s.focusEdges) {const e=graph.edges[eid];segment(position(e.a),position(e.b),{stroke:'var(--foreground)','stroke-width':3,'stroke-dasharray':'7 4'});}
+    }
+    if(inspectOpen && inspection.type==='e'){const e=graph.edges[inspection.id];segment(position(e.a),position(e.b),{stroke:'var(--foreground)','stroke-width':2,'stroke-dasharray':'2 4'});}
+    for(const e of graph.edges){const hit=segment(position(e.a),position(e.b),{stroke:'transparent','stroke-width':18,class:'cursor-interaction','data-tooltip':`e${e.id} · v${e.a}–v${e.b} · ${Number((s.support[e.id][0]+s.support[e.id][1]).toFixed(2))}/1 grown`});hit.addEventListener('click',()=>{if(editing)return;$('inspect').value=`e${e.id}`;$('tab-inspect').click();draw();});}
+    for(const v of graph.nodes) {
+      const p=position(v.id),bit=s.phase==='done'?v.syndrome:(peeling?s.bits[v.id]:v.syndrome);
+      const faded=peeling && removed.has(v.id) && !focusNodes.has(v.id) && !v.syndrome;
+      if(focusNodes.has(v.id)) el('circle',{cx:p.x,cy:p.y,r:narrow?15:19,fill:'none',stroke:'var(--foreground)','stroke-width':1.4,'stroke-dasharray':'3 4',opacity:0.7});
+      if(v.boundary) {
+        el('rect',{x:p.x-4,y:p.y-7,width:8,height:14,fill:'var(--background)',stroke:'var(--muted-foreground)','stroke-width':1.5});
+      } else if(bit) {
+        el('circle',{cx:p.x,cy:p.y,r:narrow?7:8,fill:'var(--foreground)'});
+      } else {
+        el('circle',{cx:p.x,cy:p.y,r:narrow?4:5,fill:'var(--background)',stroke:'var(--muted-foreground)','stroke-width':1.2,opacity:faded?0.38:0.85});
+      }
+      if(v.label) {
+        el('text',{x:p.x,y:p.y-(narrow?23:27),'text-anchor':'middle',class:'uf-letter'},drawing,v.label);
+      }
+      if($('ids').checked)el('text',{x:p.x,y:p.y+27,'text-anchor':'middle'},drawing,`v${v.id}`);
+      if(s.action==='inspect' && focusNodes.has(v.id) && !v.label) el('text',{x:p.x,y:p.y-25,'text-anchor':'middle'},drawing,'leaf: 1');
+      const hit=el('circle',{cx:p.x,cy:p.y,r:Math.min(21,dx/2-1),fill:'transparent',class:'cursor-interaction','data-tooltip':`${nodeName(v.id)} · ${v.boundary?'boundary':`input ${v.syndrome}, current ${s.bits[v.id]}`}`});
+      hit.addEventListener('click',()=>{if(editing){if(!v.boundary)toggleDefect(v.id);}else{$('inspect').value=`v${v.id}`;$('tab-inspect').click();draw();}});
+    }
+    if(s.phase==='done') {
+      el('text',{x:width/2,y:height-8,'text-anchor':'middle'},drawing,`${s.correction.length} correction edge${s.correction.length===1?'':'s'} · syndrome matched`);
+    }
+    note.textContent=editing?'Edit the syndrome, then run the decoder.':s.note;
+    counter.textContent=`${index+1} / ${trace.frames.length} · ${s.title}`;
+    $('scrub').max=trace.frames.length-1;$('scrub').value=index;$('scrub').disabled=editing;
+    $('scrub').setAttribute('aria-valuetext',`${index+1} of ${trace.frames.length}: ${s.title}`);
+    back.disabled=editing||index===0;first.disabled=editing||index===0;next.disabled=editing||index===trace.frames.length-1;
+    play.disabled=editing||index===trace.frames.length-1;
+    if(index===trace.frames.length-1)pause();
+    for(const stage of stages) {stage.disabled=editing||!trace.frames.some(f=>f.phase===stage.dataset.phase);stage.setAttribute('aria-pressed',String(stage.dataset.phase===s.phase));if(stage.dataset.phase===s.phase)stage.setAttribute('aria-current','step');else stage.removeAttribute('aria-current');}
+    clusters.replaceChildren();
+    for(const g of s.groups) {
+      const item=document.createElement('span');item.className='uf-cluster';
+      const swatch=document.createElement('span');swatch.className='uf-swatch';swatch.style.background=statusColor(g);swatch.setAttribute('aria-hidden','true');
+      const text=document.createElement('span');
+      let status=g.boundary?'boundary · stopped':g.active?'odd · growing':'even · paused';
+      if(!growing) status=g.boundary?'boundary-valid':g.count%2===0?'even':'odd · boundary-valid';
+      text.textContent=`${g.label}: ${g.count} defect${g.count===1?'':'s'} · ${status}`;
+      item.append(swatch,text);clusters.append(item);
+    }
+    root.querySelector('#uf-bit-key').textContent=s.phase==='peel'?'Working bit 1':'Observed syndrome 1';
+    updatePanels(s);
+    desc.textContent=`${graph.preset.name}. Step ${index+1} of ${trace.frames.length}. ${s.title}. ${s.note} ${s.groups.map(g=>`${g.label}: ${g.count} defects, ${g.boundary?'boundary reached':g.active?'odd and active':'even and paused'}`).join('. ')}.`;
+    if(animated.length && !reduced()) {
+      const start=performance.now();
+      const animate=now=>{
+        const t=Math.min(1,(now-start)/360),ease=1-Math.pow(1-t,3);
+        for(const p of animated) {const amount=p.old+(p.amount-p.old)*ease;for(const line of [p.thick,p.line]){line.setAttribute('x2',p.start.x+(p.end.x-p.start.x)*amount);line.setAttribute('y2',p.start.y+(p.end.y-p.start.y)*amount);}}
+        if(t<1)animation=requestAnimationFrame(animate);else animation=null;
+      };
+      animation=requestAnimationFrame(animate);
+    }
+    lastCoordinates=s.support;lastIndex=index;
+  }
+  function filterTrace(raw=0){trace={...fullTrace,frames:fullTrace.frames.filter(s=>$('micro').checked||!s.micro)};index=trace.frames.findIndex(s=>s.raw>=raw);if(index<0)index=trace.frames.length-1;lastCoordinates=null;lastIndex=-2;}
+  function compile(key,defects,boundary){
+    graph=makeGraph(key,defects,boundary);fullTrace=run(graph);reference=fullTrace.valid?minimumCorrection(graph):null;grownReference=fullTrace.valid?minimumCorrection(graph,fullTrace.fullEdges):null;
+    filterTrace();prepareChoices();$('reference').checked=false;
+  }
+  function refreshEditor(){
+    compile('custom',draft,draftBoundary);
+    $('editor-status').textContent=`${draft.length} defect${draft.length===1?'':'s'} selected`;
+    $('editor-error').hidden=fullTrace.valid;$('editor-error').textContent=fullTrace.error||'';$('run').disabled=!fullTrace.valid;
+    index=0;draw();
+  }
+  function toggleDefect(id){const v=graph.nodes[id];if(!v||v.boundary)return;const i=draft.findIndex(p=>p[0]===v.col&&p[1]===v.row);if(i>=0)draft.splice(i,1);else draft.push([v.col,v.row]);draft.sort((a,b)=>a[1]-b[1]||a[0]-b[0]);refreshEditor();}
+  function load(key){pause();editing=key==='custom';$('editor').hidden=!editing;$('edit').hidden=editing;if(editing){$('boundary').checked=draftBoundary;refreshEditor();}else{compile(key);draw();}}
+  function go(i){pause();index=Math.max(0,Math.min(trace.frames.length-1,i));draw();}
+  select.addEventListener('change',()=>load(select.value));
+  next.addEventListener('click',()=>{pause();if(index<trace.frames.length-1){index++;draw();}});
+  back.addEventListener('click',()=>{pause();if(index>0){index--;draw();}});
+  first.addEventListener('click',()=>{pause();index=0;draw();});
+  function startPlayback(){
+    if(timer!==null){pause();return;}
+    if(index>=trace.frames.length-1||editing)return;
+    play.textContent='Pause';play.setAttribute('aria-pressed','true');
+    index++;draw();
+    if(index<trace.frames.length-1)timer=setInterval(()=>{if(index<trace.frames.length-1){index++;draw();}else pause();},Number($('speed').value));
+  }
+  play.addEventListener('click',startPlayback);
+  $('speed').addEventListener('change',()=>{if(timer!==null){pause();startPlayback();}});
+  $('scrub').addEventListener('input',()=>go(Number($('scrub').value)));
+  $('micro').addEventListener('change',()=>{pause();const raw=trace.frames[index].raw;filterTrace(raw);draw();});
+  $('ids').addEventListener('change',()=>draw());
+  $('inspect').addEventListener('change',()=>draw());
+  $('reference').addEventListener('change',()=>draw());
+  for(const stage of stages)stage.addEventListener('click',()=>{const i=trace.frames.findIndex(s=>s.phase===stage.dataset.phase);if(i>=0)go(i);});
+  for(const tab of root.querySelectorAll('[role="tab"]'))tab.addEventListener('click',()=>setTimeout(()=>draw(),0));
+  $('edit').addEventListener('click',()=>{draft=graph.nodes.filter(v=>v.syndrome).map(v=>[v.col,v.row]);draftBoundary=graph.preset.boundary;select.value='custom';load('custom');});
+  $('toggle-defect').addEventListener('click',()=>toggleDefect(Number($('edit-node').value)));
+  $('clear').addEventListener('click',()=>{draft=[];refreshEditor();});
+  $('boundary').addEventListener('change',()=>{draftBoundary=$('boundary').checked;refreshEditor();});
+  $('run').addEventListener('click',()=>{if(!fullTrace.valid)return;editing=false;$('editor').hidden=true;$('edit').hidden=false;index=0;draw();});
+  document.addEventListener('visibilitychange',()=>{if(document.hidden)pause();});
+  if(typeof ResizeObserver!=='undefined')new ResizeObserver(()=>{lastCoordinates=null;draw();}).observe(svg);
+  root.ufInspect=()=>({key:select.value,index,total:trace.frames.length,state:trace.frames[index],valid:trace.valid,graph,trace,fullTrace,reference,grownReference,editing});
+  load('pair');
+})();
+</script>

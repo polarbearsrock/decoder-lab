@@ -351,14 +351,85 @@ body{-webkit-font-smoothing:antialiased}button,select{line-height:1.35}.site-hea
 @media(max-width:500px) { .lab-switch { gap:20px; padding-top:12px; } .lab-switch a { font-size:13px; } .sc-heading { padding-top:23px; } .sc-heading h1 { font-size:31px; letter-spacing:-.8px; } .sc-heading p { font-size:14px; } .sc-board-panel { padding:17px 12px; } .sc-views { grid-template-columns:repeat(2,1fr); margin-top:16px; } .sc-views .btn { font-size:13px; } .sc-view-heading { flex-wrap:wrap; gap:5px; } .sc-view-heading h2 { font-size:18px; } .sc-factor-grid { grid-template-columns:1fr; } .sc-factor,.sc-parity { padding:20px; } .sc-parity { grid-column:auto; } .sc-example-story h2 { font-size:22px; } .sc-outcome { padding:20px; } .sc-experiment { padding:22px 18px; } .sc-experiment h2 { font-size:23px; } .sc-supports { grid-template-columns:1fr; } .sc-display-options { gap:5px 14px; justify-content:start; } .sc-view-note { font-size:14px; } .sc-legend { font-size:12px; } .sc-product { font-size:32px; } }
 @media print { .lab-switch,.sc-views,.sc-display-options,.sc-editor,.sc-transform-controls,#sc-trace-controls { display:none!important; } .sc-layout { grid-template-columns:1.5fr 1fr; } .sc-heading h1 { font-size:28px; } .sc-factor-grid { grid-template-columns:1fr 1fr; } .sc-factor,.sc-parity,.sc-experiment { break-inside:avoid; } .sc-heading { padding:16px 0; } }
 @media print { :root,:root[data-theme="dark"] { --sc-error:#b65021; --sc-error-soft:#faeee8; } }
+
+/* Research tools share one quiet grid; color is reserved for operators/outcomes. */
+.sc-case-navigation { display:flex; align-items:center; justify-content:space-between; gap:8px; margin-top:4px; }
+.sc-case-navigation .btn { font-size:13px; padding:5px 0; }
+.sc-case-navigation span { color:var(--muted-foreground); font-size:13px; font-variant-numeric:tabular-nums; }
+.sc-strategy { display:flex; gap:12px; align-items:center; justify-content:space-between; margin-top:17px; font-size:14px; }
+.sc-strategy .form-select { width:auto; max-width:65%; min-width:0; font-size:14px; }
+.sc-section-nav { display:flex; flex-wrap:wrap; gap:10px 26px; border-top:1px solid var(--border); border-bottom:1px solid var(--border); padding:16px 0; font-size:14px; }
+.sc-section-nav a { color:var(--muted-foreground); text-decoration:none; }
+.sc-section-nav a:hover { color:var(--foreground); text-decoration:underline; }
+.sc-research-section { margin:38px 0; scroll-margin-top:24px; }
+.sc-research-section .section-heading { align-items:center; flex-wrap:wrap; gap:18px; margin-bottom:17px; }
+.sc-research-section .section-heading h2 { font-size:27px; letter-spacing:-.6px; }
+.sc-section-intro { max-width:940px; color:var(--muted-foreground); font-size:16px; margin-bottom:22px; }
+.sc-reference-toggle { display:flex; flex-wrap:wrap; gap:5px; }
+.sc-reference-toggle .btn { font-size:14px; white-space:normal; }
+.sc-reference-toggle .btn[aria-pressed="true"] { background:var(--accent); color:var(--accent-foreground); border-color:var(--accent-border); }
+.sc-reference-grid,.sc-growth-layout,.sc-sampling-grid { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:22px; }
+.sc-reference-card { background:var(--background); border:1px solid var(--border); border-radius:10px; padding:24px; min-width:0; }
+.sc-reference-card h3 { margin:0; font-size:19px; }
+.sc-reference-card .sc-factor-heading { flex-wrap:wrap; gap:8px; }
+.sc-reference-card svg { display:block; width:100%; margin:12px 0; }
+.sc-reference-card p { margin-bottom:0; }
+.sc-reference-numbers { display:grid; grid-template-columns:1fr 1.2fr; gap:16px; margin-top:24px; }
+.sc-reference-numbers>div { display:flex; flex-direction:column; gap:3px; }
+.sc-reference-numbers strong { font-size:31px; line-height:1.2; font-weight:550; font-variant-numeric:tabular-nums; overflow-wrap:anywhere; }
+.sc-reference-numbers span { font-size:13px; color:var(--muted-foreground); }
+.sc-gap { display:grid; grid-template-columns:minmax(220px,.8fr) 2fr; gap:25px; padding:24px; border:1px solid var(--border); border-radius:8px; margin-top:16px; background:var(--background); }
+.sc-gap strong { display:block; font:italic 27px/1.4 Georgia,serif; margin-top:9px; }
+.sc-gap p { margin:0; }
+.sc-gap p+p { margin-top:8px; }
+.sc-method { border-top:1px solid var(--border); padding-top:17px; margin-top:23px; font-size:15px; }
+.sc-method summary,.sc-clusters summary { cursor:pointer; }
+.sc-method>div { max-width:970px; margin-top:17px; color:var(--muted-foreground); }
+.sc-method p:last-child { margin-bottom:0; }
+.sc-diagnosis { border-left:3px solid var(--primary); padding:3px 0 3px 18px; margin:25px 0; max-width:1000px; }
+.sc-diagnosis h3 { font-size:20px; margin-bottom:9px; }
+.sc-diagnosis p { margin:0; color:var(--muted-foreground); font-size:16px; }
+.sc-growth-layout>div,.sc-sampling-grid>div { min-width:0; }
+.sc-table-scroll { max-width:100%; overflow-x:auto; margin-bottom:13px; }
+#logical-lab table { width:100%; border-collapse:collapse; font-size:14px; text-align:left; }
+#logical-lab caption { text-align:left; color:var(--foreground); font-size:16px; font-weight:600; padding:0 0 14px; }
+#logical-lab th { color:var(--muted-foreground); font-size:13px; font-weight:500; background:var(--muted); }
+#logical-lab th,#logical-lab td { padding:12px 12px; border-bottom:1px solid var(--border); vertical-align:middle; font-variant-numeric:tabular-nums; }
+#logical-lab td .btn { padding:5px 7px; font-size:13px; white-space:normal; }
+.sc-cost-note { background:var(--muted); border-radius:6px; padding:14px 16px; color:var(--muted-foreground); font-size:14px; line-height:1.7; }
+.sc-catalog-table { min-width:710px; }
+.sc-catalog-table td:first-child { width:35%; font-weight:500; }
+.sc-trace-jumps { display:flex; flex-wrap:wrap; align-items:center; gap:4px 12px; border-top:1px solid var(--border); padding-top:7px; font-size:13px; }
+.sc-trace-jumps .btn { font-size:13px; padding:6px 0; }
+.sc-trace-metrics { display:grid; grid-template-columns:repeat(3,1fr); gap:10px; padding:15px 0; }
+.sc-trace-metrics>div { display:flex; flex-direction:column; gap:4px; }
+.sc-trace-metrics strong { font-size:24px; font-weight:550; }
+.sc-trace-metrics span { font-size:12px; color:var(--muted-foreground); }
+.sc-clusters { font-size:14px; margin-bottom:16px; }
+.sc-clusters .sc-table-scroll { margin-top:15px; }
+.sc-clusters td:first-child { max-width:130px; overflow-wrap:anywhere; }
+.sc-sampling-grid { background:var(--background); padding:25px; border:1px solid var(--border); border-radius:10px; gap:36px; }
+.sc-sample-form { display:grid; grid-template-columns:1fr 1fr; align-items:end; gap:17px; }
+.sc-sample-form>div:first-child,.sc-sample-actions { grid-column:1/-1; }
+.sc-sample-actions,.sc-preserve>div { display:flex; flex-wrap:wrap; gap:8px; }
+.sc-preserve h3 { font-size:20px; margin-bottom:10px; }
+.sc-preserve p { color:var(--muted-foreground); font-size:15px; }
+#logical-lab .form-control { display:block; width:100%; min-height:42px; background:var(--background); color:var(--foreground); border:1px solid var(--border); border-radius:5px; padding:9px 11px; font:inherit; font-size:14px; box-sizing:border-box; }
+#sc-share-label { margin-top:16px; }
+#sc-share-url { font:13px/1.5 ui-monospace,monospace!important; }
+#sc-sample-status { margin-top:15px; color:var(--muted-foreground); }
+@media(max-width:850px) { .sc-growth-layout,.sc-sampling-grid { grid-template-columns:1fr; } .sc-gap { grid-template-columns:1fr; gap:12px; } .sc-reference-card { padding:20px; } }
+@media(max-width:600px) { .sc-reference-grid { grid-template-columns:1fr; gap:15px; } .sc-research-section { margin:30px 0; } .sc-research-section .section-heading h2 { font-size:23px; } .sc-section-nav { gap:10px 20px; } .sc-sampling-grid { padding:20px 16px; } .sc-gap { padding:20px; } .sc-growth-layout table { min-width:355px; } .sc-strategy .form-select { font-size:13px; } }
+@media print { .sc-case-navigation,.sc-section-nav,.sc-reference-toggle,.sc-trace-jumps,.sc-preserve,.sc-sample-form,#sc-catalog,#sc-sampling,#sc-inspect-growth,.sc-strategy { display:none!important; } .sc-reference-grid { grid-template-columns:1fr 1fr; } .sc-reference-card,.sc-gap { break-inside:avoid; } }
 </style></head><body><a class="skip-link" href="#main-content">Skip to decoder</a><header class="site-header"><a class="brand" href="#"><span class="brand-symbol">∪</span> Decoder lab</a><div class="header-actions"><nav aria-label="Page"><a href="#structures">Structures</a><a href="#field-guide">Field guide</a><a href="#sources">Sources</a></nav><div class="theme-control"><label for="theme-select">Theme</label><select id="theme-select"><option value="system">System</option><option value="light">Light</option><option value="dark">Dark</option></select></div></div></header><main id="main-content"><nav class="lab-switch" aria-label="Choose a lab"><a href="#logical-lab" data-lab-mode="logical" aria-current="page">Surface code · logical errors</a><a href="#walkthrough" data-lab-mode="walkthrough">UF mechanics</a></nav><section id="logical-lab" aria-label="Surface-code logical recovery">
   <div class="sc-heading">
     <div><div class="eyebrow">SURFACE-CODE MEMORY</div><h1>Union-Find and logical errors</h1><p>Planar [[41, 1, 5]] code · Z errors · perfect syndrome measurements</p></div>
-    <div class="sc-example"><label class="form-label" for="sc-example">Error configuration</label><select class="form-select" id="sc-example"></select></div>
+    <div class="sc-example"><label class="form-label" for="sc-example">Error configuration</label><select class="form-select" id="sc-example"></select><div class="sc-case-navigation"><button class="btn btn-ghost" id="sc-previous-example" aria-label="Previous example">← Previous</button><span id="sc-case-position"></span><button class="btn btn-ghost" id="sc-next-example" aria-label="Next example">Next →</button></div></div>
   </div>
   <div class="sc-layout">
     <section class="sc-board-panel" aria-label="Surface-code patch">
       <div class="surface-heading"><span>DISTANCE-5 PLANAR PATCH</span><span class="model-tag">41 data qubits · 1 logical qubit</span></div>
+      <div class="sc-strategy"><label for="sc-forest">Peeling forest</label><select id="sc-forest" class="form-select"><option value="bfs">Breadth-first (BFS)</option><option value="reverse-bfs">Reverse breadth-first</option><option value="dfs">Depth-first (DFS)</option></select></div>
       <div class="sc-views" role="group" aria-label="Choose a decoding view">
         <button class="btn" data-sc-view="error" aria-pressed="false">1. Error E</button>
         <button class="btn" data-sc-view="syndrome" aria-pressed="false">2. Syndrome</button>
@@ -374,6 +445,9 @@ body{-webkit-font-smoothing:antialiased}button,select{line-height:1.35}.site-hea
         <div class="sc-trace-caption"><strong id="sc-trace-title"></strong><span id="sc-trace-count"></span></div>
         <input type="range" id="sc-trace-scrub" class="form-range" min="0" max="1" value="0" aria-label="Surface-code UF step">
         <div class="sc-trace-buttons"><button class="btn" id="sc-trace-start">Start</button><button class="btn" id="sc-trace-back">Back</button><button class="btn" id="sc-trace-play" aria-pressed="false">Play</button><button class="btn btn-primary" id="sc-trace-next">Next</button><button class="btn btn-ghost" id="sc-trace-end">Final correction</button></div>
+        <div class="sc-trace-jumps"><span>Jump to</span><button class="btn btn-ghost" id="sc-jump-merge">First merge</button><button class="btn btn-ghost" id="sc-jump-reactivate">Reactivation</button><button class="btn btn-ghost" id="sc-jump-forest">Forest</button></div>
+        <div class="sc-trace-metrics" id="sc-trace-metrics"></div>
+        <details class="sc-clusters"><summary>Live clusters and their stopping conditions</summary><div class="sc-table-scroll"><table><thead><tr><th scope="col">Cluster</th><th scope="col">Defects</th><th scope="col">Vertices</th><th scope="col">Growth</th></tr></thead><tbody id="sc-cluster-rows"></tbody></table></div><p class="sc-secondary">Counts refer to original defects in each cluster. Peeling updates the separate residual syndrome. Boundary contact permits a cluster to stop even with odd parity.</p></details>
       </div>
       <div class="sc-display-options"><label class="form-check"><input type="checkbox" class="form-check-input" id="sc-cut" checked> Show X̄ reference</label><label class="form-check"><input type="checkbox" class="form-check-input" id="sc-ids"> Qubit IDs</label><button class="btn btn-ghost" id="sc-edit" aria-pressed="false">Edit error E</button></div>
       <div id="sc-editor" class="sc-editor" hidden><p>Click a data-qubit edge to toggle a Z error, or use the selector. The correction is recomputed from the syndrome.</p><div class="sc-editor-row"><div><label class="form-label" for="sc-qubit">Data qubit</label><select class="form-select" id="sc-qubit"></select></div><button class="btn" id="sc-toggle-qubit">Toggle Z</button><button class="btn" id="sc-clear">Clear E</button></div></div>
@@ -392,6 +466,25 @@ body{-webkit-font-smoothing:antialiased}button,select{line-height:1.35}.site-hea
 
   <div class="sc-example-story"><span class="eyebrow">THIS EXAMPLE</span><h2 id="sc-example-title"></h2><p id="sc-example-note"></p></div>
 
+  <nav class="sc-section-nav" aria-label="Research tools"><a href="#sc-comparison">Logical-class comparison</a><a href="#sc-growth">Growth versus peeling</a><a href="#sc-catalog">All 15 examples</a><a href="#sc-sampling">Reproducible experiments</a></nav>
+
+  <section class="sc-research-section" id="sc-comparison" aria-label="Exact logical-class comparison">
+    <div class="section-heading"><div><div class="eyebrow">EXACT UNIT-WEIGHT REFERENCE</div><h2>Compare the two logical classes</h2></div><div class="sc-reference-toggle" role="group" aria-label="Reference diagram"><button class="btn" data-sc-reference="correction" aria-pressed="true">Corrections C₀, C₁</button><button class="btn" data-sc-reference="residual" aria-pressed="false">Residuals CᵢE</button></div></div>
+    <p class="sc-section-intro">C₀ is a minimum-weight correction in UF’s logical class. C₁ is a minimum-weight correction in the opposite class. Both reproduce the observed syndrome; the reference uses no knowledge of E.</p>
+    <div class="sc-reference-grid">
+      <article class="sc-reference-card"><div class="sc-factor-heading"><h3>C₀ · UF’s class</h3><span class="sc-badge" id="sc-ref-0-outcome"></span></div><div class="sc-reference-numbers"><div><strong id="sc-ref-0-weight"></strong><span>minimum weight w₀</span></div><div><strong id="sc-ref-0-count"></strong><span>minimum-weight corrections</span></div></div><svg id="sc-ref-0-graph" role="img" aria-label="Reference correction in UF's logical class"></svg><p id="sc-ref-0-caption" class="sc-secondary"></p></article>
+      <article class="sc-reference-card"><div class="sc-factor-heading"><h3>C₁ · Opposite class</h3><span class="sc-badge" id="sc-ref-1-outcome"></span></div><div class="sc-reference-numbers"><div><strong id="sc-ref-1-weight"></strong><span>minimum weight w₁</span></div><div><strong id="sc-ref-1-count"></strong><span>minimum-weight corrections</span></div></div><svg id="sc-ref-1-graph" role="img" aria-label="Reference correction in the opposite logical class"></svg><p id="sc-ref-1-caption" class="sc-secondary"></p></article>
+    </div>
+    <div class="sc-gap"><div><span class="eyebrow">SIGNED CLASS GAP</span><strong id="sc-gap-equation"></strong></div><div><p id="sc-gap-note"></p><p class="sc-secondary">Δ compares the best correction in each class, not C₁ against the possibly longer UF correction. Multiplicities count only minimum-weight representatives. Neither number is a calibrated failure probability.</p></div></div>
+    <details class="sc-method"><summary>What the exact reference computes</summary><div><p>For each correction class, minimize |Cᵢ| subject to H<sub>X</sub>cᵢ = s and |Cᵢ ∩ X̄| mod 2 = bᵢ. The two parities differ by one. A row-by-row dynamic program enumerates every allowed horizontal assignment while tracking the vertical frontier and logical parity. It retains one minimum-weight witness and counts all minimum-weight corrections in each class.</p><p>This is an exact reference for this finite, unit-weight graph, implemented without Blossom. It is not maximum-likelihood class decoding, which would sum probabilities over every error in a class. The “success” labels use E after the solve, only as simulation ground truth. Tied witnesses use a fixed traversal order.</p><p id="sc-reference-check" class="sc-secondary"></p></div></details>
+  </section>
+
+  <section class="sc-research-section" id="sc-growth" aria-label="Growth and peeling comparison">
+    <div class="section-heading"><div><div class="eyebrow">LOCATE THE DECISION</div><h2>Growth versus peeling</h2></div><button class="btn" id="sc-inspect-growth">Inspect the final grown region</button></div>
+    <div class="sc-diagnosis"><h3 id="sc-growth-title"></h3><p id="sc-growth-note"></p></div>
+    <div class="sc-growth-layout"><div><div class="sc-table-scroll"><table><caption>Allowed support and correction weight</caption><thead><tr><th scope="col">Logical class</th><th scope="col">Full patch</th><th scope="col">Grown edges only</th></tr></thead><tbody id="sc-growth-rows"></tbody></table></div><p class="sc-secondary">“Impossible” is an exact feasibility result: no syndrome-consistent correction in that class fits within the fully grown edges. Half-grown edges are excluded.</p><div class="sc-cost-note" id="sc-cost-note"></div></div><div><div class="sc-table-scroll"><table><caption>Same growth, different peeling forests</caption><thead><tr><th scope="col">Forest</th><th scope="col">|C|</th><th scope="col">Recovery for E</th><th scope="col">Select</th></tr></thead><tbody id="sc-forest-rows"></tbody></table></div><p class="sc-secondary">Changing this selection updates the entire lab. Each forest uses the same fully grown support. A longer correction can still be in the successful logical class.</p><p class="sc-secondary" id="sc-run-metrics"></p></div></div>
+  </section>
+
   <section class="sc-witness" aria-label="Logical and stabilizer decomposition">
     <div class="section-heading"><div><div class="eyebrow">VERIFY THE PRODUCT</div><h2>Separate the logical part from the stabilizers</h2></div><p>These factors reproduce CE exactly. On shared qubits, Z · Z = I.</p></div>
     <div class="sc-factor-grid">
@@ -407,9 +500,21 @@ body{-webkit-font-smoothing:antialiased}button,select{line-height:1.35}.site-hea
     <div class="sc-transform-controls"><button class="btn" id="sc-add-logical">Multiply E by logical Z̄</button><label class="form-label" for="sc-face">Choose a Z stabilizer</label><select id="sc-face" class="form-select"></select><button class="btn" id="sc-add-stabilizer">Multiply E by this stabilizer</button><button class="btn btn-ghost" id="sc-reset-example">Reset selected example</button></div>
   </section>
 
+  <section class="sc-research-section" id="sc-catalog" aria-label="Worked example catalog">
+    <div class="section-heading"><div><div class="eyebrow">15 WORKED CASES</div><h2>Explore a specific failure mechanism</h2></div><div><label class="form-label" for="sc-category">Filter examples</label><select id="sc-category" class="form-select"><option value="all">All concepts</option></select></div></div>
+    <p class="sc-section-intro">Weights and outcomes in this catalog use the default BFS forest. Open a case to compare alternative forests and exact logical classes.</p><div class="sc-table-scroll"><table class="sc-catalog-table"><thead><tr><th scope="col">Example</th><th scope="col">Concept</th><th scope="col">|E|</th><th scope="col">Defects</th><th scope="col">BFS outcome</th><th scope="col">Explore</th></tr></thead><tbody id="sc-catalog-rows"></tbody></table></div>
+  </section>
+
+  <section class="sc-research-section" id="sc-sampling" aria-label="Reproducible error experiments">
+    <div class="section-heading"><div><div class="eyebrow">REPRODUCIBLE EXPERIMENTS</div><h2>Generate and preserve an error pattern</h2></div></div>
+    <div class="sc-sampling-grid"><form id="sc-sample-form" class="sc-sample-form"><div><label class="form-label" for="sc-sample-mode">Sampling model</label><select class="form-select" id="sc-sample-mode"><option value="iid">Independent Z errors</option><option value="fixed">Fixed-weight Z errors</option></select></div><div><label class="form-label" for="sc-seed">Random seed</label><input class="form-control" id="sc-seed" type="number" min="0" max="4294967295" step="1" value="89" required></div><div id="sc-probability-field"><label class="form-label" for="sc-probability">Per-qubit probability p</label><input class="form-control" id="sc-probability" type="number" min="0" max="1" step="any" value="0.1" required></div><div id="sc-weight-field" hidden><label class="form-label" for="sc-sample-weight">Number of errors</label><input class="form-control" id="sc-sample-weight" type="number" min="0" max="41" step="1" value="7" required disabled></div><div class="sc-sample-actions"><button class="btn btn-primary" type="submit">Generate error</button><button class="btn" type="button" id="sc-next-seed">Next seed</button></div></form><div class="sc-preserve"><h3>Keep the exact experiment</h3><p>Export E, syndrome, UF correction, CE = LS, both exact references, growth support, and all three forest outcomes. A case link preserves the error, forest, and diagram view.</p><div><button class="btn" id="sc-export">Export JSON</button><button class="btn" id="sc-share">Create case link</button></div><label class="form-label" for="sc-share-url" id="sc-share-label" hidden>Case link · select and copy</label><input class="form-control" id="sc-share-url" type="text" readonly hidden></div></div>
+    <p id="sc-sample-status" class="sc-equivalence-status" role="status">Seeds produce the same error pattern on every device. Each generation is one shot; this is not a logical-error-rate estimate.</p>
+    <details class="sc-method"><summary>Sampling and reproducibility details</summary><div><p>Independent sampling draws one Bernoulli(p) Z error per data qubit. Fixed-weight sampling selects a subset without replacement; it conditions the weight and is not an independent noise model. The deterministic 32-bit generator uses state ← (1664525 · state + 1013904223) mod 2³². Fixed-weight samples use a Fisher–Yates shuffle in descending qubit order.</p><p>These experiments model a single perfect-syndrome round. They contain no measurement faults, circuit propagation, temporal correlations, or X/Y errors. Curated examples are selected to illustrate mechanisms and cannot establish comparative decoder error rates.</p></div></details>
+  </section>
+
   <section class="sc-notes" aria-label="Surface-code assumptions">
     <details open><summary>Why a cleared syndrome is not enough</summary><div><p>Once H<sub>X</sub>(e ⊕ c) = 0, the remaining Z operator is either a stabilizer or a logical Z times a stabilizer. The syndrome cannot distinguish those two classes. Successful recovery requires CE ∈ 𝒮, where 𝒮 is the stabilizer group.</p><p>A nontrivial Z̄ changes the relative phase of an arbitrary encoded state: α|0<sub>L</sub>⟩ + β|1<sub>L</sub>⟩ → α|0<sub>L</sub>⟩ − β|1<sub>L</sub>⟩. It does not flip the logical computational-basis bit.</p></div></details>
-    <details><summary>Geometry, boundaries, and model limits</summary><div><p>This is an unrotated distance-5 planar CSS code. Its 41 data qubits lie on edges. The 20 measured X checks sit at non-boundary vertices; the 20 Z stabilizers surround faces. Boundary faces have weight 3. The left and right boundaries are rough, allowing Z chains to terminate without a measured endpoint.</p><p>The example uses only Pauli Z errors, perfect syndrome extraction, uniform unit-cost UF growth, and deterministic breadth-first peeling forests. It models one recovery round, without measurement errors, circuit faults, correlations, or time. Outcomes here are exact for the displayed error pattern, not a measured logical error rate.</p><p>Both check matrices have rank 20 and H<sub>X</sub>H<sub>Z</sub><sup>T</sup> = 0, leaving 41 − 20 − 20 = 1 logical qubit. The displayed Z̄ and X̄ overlap on one data qubit and anticommute.</p></div></details>
+    <details><summary>Geometry, boundaries, and model limits</summary><div><p>This is an unrotated distance-5 planar CSS code. Its 41 data qubits lie on edges. The 20 measured X checks sit at non-boundary vertices; the 20 Z stabilizers surround faces. Boundary faces have weight 3. The left and right boundaries are rough, allowing Z chains to terminate without a measured endpoint.</p><p>The example uses only Pauli Z errors, perfect syndrome extraction, uniform unit-cost UF growth, and deterministic BFS, reverse-BFS, or DFS peeling forests. It models one recovery round, without measurement errors, circuit faults, correlations, or time. Outcomes here are exact for the displayed error pattern, not a measured logical error rate.</p><p>Both check matrices have rank 20 and H<sub>X</sub>H<sub>Z</sub><sup>T</sup> = 0, leaving 41 − 20 − 20 = 1 logical qubit. The displayed Z̄ and X̄ overlap on one data qubit and anticommute.</p></div></details>
     <details><summary>Is the physical correction actually applied?</summary><div><p>The display treats C as a Pauli operator for bookkeeping. A controller can instead track C in a Pauli frame and interpret later operations or measurements accordingly. The logical success criterion is still whether the tracked correction and actual error differ by a stabilizer.</p><p>In a real run, the decoder does not know E and cannot use this simulation’s logical verdict. Memory experiments use suitable logical preparation and final readout to assess outcomes; syndrome checks alone do not reveal an arbitrary encoded state.</p></div></details>
   </section>
   <div class="sc-references"><span>References</span><a href="https://arxiv.org/abs/1208.0928" target="_blank" rel="noopener">Fowler et al. · Surface codes</a><a href="https://arxiv.org/abs/1709.06218" target="_blank" rel="noopener">Delfosse &amp; Nickerson · Union-Find decoding</a><a href="#walkthrough">Open the detailed UF walkthrough →</a></div>
@@ -1192,22 +1297,120 @@ const {makeGraph,run,presets,minimumCorrection}=globalThis.__ufLessonModel;
     return {graph,error,observed,trace,correction,residual,result};
   }
 
+  // Exact unit-weight reference. Transfer one horizontal row at a time, keeping
+  // the vertical frontier and the intersection parity with the fixed Xbar cut.
+  // For each frontier pair, the check equations allow two horizontal strings.
+  // This minimizes over every syndrome-consistent correction, not just paths
+  // chosen by UF. An optional edge set restricts the same solve to its growth.
+  function minimumCorrections(patch,bits,allowedEdges) {
+    if(bits.length!==patch.nodes.length || bits.some(b=>b!==0&&b!==1)) throw new Error('Invalid syndrome.');
+    const d=patch.d,width=1<<(d-1),states=width*2,allH=(1<<d)-1;
+    const pop=Array.from({length:1<<d},(_,i)=>{let n=0;for(;i;i&=i-1)n++;return n;});
+    const allowed=allowedEdges===undefined?null:new Set(allowedEdges);
+    let costs=Array(states).fill(Infinity),counts=Array(states).fill(0n);
+    costs[0]=0;counts[0]=1n;
+    const history=[];
+    for(let row=0;row<d;row++) {
+      let s=0,allowH=0,allowV=0;
+      for(let j=0;j<d-1;j++)s|=bits[row*(d-1)+j]<<j;
+      for(let j=0;j<d;j++)if(!allowed||allowed.has(patch.edge('h',j,row)))allowH|=1<<j;
+      if(row<d-1)for(let j=0;j<d-1;j++)if(!allowed||allowed.has(patch.edge('v',j+1,row)))allowV|=1<<j;
+      const horizontal=Array.from({length:width},(_,t)=>{let h=0,b=0;for(let j=1;j<d;j++){b^=(t>>(j-1))&1;h|=b<<j;}return h;});
+      const next=Array(states).fill(Infinity),ways=Array(states).fill(0n),previous=Array(states).fill(-1),hs=Array(states).fill(0);
+      for(let up=0;up<width;up++)for(let down=0;down<(row===d-1?1:width);down++) {
+        if(down&~allowV)continue;
+        const base=horizontal[s^up^down];
+        for(const h of [base,base^allH]) {
+          if(h&~allowH)continue;
+          const weight=pop[h]+pop[down],cross=(h>>Math.floor(d/2))&1;
+          for(let parity=0;parity<2;parity++) {
+            const old=up*2+parity;if(!Number.isFinite(costs[old]))continue;
+            const state=down*2+(parity^cross),cost=costs[old]+weight;
+            if(cost<next[state]){next[state]=cost;ways[state]=counts[old];previous[state]=old;hs[state]=h;}
+            else if(cost===next[state])ways[state]+=counts[old];
+          }
+        }
+      }
+      history.push({previous,hs});costs=next;counts=ways;
+    }
+    const sectors=[0,1].map(parity=>{
+      if(!Number.isFinite(costs[parity]))return {parity,weight:null,count:'0',correction:[]};
+      let state=parity;const correction=[];
+      for(let row=d-1;row>=0;row--) {
+        const h=history[row].hs[state],down=state>>1;
+        for(let j=0;j<d;j++)if(h&(1<<j))correction.push(patch.edge('h',j,row));
+        if(row<d-1)for(let j=0;j<d-1;j++)if(down&(1<<j))correction.push(patch.edge('v',j+1,row));
+        state=history[row].previous[state];
+      }
+      correction.sort((a,b)=>a-b);
+      if(correction.length!==costs[parity] || syndrome(patch,correction).some((v,i)=>v!==bits[i]) || cutParity(patch,correction)!==parity)throw new Error('Exact reference witness failed.');
+      return {parity,weight:costs[parity],count:counts[parity].toString(),correction};
+    });
+    return {sectors,restricted:!!allowed,method:'row-frontier dynamic programming',unitWeights:true};
+  }
+
+  const cutParity=(patch,chain)=>chain.filter(id=>patch.logicalX.includes(id)).length%2;
+
+  function analyze(patch,data,forestStrategy='bfs') {
+    const exact=minimumCorrections(patch,data.observed),grown=minimumCorrections(patch,data.observed,data.trace.fullEdges);
+    const parity=cutParity(patch,data.correction),truth=cutParity(patch,data.error);
+    const variants=['bfs','reverse-bfs','dfs'].map(strategy=>{
+      const d=strategy===forestStrategy?data:decode(patch,data.error,strategy);
+      if(d.trace.fullEdges.join(',')!==data.trace.fullEdges.join(','))throw new Error('Forest changed grown support.');
+      return {strategy,correction:d.correction,residual:d.residual,logical:d.result.logical,parity:cutParity(patch,d.correction),forest:d.trace.forest};
+    });
+    const frames=data.trace.frames.filter(f=>!f.micro);
+    return {exact,grown,parity,truth,variants,gap:exact.sectors[parity^1].weight-exact.sectors[parity].weight,
+      peelingExcess:data.correction.length-grown.sectors[parity].weight,
+      growthPenalty:grown.sectors[parity].weight-exact.sectors[parity].weight,
+      correctClassInGrowth:grown.sectors[truth].weight!==null,
+      rounds:Math.max(...frames.map(f=>f.tick)),reactivations:frames.filter(f=>f.reactivated).length,
+      unions:frames.filter(f=>f.action==='merge').reduce((n,f)=>n+f.operations.filter(o=>!o.same).length,0)};
+  }
+
+  function sample(patch,{seed=1,mode='iid',p=.1,weight=5}={}) {
+    if(!Number.isInteger(seed)||seed<0||seed>4294967295)throw new Error('Seed must be an integer from 0 to 4294967295.');
+    let state=seed>>>0;
+    const random=()=>{state=(Math.imul(state,1664525)+1013904223)>>>0;return state/4294967296;};
+    if(mode==='iid'){
+      if(!Number.isFinite(p)||p<0||p>1)throw new Error('Use a probability between 0 and 1.');
+      return patch.edges.filter(()=>random()<p).map(e=>e.id);
+    }
+    if(mode!=='fixed'||!Number.isInteger(weight)||weight<0||weight>patch.n)throw new Error('Use a valid fixed error weight.');
+    const ids=patch.edges.map(e=>e.id);
+    for(let i=ids.length-1;i>0;i--){const j=Math.floor(random()*(i+1));[ids[i],ids[j]]=[ids[j],ids[i]];}
+    return ids.slice(0,weight).sort((a,b)=>a-b);
+  }
+
   function examples(patch) {
     const h=(x,y)=>patch.edge('h',x,y),v=(x,y)=>patch.edge('v',x,y);
     const m=Math.floor(patch.d/2),right=Array.from({length:patch.d-m},(_,i)=>h(m+i,m));
     const detourFace=patch.faces.find(f=>f.col===m+1 && f.row===m-1);
     const successFace=patch.faces.find(f=>f.col===m && f.row===m-1);
     const boundaryFace=patch.faces.find(f=>f.col===0 && f.row===m-1);
-    return [
+    const basic=[
       {id:'exact',name:'1 · Exact recovery: CE = I',error:[h(m,m)],title:'The correction cancels the error.',note:'One Z error creates two neighboring X-check defects. UF returns the same single-qubit Z, so both copies cancel.'},
       {id:'stabilizer',name:'2 · Different paths: CE = S',error:xor([h(m,m)],successFace.edges),title:'Different physical paths can recover the same logical state.',note:'The actual error takes a three-edge detour. The one-edge correction leaves a plaquette stabilizer, which acts as identity on the code space.'},
       {id:'logical',name:'3 · Wrong boundary: CE = Z̄',error:right,title:'A shorter correction can leave a logical error.',note:'The error reaches the right rough boundary, but its defect is closer to the left. UF chooses the left path; together they span the patch.'},
       {id:'dressed',name:'4 · Deformed logical path: CE = Z̄S',error:xor(right,detourFace.edges),title:'A logical operator remains, even after removing a stabilizer.',note:'The error detours around one plaquette. After UF clears the syndrome, the remaining path is a logical Z multiplied by that plaquette stabilizer.'},
       {id:'invisible',name:'5 · Zero syndrome, nontrivial logical Z̄',error:patch.logicalZ.slice(),title:'A logical error can produce no detection events.',note:'A complete rough-to-rough Z string flips no measured X check. UF receives an empty syndrome and returns C = I.'},
       {id:'boundary',name:'6 · Boundary stabilizer: CE = S',error:boundaryFace.edges.slice(),title:'Touching a boundary does not by itself imply failure.',note:'This three-qubit chain returns to the same rough boundary. It is a boundary Z stabilizer, with zero syndrome and no logical effect.'}
+    ].map(e=>({...e,group:'Foundations'}));
+    if(patch.d!==5)return basic;
+    const row=y=>Array.from({length:patch.d},(_,x)=>h(x,y));
+    return [...basic,
+      {id:'independent',group:'Multiple chains',name:'7 · Three separated error chains',error:[h(1,0),h(3,4),v(2,2)],title:'Several clusters can finish independently.',note:'Three isolated Z errors create six defects. Each neighboring pair becomes even without a global merger. Inspect the live cluster table to see each pair stop growing.'},
+      {id:'two-strings',group:'Topological composition',name:'8 · Two logical strings cancel',error:xor(row(1),row(3),[h(2,2)]),title:'Two nontrivial strings can have a trivial combined effect.',note:'Two complete rough-to-rough strings are hidden from the syndrome. UF corrects the one visible central error. The two remaining strings multiply to ten face stabilizers: Z̄² = I, so the logical state is recovered despite a weight-10 residual.'},
+      {id:'three-strings',group:'Topological composition',name:'9 · Three logical strings survive',error:xor(row(0),row(2),row(4),[h(2,1)]),title:'Logical parity counts strings modulo two.',note:'The three full horizontal strings create no defects. After UF removes the extra visible error, CE crosses the X̄ cut three times. Its exact witness is one logical Z̄ multiplied by all 20 face stabilizers.'},
+      {id:'islands',group:'Topological composition',name:'10 · Four stabilizer islands',error:xor([h(2,2)],... [1,3,16,18].map(i=>patch.faces[i].edges)),title:'A heavy physical error can still be logically harmless.',note:'Four disjoint plaquette loops surround a single visible error. The 17-qubit error has the same syndrome as one Z error. UF removes that one edge, leaving only the four stabilizers. Error weight alone does not determine a particular shot’s outcome.'},
+      {id:'reactivation',group:'Growth and peeling',name:'11 · Reactivation and peeling cost',error:[22,31,32,35],title:'An even cluster can resume growth after a merger.',note:'Six initial defects cause an even cluster to absorb an odd one and become active again. Default BFS peeling returns six correction edges; reverse BFS and DFS need four on exactly the same grown support. All three recover this error logically.'},
+      {id:'forest-choice',group:'Growth and peeling',name:'12 · Forest choice changes the logical class',error:[3,16,27,29,30,33,38],title:'The same grown region can support both logical outcomes.',note:'Default BFS and reverse BFS fail on this error; DFS succeeds. Both logical classes have a global minimum correction of weight five, but with different numbers of minimum-weight representatives. A zero weight gap does not specify a probability of logical failure.'},
+      {id:'growth-trap',group:'Growth and peeling',name:'13 · Growth excludes the correct class',error:[1,3,10,13,23,30,39],title:'Changing the peeling forest cannot repair this grown region.',note:'Eleven defects lead UF to a weight-eight correction in the wrong logical class. The full patch admits successful weight-seven corrections, but none in that class fit inside the fully grown edges. Every correction confined to this grown region therefore fails for this E.'},
+      {id:'uf-wins',group:'Decoder disagreements',name:'14 · UF succeeds, minimum weight fails',error:[9,13,15,23,34,40],title:'Minimum weight is a decision rule, not a guarantee for each shot.',note:'Default BFS UF succeeds using six edges. Every globally minimum-weight correction has five edges and fails for this particular E. This selected counterexample says nothing about which decoder has the better average logical error rate.'},
+      {id:'dense',group:'Decoder disagreements',name:'15 · Dense syndrome and degenerate minima',error:[3,8,11,16,20,35,39],title:'Many shortest representatives can share a logical class.',note:'Eleven defects interact through repeated mergers. Both classes have minimum weight seven, with 16 and 4 distinct minimum-weight corrections. Default BFS fails while DFS succeeds. Compare their residuals, and distinguish minimum-weight multiplicity from a full class likelihood.'}
     ];
   }
-  globalThis.__surfaceModel={makePatch,syndrome,decompose,decode,examples,xor};
+  globalThis.__surfaceModel={makePatch,syndrome,decompose,decode,examples,xor,cutParity,minimumCorrections,analyze,sample};
 })();
 
 </script>
@@ -1217,7 +1420,8 @@ const {makeGraph,run,presets,minimumCorrection}=globalThis.__ufLessonModel;
   const M=globalThis.__surfaceModel, patch=M.makePatch(5), presets=M.examples(patch);
   const root=document.getElementById('logical-lab'), $=id=>document.getElementById('sc-'+id);
   const NS='http://www.w3.org/2000/svg';
-  let selected='dressed',error=presets.find(p=>p.id===selected).error.slice(),data;
+  let selected='growth-trap',error=presets.find(p=>p.id===selected).error.slice(),data,analysis;
+  let forestStrategy='bfs',referenceView='correction',sampleOrigin=null;
   let view='decomposition',editing=false,traceIndex=0,timer=null,frames=[];
   const viewButtons=[...root.querySelectorAll('[data-sc-view]')];
   const colors={error:'var(--sc-error)',correction:'var(--viz-series-3)',residual:'var(--viz-series-5)',logical:'var(--muted-foreground)',stabilizer:'var(--viz-series-1)',cut:'var(--viz-series-2)'};
@@ -1236,7 +1440,7 @@ const {makeGraph,run,presets,minimumCorrection}=globalThis.__ufLessonModel;
     parent.append(e);return e;
   }
   const supportText=ids=>ids.length?ids.map(id=>'q'+id).join(', '):'∅';
-  const stabilizerHTML=ids=>ids.length?ids.map(id=>`S<sub>${id+1}</sub>`).join(' '):'I';
+  const stabilizerHTML=ids=>ids.length>5?'∏<sub>i∈A</sub> S<sub>i</sub>':ids.length?ids.map(id=>`S<sub>${id+1}</sub>`).join(' '):'I';
   function stop(){if(timer!==null)clearInterval(timer);timer=null;$('trace-play').textContent='Play';$('trace-play').setAttribute('aria-pressed','false');}
 
   function geometry(svg,mini=false) {
@@ -1302,6 +1506,7 @@ const {makeGraph,run,presets,minimumCorrection}=globalThis.__ufLessonModel;
       else {
         const c=svgEl(drawing,'circle',{cx:p.x,cy:p.y,r:bits[v.id]?5.3:(mini?2.5:3.3),fill:bits[v.id]?'var(--foreground)':'var(--background)',stroke:'var(--muted-foreground)','stroke-width':1});
         svgEl(c,'title',{},`X${v.id+1}: ${bits[v.id]?'−1, defect':'+1, satisfied'}`);
+        if(trace&&data.graph.nodes[v.id].label)text(p.x+8,p.y-8,data.graph.nodes[v.id].label,{'text-anchor':'start','font-size':11,fill:'var(--foreground)'});
       }
     }
     if(!mini) for(const e of patch.edges) {
@@ -1344,11 +1549,13 @@ const {makeGraph,run,presets,minimumCorrection}=globalThis.__ufLessonModel;
     $('trace-play').disabled=traceIndex===frames.length-1;
     $('editor').hidden=!editing;$('edit').setAttribute('aria-pressed',String(editing));$('edit').textContent=editing?'Done editing':'Edit error E';
     viewButtons.forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.scView===view)));
+    if(view==='trace')renderClusters(frame);
   }
   function drawFactors(){
     if(root.hidden)return;
     drawPatch($('logical-factor'),{mini:true,chain:data.result.logical?patch.logicalZ:[],color:colors.residual,cut:true});
     drawPatch($('stabilizer-factor'),{mini:true,chain:data.result.stabilizerEdges,color:colors.stabilizer,faces:data.result.stabilizers});
+    drawReferences();
   }
   function renderResult(){
     const r=data.result,sHTML=stabilizerHTML(r.stabilizers),logical=r.logical?'Z̄':'I';
@@ -1360,7 +1567,7 @@ const {makeGraph,run,presets,minimumCorrection}=globalThis.__ufLessonModel;
     $('error-weight').textContent=data.error.length;$('correction-weight').textContent=data.correction.length;$('residual-weight').textContent=data.residual.length;
     $('l-factor').textContent=logical;$('s-factor').innerHTML=sHTML;
     $('l-caption').textContent=r.logical?'The fixed middle-row Z̄ joins the two rough boundaries. It anticommutes with the vertical X̄ reference.':'L = I. No logical operator is needed to reconstruct CE.';
-    $('s-caption').textContent=r.stabilizers.length?`${r.stabilizers.length} Z stabilizer${r.stabilizers.length===1?'':'s'}; shared edges cancel in their product. Each acts as +1 on the code space.`:'S = I: the empty stabilizer product.';
+    $('s-caption').textContent=r.stabilizers.length?`${r.stabilizers.length} Z stabilizer${r.stabilizers.length===1?'':'s'}; shared edges cancel. Each acts as +1 on the code space.${r.stabilizers.length>5?' A = {'+r.stabilizers.map(i=>i+1).join(', ')+'}.':''}`:'S = I: the empty stabilizer product.';
     const n=r.cutCrossings.length;
     $('crossings').textContent=n?`${n} residual qubit${n===1?'':'s'} overlap${n===1?'s':''} the X̄ representative: ${supportText(r.cutCrossings)}.`:'No residual qubits overlap the X̄ representative.';
     $('parity-readout').textContent=`${n} mod 2 = ${r.logical}`;$('verified').textContent='✓ Exact stabilizer reconstruction verified.';
@@ -1371,22 +1578,102 @@ const {makeGraph,run,presets,minimumCorrection}=globalThis.__ufLessonModel;
     for(const id of r.stabilizers){const p=document.createElement('p');p.textContent=`S${id+1} = {${supportText(patch.faces[id].edges)}}`;supports.append(p);}
     drawMain();drawFactors();
   }
+  const forestNames={bfs:'BFS','reverse-bfs':'Reverse BFS',dfs:'DFS'};
+  function badge(logical){const span=document.createElement('span');span.className='sc-badge'+(logical?' failure':'');span.textContent=logical?'Logical failure':'Success';return span;}
+  function tableRow(parent,values){const tr=document.createElement('tr');for(const value of values){const td=document.createElement('td');if(value instanceof Node)td.append(value);else td.textContent=String(value);tr.append(td);}parent.append(tr);return tr;}
+  function renderClusters(frame){
+    $('trace-metrics').replaceChildren();
+    for(const [value,label]of [[frame.groups.filter(g=>g.active).length,'active clusters'],[frame.support.filter(s=>s[0]+s[1]>=1).length,'fully grown edges'],[frame.bits.reduce((a,b)=>a+b,0),'residual defects']]){
+      const div=document.createElement('div'),strong=document.createElement('strong'),span=document.createElement('span');strong.textContent=value;span.textContent=label;div.append(strong,span);$('trace-metrics').append(div);
+    }
+    $('cluster-rows').replaceChildren();
+    for(const g of frame.groups)tableRow($('cluster-rows'),[g.label||'—',g.count,g.members.length,g.active?'Active · odd':g.boundary?'Stopped · boundary':'Stopped · even']);
+    if(!frame.groups.length)tableRow($('cluster-rows'),['No defect clusters',0,0,'No growth needed']);
+    $('jump-merge').disabled=!frames.some(f=>f.action==='merge');$('jump-reactivate').disabled=!frames.some(f=>f.reactivated);
+  }
+  function drawReferences(){
+    if(!analysis||root.hidden)return;
+    for(const i of [0,1]){
+      const ref=analysis.exact.sectors[analysis.parity^i],chain=referenceView==='correction'?ref.correction:M.xor(data.error,ref.correction);
+      drawPatch($(`ref-${i}-graph`),{mini:true,chain,color:referenceView==='correction'?colors.correction:colors.residual,bits:referenceView==='correction'?data.observed:[],cut:true});
+      $(`ref-${i}-graph`).setAttribute('aria-label',`${referenceView==='correction'?'Correction':'Residual'} for ${i?'the opposite class':'UF’s class'}: ${chain.length} qubits`);
+      $(`ref-${i}-caption`).textContent=referenceView==='correction'?`One of ${ref.count} minimum-weight representatives. Filled checks show the common input syndrome.`:`C${i?'₁':'₀'}E has ${chain.length} qubits and ${M.cutParity(patch,chain)} mod-2 intersection with X̄. All measured checks are satisfied.`;
+    }
+    root.querySelectorAll('[data-sc-reference]').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.scReference===referenceView)));
+  }
+  function renderResearch(){
+    for(const i of [0,1]){
+      const ref=analysis.exact.sectors[analysis.parity^i],logical=ref.parity^analysis.truth;
+      $(`ref-${i}-weight`).textContent=ref.weight;$(`ref-${i}-count`).textContent=ref.count;
+      const b=$(`ref-${i}-outcome`);b.textContent=logical?'Logical failure for E':'Success for E';b.classList.toggle('failure',!!logical);
+    }
+    const w0=analysis.exact.sectors[analysis.parity].weight,w1=analysis.exact.sectors[analysis.parity^1].weight;
+    $('gap-equation').textContent=`Δ = ${w1} − ${w0} = ${analysis.gap}`;
+    $('gap-note').textContent=analysis.gap===0?'The classes tie in minimum weight. Weight alone cannot select a unique logical class.':analysis.gap>0?`UF’s class has a lower minimum weight by ${analysis.gap}. This favors that class under a minimum-weight rule; it does not certify recovery.`:`The opposite class has a lower minimum weight by ${-analysis.gap}. UF has not selected the globally minimum-weight class.`;
+    $('reference-check').textContent='Verified: both witnesses reproduce the syndrome and differ by logical Z̄ times a stabilizer. Each count refers to distinct qubit supports.';
+    $('growth-title').textContent=!analysis.correctClassInGrowth?'Growth excludes every successful correction for this E.':data.result.logical?'Successful recovery is possible inside this grown region.':'UF selects a successful correction inside its grown region.';
+    $('growth-note').textContent=!analysis.correctClassInGrowth?'The successful logical class is infeasible when correction edges are restricted to UF’s fully grown support. No change confined to peeling that support can recover this E. Growth decisions must change.':data.result.logical?'The exact restricted solve finds a correction in the successful class. This UF forest selects the other class. Compare the forests below; a different correction inside the same support can recover E.':'Compare the weights below to see whether a different forest can shorten C. Extra physical correction edges do not themselves imply a logical error.';
+    $('growth-rows').replaceChildren();
+    for(const i of [0,1]){const parity=analysis.parity^i;tableRow($('growth-rows'),[i?'C₁ · opposite class':'C₀ · UF’s class',analysis.exact.sectors[parity].weight,analysis.grown.sectors[parity].weight??'Impossible']);}
+    const grownWeight=analysis.grown.sectors[analysis.parity].weight;
+    $('cost-note').textContent=`Within UF’s class: |C| = ${data.correction.length}; minimum on grown edges = ${grownWeight}; full-patch minimum = ${w0}. Peeling adds ${analysis.peelingExcess} edge${analysis.peelingExcess===1?'':'s'} above the grown-region minimum; restricting growth adds ${analysis.growthPenalty} above the full-patch minimum.`;
+    $('forest-rows').replaceChildren();
+    for(const variant of analysis.variants){
+      const button=document.createElement('button');button.className='btn btn-ghost';button.textContent=variant.strategy===forestStrategy?'Selected':'Use '+forestNames[variant.strategy];button.disabled=variant.strategy===forestStrategy;button.setAttribute('aria-label','Use '+forestNames[variant.strategy]+' forest');button.addEventListener('click',()=>changeForest(variant.strategy));
+      tableRow($('forest-rows'),[forestNames[variant.strategy],variant.correction.length,badge(variant.logical),button]);
+    }
+    $('run-metrics').textContent=`${analysis.rounds} half-edge growth rounds · ${analysis.unions} unions · ${analysis.reactivations} round${analysis.reactivations===1?'':'s'} with reactivation · ${data.trace.fullEdges.length} fully grown edges.`;
+  }
+  function changeForest(strategy){forestStrategy=strategy;$('forest').value=strategy;recompute({changed:$('example').value==='custom'});}
+  const catalog=presets.map(p=>{const d=M.decode(patch,p.error);return {preset:p,weight:d.error.length,defects:d.observed.reduce((a,b)=>a+b,0),logical:d.result.logical};});
+  function renderCatalog(){
+    $('catalog-rows').replaceChildren();
+    for(const c of catalog.filter(c=>$('category').value==='all'||c.preset.group===$('category').value)){
+      const button=document.createElement('button');button.className='btn btn-ghost';button.textContent='Open';button.setAttribute('aria-label','Open example '+(presets.indexOf(c.preset)+1));
+      button.addEventListener('click',()=>{forestStrategy='bfs';$('forest').value=forestStrategy;chooseExample(c.preset.id);root.scrollIntoView({block:'start'});});
+      tableRow($('catalog-rows'),[c.preset.name,c.preset.group,c.weight,c.defects,badge(c.logical),button]);
+    }
+  }
+  function experimentRecord(){return {
+    format:'decoder-lab.surface-code.v2',model:{distance:5,dataQubits:41,logicalQubits:1,noise:'Z only; perfect syndrome; one round',edgeWeights:'uniform unit weights'},
+    example:$('example').value==='custom'?null:selected,sampling:sampleOrigin,forestStrategy,view,error:data.error,syndrome:data.observed,correction:data.correction,residual:data.residual,
+    decomposition:data.result,reference:analysis,fullyGrownEdges:data.trace.fullEdges,
+    geometry:{qubits:patch.edges,checks:patch.nodes.filter(v=>!v.boundary),stabilizers:patch.faces,logicalZ:patch.logicalZ,logicalX:patch.logicalX},
+    convention:'All supports multiply by symmetric difference. Reference sector parity is intersection with the fixed logical-X cut; reference.parity identifies UF’s class. Success labels use the simulated error only after decoding.'
+  };}
+  function generateSample(){
+    if(!$('sample-form').reportValidity())return;
+    try{
+      const params={seed:Number($('seed').value),mode:$('sample-mode').value};
+      if(params.mode==='iid')params.p=Number($('probability').value);else params.weight=Number($('sample-weight').value);
+      error=M.sample(patch,params);sampleOrigin=params;editing=false;view='error';recompute({changed:true});
+      $('example-title').textContent=`Seed ${params.seed} · ${params.mode==='iid'?'independent Z errors':'fixed-weight Z errors'}`;
+      $('example-note').textContent=`${error.length} physical errors generated deterministically. Compare the observed syndrome, the UF correction, and the two logical classes.`;
+      $('sample-status').textContent=`Generated seed ${params.seed}: ${error.length} errors, ${data.observed.reduce((a,b)=>a+b,0)} defects, ${data.result.logical?'logical failure':'successful recovery'} with ${forestNames[forestStrategy]}.`;
+    }catch(e){$('sample-status').textContent=e.message;}
+  }
   function recompute({changed=false,message=''}={}) {
-    stop();data=M.decode(patch,error);error=data.error;frames=data.trace.frames.filter(f=>!f.micro);traceIndex=0;
+    stop();data=M.decode(patch,error,forestStrategy);analysis=M.analyze(patch,data,forestStrategy);error=data.error;frames=data.trace.frames.filter(f=>!f.micro);traceIndex=0;
     if(changed){$('example').value='custom';$('example-title').textContent='Explore your own error pattern.';$('example-note').textContent='The syndrome, UF correction, and exact logical/stabilizer decomposition update together.';}
+    if(changed&&!sampleOrigin)$('sample-status').textContent='Custom error pattern. Export or create a case link to preserve it exactly.';
     $('equivalence-status').textContent=message||'Try either transformation. Both preserve the syndrome and deterministic correction.';
-    renderResult();
+    $('share-url').hidden=$('share-label').hidden=true;
+    $('case-position').textContent=changed?'Custom pattern':`${presets.findIndex(p=>p.id===selected)+1} / ${presets.length}`;
+    $('previous-example').disabled=presets.findIndex(p=>p.id===selected)===0;
+    $('next-example').disabled=presets.findIndex(p=>p.id===selected)===presets.length-1;
+    renderResult();renderResearch();
   }
   function chooseExample(id){
     const p=presets.find(p=>p.id===id);if(!p)return;
-    selected=id;error=p.error.slice();editing=false;$('example').value=id;
+    selected=id;error=p.error.slice();editing=false;sampleOrigin=null;$('example').value=id;
+    $('sample-status').textContent='Seeds produce the same error pattern on every device. Each generation is one shot; this is not a logical-error-rate estimate.';
     $('example-title').textContent=p.title;$('example-note').textContent=p.note;
     $('reset-example').textContent=`Reset example ${presets.indexOf(p)+1}`;
     recompute();
   }
-  function toggleQubit(id){error=M.xor(error,[id]);recompute({changed:true});}
+  function toggleQubit(id){sampleOrigin=null;error=M.xor(error,[id]);recompute({changed:true});}
   function transform(chain,isLogical){
-    const old=data;error=M.xor(error,chain);recompute({changed:true});
+    const old=data;sampleOrigin=null;error=M.xor(error,chain);recompute({changed:true});
     const sameS=old.observed.every((b,i)=>b===data.observed[i]);
     const sameC=old.correction.join(',')===data.correction.join(',');
     if(!sameS||!sameC||data.result.logical!==(old.result.logical^(isLogical?1:0)))throw new Error('Equivalence transformation failed.');
@@ -1395,16 +1682,41 @@ const {makeGraph,run,presets,minimumCorrection}=globalThis.__ufLessonModel;
   }
   function setView(next){stop();view=next;if(next!=='error')editing=false;drawMain();}
   function goTrace(i){stop();traceIndex=Math.max(0,Math.min(frames.length-1,i));drawMain();}
-  $('example').replaceChildren(...presets.map(p=>new Option(p.name,p.id)));
+  for(const group of [...new Set(presets.map(p=>p.group))]){
+    const optgroup=document.createElement('optgroup');optgroup.label=group;
+    optgroup.append(...presets.filter(p=>p.group===group).map(p=>new Option(p.name,p.id)));$('example').append(optgroup);
+    $('category').append(new Option(group,group));
+  }
   const custom=new Option('Custom / transformed error','custom');custom.disabled=true;$('example').append(custom);
   for(const e of patch.edges)$('qubit').append(new Option(`q${e.id} · ${e.kind==='h'?'horizontal':'vertical'} edge`,String(e.id)));
   for(const f of patch.faces)$('face').append(new Option(`S${f.id+1} · ${f.edges.length}-qubit ${f.edges.length===3?'boundary':'plaquette'} stabilizer`,String(f.id)));
   $('face').value='8';
   $('example').addEventListener('change',()=>chooseExample($('example').value));
+  $('forest').addEventListener('change',()=>changeForest($('forest').value));
+  $('previous-example').addEventListener('click',()=>chooseExample(presets[presets.findIndex(p=>p.id===selected)-1]?.id));
+  $('next-example').addEventListener('click',()=>chooseExample(presets[presets.findIndex(p=>p.id===selected)+1]?.id));
+  $('category').addEventListener('change',renderCatalog);
+  root.querySelectorAll('[data-sc-reference]').forEach(b=>b.addEventListener('click',()=>{referenceView=b.dataset.scReference;drawReferences();}));
+  for(const [id,predicate] of [['jump-merge',f=>f.action==='merge'],['jump-reactivate',f=>f.reactivated],['jump-forest',f=>f.phase==='forest']])$(id).addEventListener('click',()=>goTrace(frames.findIndex(predicate)));
+  $('inspect-growth').addEventListener('click',()=>{setView('trace');goTrace(frames.findIndex(f=>f.phase==='forest'));$('graph').scrollIntoView({block:'center'});});
+  $('sample-mode').addEventListener('change',()=>{const fixed=$('sample-mode').value==='fixed';$('probability-field').hidden=fixed;$('probability').disabled=fixed;$('weight-field').hidden=!fixed;$('sample-weight').disabled=!fixed;});
+  $('sample-form').addEventListener('submit',event=>{event.preventDefault();generateSample();});
+  $('next-seed').addEventListener('click',()=>{if(!$('sample-form').reportValidity())return;$('seed').value=(Number($('seed').value)+1)>>>0;generateSample();});
+  $('export').addEventListener('click',()=>{
+    const blob=new Blob([JSON.stringify(experimentRecord(),null,2)+'\n'],{type:'application/json'}),url=URL.createObjectURL(blob),link=document.createElement('a');
+    link.href=url;link.download=`surface-code-d5-${$('example').value}.json`;link.click();setTimeout(()=>URL.revokeObjectURL(url),1000);
+    $('sample-status').textContent='Exported the current experiment, exact references, and geometry as JSON.';
+  });
+  $('share').addEventListener('click',()=>{
+    const url=new URL(location.href);url.search='';url.hash='';url.searchParams.set('sc','2');url.searchParams.set('e',data.error.join(','));url.searchParams.set('forest',forestStrategy);url.searchParams.set('view',view);
+    if($('example').value!=='custom')url.searchParams.set('example',selected);
+    $('share-url').value=url.href;$('share-url').hidden=$('share-label').hidden=false;$('share-url').focus();$('share-url').select();
+    $('sample-status').textContent='Case link ready. It preserves the exact error, forest, and diagram view; select and copy it.';
+  });
   viewButtons.forEach(b=>b.addEventListener('click',()=>setView(b.dataset.scView)));
   $('edit').addEventListener('click',()=>{stop();editing=!editing;view='error';drawMain();});
   $('toggle-qubit').addEventListener('click',()=>toggleQubit(Number($('qubit').value)));
-  $('clear').addEventListener('click',()=>{error=[];recompute({changed:true});});
+  $('clear').addEventListener('click',()=>{sampleOrigin=null;error=[];recompute({changed:true});});
   $('cut').addEventListener('change',drawMain);$('ids').addEventListener('change',drawMain);
   $('reset-example').addEventListener('click',()=>chooseExample(selected));
   $('add-logical').addEventListener('click',()=>transform(patch.logicalZ,true));
@@ -1435,8 +1747,23 @@ const {makeGraph,run,presets,minimumCorrection}=globalThis.__ufLessonModel;
   }
   new ResizeObserver(()=>{drawMain();drawFactors();}).observe(root);
   window.addEventListener('hashchange',route);
-  chooseExample(selected);route();
-  root.surfaceInspect=()=>({view,editing,selected,error:data.error,correction:data.correction,residual:data.residual,syndrome:data.observed,result:data.result,frame:frames[traceIndex],traceIndex,frames:frames.length});
+  chooseExample(selected);
+  const query=new URLSearchParams(location.search);
+  if(query.has('sc')){
+    try{
+      const raw=query.get('e'),strategy=query.get('forest'),nextView=query.get('view');
+      if(query.get('sc')!=='2'||raw===null||raw.length>160||!/^(?:\d+(?:,\d+)*)?$/.test(raw)||!Object.hasOwn(forestNames,strategy)||!Object.hasOwn(views,nextView))throw new Error('Invalid shared case');
+      const ids=raw===''?[]:raw.split(',').map(Number);
+      if(ids.some(id=>!Number.isInteger(id)||id<0||id>=patch.n)||new Set(ids).size!==ids.length)throw new Error('Invalid qubit support');
+      forestStrategy=strategy;$('forest').value=strategy;view=nextView;
+      const preset=presets.find(p=>p.id===query.get('example')&&p.error.slice().sort((a,b)=>a-b).join(',')===ids.slice().sort((a,b)=>a-b).join(','));
+      if(preset)chooseExample(preset.id);else{error=ids;recompute({changed:true});$('example-title').textContent='Shared error pattern';}
+      $('sample-status').textContent='Shared case restored: exact error, forest, and diagram view.';
+    }catch(e){$('sample-status').textContent='This case link is invalid or uses an unsupported version. The default example is shown.';}
+  }
+  renderCatalog();route();
+  root.surfaceInspect=()=>({view,editing,selected,forestStrategy,referenceView,error:data.error,correction:data.correction,residual:data.residual,syndrome:data.observed,result:data.result,analysis,frame:frames[traceIndex],traceIndex,frames:frames.length});
+  root.surfaceExport=experimentRecord;
 })();
 
 </script></body></html>
